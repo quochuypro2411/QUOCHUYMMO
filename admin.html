@@ -512,8 +512,14 @@ async function ensureAdmin() {
   }
   if (auth && db && auth.currentUser) {
     const uid = auth.currentUser.uid;
-    const adminSnapshot = await db.collection('admins').doc(uid).get();
-    if (!adminSnapshot.exists) {
+    const userSnapshot = await db.collection('users').doc(uid).get();
+    const userData = userSnapshot.exists ? normalizeUser(userSnapshot.data()) : null;
+    
+    // Check if cloud data confirms admin status OR if local data already confirmed it
+    const isCloudAdmin = userData && (userData.isAdmin || userData.role === 'admin');
+    const isLocalAdmin = currentUser.isAdmin || currentUser.role === 'admin';
+    
+    if (!isCloudAdmin && !isLocalAdmin) {
       alert('Tài khoản của bạn không có quyền admin.');
       redirectToAuth();
       return false;
