@@ -1047,21 +1047,36 @@ async function revokeAdminRole() {
   }
 }
 function exportBackup() {
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    users: getUsers(),
-    globalNotifications: JSON.parse(localStorage.getItem('mmo_global_notifications') || '[]')
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `mmo-backup-${Date.now()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('Đã xuất file backup dữ liệu.');
+  try {
+    const users = getUsers();
+    const globalNotifications = JSON.parse(localStorage.getItem('mmo_global_notifications') || '[]');
+    
+    if (!users.length && !globalNotifications.length) {
+      showToast('Không có dữ liệu để xuất backup.', true);
+      return;
+    }
+    
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      users: users,
+      globalNotifications: globalNotifications
+    };
+    
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mmo-backup-${Date.now()}.json`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('✅ Đã xuất file backup thành công.');
+  } catch (error) {
+    console.error('Export backup error:', error);
+    showToast('❌ Lỗi khi xuất backup: ' + error.message, true);
+  }
 }
 async function importBackup(event) {
   const file = event?.target?.files?.[0];
@@ -1091,6 +1106,7 @@ async function importBackup(event) {
     event.target.value = '';
   }
 }
+
 function saveSelectedAccount() {
   const currentUser = getCurrentUser();
   if (!currentUser || !hasPermission(currentUser, 'manageUsers')) {
@@ -1102,17 +1118,6 @@ function saveSelectedAccount() {
   const idx = users.findIndex(u => u.email === selectedEmail);
   if (idx === -1) {
     showToast('Tài khoản không tồn tại.', true);
-    return;
-  }
-  const username = document.getElementById('detail-username').value.trim();
-  const name = document.getElementById('detail-name').value.trim();
-  const password = document.getElementById('detail-password').value;
-
-  if (!username || !name) {
-    showToast('Tên đăng nhập và họ tên không được để trống.', true);
-    return;
-  }
-  const duplicate = users.find((u, i) => i !== idx && (u.user === username || u.email === selectedEmail));
   if (duplicate) {
     showToast('Tên đăng nhập đã tồn tại trên tài khoản khác.', true);
     return;
