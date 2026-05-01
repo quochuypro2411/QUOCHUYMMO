@@ -587,7 +587,6 @@ async function findUserByLoginInput(input) {
 }
 
 async function ensureAdminAccount() {
-  if (auth && db) return;
   const users = await getUsersMerged();
   const adminExists = users.some(u => u.email && u.email.toLowerCase() === ADMIN_EMAIL);
   if (!adminExists) {
@@ -682,23 +681,37 @@ async function handleLogin(e) {
     const loginEmail = profile?.email || u;
 
     if (auth) {
-      const cred = await auth.signInWithEmailAndPassword(loginEmail, p);
-      const authUser = cred.user;
-      let snapshot = null;
-      if (db && authUser?.uid) {
-        snapshot = await db.collection('users').doc(authUser.uid).get();
+      let authUser = null;
+      try {
+        const cred = await auth.signInWithEmailAndPassword(loginEmail, p);
+        authUser = cred.user;
+      } catch (authErr) {
+        // Fallback for default admin if Firebase Auth fails
+        if (loginEmail.toLowerCase() === ADMIN_EMAIL && p === ADMIN_PASSWORD) {
+          profile = (await getUsersMerged()).find(u => u.email.toLowerCase() === ADMIN_EMAIL);
+          if (!profile) throw authErr;
+        } else {
+          throw authErr;
+        }
       }
 
-      if (snapshot && snapshot.exists) {
-        profile = normalizeUser(snapshot.data());
-      } else {
-        profile = normalizeUser({
-          ...(profile || {}),
-          uid: authUser.uid,
-          email: authUser.email || loginEmail
-        });
-        if (db) {
-          await db.collection('users').doc(authUser.uid).set(profile, { merge: true });
+      if (authUser) {
+        let snapshot = null;
+        if (db && authUser.uid) {
+          snapshot = await db.collection('users').doc(authUser.uid).get();
+        }
+
+        if (snapshot && snapshot.exists) {
+          profile = normalizeUser(snapshot.data());
+        } else {
+          profile = normalizeUser({
+            ...(profile || {}),
+            uid: authUser.uid,
+            email: authUser.email || loginEmail
+          });
+          if (db) {
+            await db.collection('users').doc(authUser.uid).set(profile, { merge: true });
+          }
         }
       }
     } else {
