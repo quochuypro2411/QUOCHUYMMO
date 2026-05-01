@@ -56,16 +56,16 @@
     <div class="ck-card" id="payment-card">
       <h3><i class="fas fa-credit-card"></i> Phương thức thanh toán</h3>
       <div class="pay-options">
-        <label class="pay-opt active" data-method="balance" onclick="selectPay(this)">
+        <label class="pay-opt active" data-method="balance" onclick="window.selectPay(this)">
           <input type="radio" name="pay" checked>
           <i class="fas fa-coins"></i><span class="pay-label">Số dư tài khoản</span>
         </label>
-        <label class="pay-opt" data-method="bank" onclick="selectPay(this)">
+        <label class="pay-opt" data-method="bank" onclick="window.selectPay(this)">
           <input type="radio" name="pay">
           <i class="fas fa-university"></i><span class="pay-label">Chuyển khoản ngân hàng</span>
         </label>
       </div>
-      <button class="buy-main" id="buy-main-btn" onclick="handleBuy()">
+      <button class="buy-main" id="buy-main-btn" onclick="window.handleBuy()">
         <i class="fas fa-bolt"></i> MUA NGAY TOÀN BỘ
       </button>
     </div>
@@ -78,7 +78,7 @@
   <div class="pay-modal-box">
     <div class="pm-header">
       <h3 id="pm-title"><i class="fas fa-qrcode"></i> QUÉT MÃ ĐỂ THANH TOÁN</h3>
-      <button class="pm-close" onclick="closePayModal()"><i class="fas fa-times"></i></button>
+      <button class="pm-close" onclick="window.closePayModal()"><i class="fas fa-times"></i></button>
     </div>
     <div class="pm-body">
       <div class="pm-qr" id="pm-qr-panel">
@@ -92,7 +92,7 @@
       <div class="pm-form">
         <div class="pm-row"><span class="pm-label">Số lượng sản phẩm</span><span class="pm-val" id="pm-qty">0</span></div>
         <div class="pm-row"><span class="pm-label">TỔNG TIỀN</span><span class="pm-val highlight" id="pm-total">0 đ</span></div>
-        <button class="pm-confirm" onclick="confirmPay()"><i class="fas fa-check-circle"></i> XÁC NHẬN THANH TOÁN</button>
+        <button class="pm-confirm" onclick="window.confirmPay()"><i class="fas fa-check-circle"></i> XÁC NHẬN THANH TOÁN</button>
       </div>
     </div>
   </div>
@@ -163,43 +163,44 @@
   function removeItem(idx){const c=getCart();c.splice(idx,1);saveCart(c);renderCart();showToast('Đã xóa sản phẩm')}
 
   let selectedPayMethod = 'balance';
-  function selectPay(el){
+  window.selectPay = function(el){
     document.querySelectorAll('.pay-opt').forEach(e=>e.classList.remove('active'));
     el.classList.add('active');
     selectedPayMethod = el.dataset.method;
+    const qr=document.getElementById('pm-qr-panel');
+    const title=document.getElementById('pm-title');
+    if(selectedPayMethod==='balance'){
+      if(qr) qr.style.display='none';
+      if(title) title.innerHTML='<i class="fas fa-wallet"></i> THANH TOÁN QUA SỐ DƯ';
+    }else{
+      if(qr) qr.style.display='block';
+      if(title) title.innerHTML='<i class="fas fa-qrcode"></i> QUÉT MÃ THANH TOÁN';
+    }
   }
 
-  function handleBuy(){
+  window.handleBuy = function(){
     const cart=getCart();
-    if(!cart.length)return;
+    if(!cart.length) { showToast('Giỏ hàng trống!', true); return; }
     const user=getUser();
     if(!user){showToast('Vui lòng đăng nhập!',true);setTimeout(()=>window.location.href='auth.html',1500);return}
     
     document.getElementById('pm-qty').textContent=cart.reduce((s,i)=>s+i.qty,0);
     document.getElementById('pm-total').textContent=fmt(cart.reduce((s,i)=>s+i.price*i.qty,0));
     
-    const qr=document.getElementById('pm-qr-panel');
-    const title=document.getElementById('pm-title');
-    if(selectedPayMethod==='balance'){
-      qr.style.display='none';
-      title.innerHTML='<i class="fas fa-wallet"></i> THANH TOÁN QUA SỐ DƯ';
-    }else{
-      qr.style.display='block';
-      title.innerHTML='<i class="fas fa-qrcode"></i> QUÉT MÃ THANH TOÁN';
-    }
     document.getElementById('pay-overlay').classList.add('active');
   }
 
-  function closePayModal(){document.getElementById('pay-overlay').classList.remove('active')}
+  window.closePayModal = function(){document.getElementById('pay-overlay').classList.remove('active')}
 
-  async function confirmPay(){
+  window.confirmPay = async function(){
     const btn=document.querySelector('.pm-confirm');
+    if(!btn || btn.disabled) return;
     const original=btn.innerHTML;
     const cart=getCart();
     const user=getUser();
     const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
 
-    if(selectedPayMethod==='balance' && user.balance < total){
+    if(selectedPayMethod==='balance' && (user.balance || 0) < total){
       showToast('Số dư không đủ!',true);
       return;
     }
@@ -218,19 +219,14 @@
       };
 
       const users=JSON.parse(localStorage.getItem('mmo_users')||'[]');
-      const idx=users.findIndex(u=>u.email===user.email);
+      const idx = users.findIndex(u => u.email === user.email || u.uid === user.uid);
       if(idx!==-1){
         users[idx].orders=users[idx].orders||[];
         users[idx].orders.unshift(order);
         if(selectedPayMethod==='balance') users[idx].balance-=total;
         
-        if(window.mmoUpsertUser) await window.mmoUpsertUser(users[idx]);
         localStorage.setItem('mmo_users',JSON.stringify(users));
         localStorage.setItem('mmo_currentUser',JSON.stringify(users[idx]));
-      }
-
-      // --- BÁO TELEGRAM ---
-      if (window.mmoSendTelegram) {
         const msg = `📦 <b>ĐƠN HÀNG MỚI</b>\n- ID: ${order.id}\n- Khách: ${user.email}\n- Tổng: ${fmt(total)}\n- Hình thức: ${order.method}\n- Trạng thái: ${order.status}`;
         window.mmoSendTelegram(msg);
       }

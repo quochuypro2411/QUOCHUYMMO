@@ -8,7 +8,7 @@
     content="QuocHuy MMO - Chuyên cung cấp tài khoản Facebook, Gmail, Proxy, VPS và các dịch vụ MMO uy tín, giá tốt nhất Việt Nam. Giao hàng tự động, bảo hành 1 đổi 1.">
     <style>
     /* MARKET TICKER */
-    .market-ticker { background: #0f172a; border-bottom: 1px solid rgba(255,255,255,.05); padding: 8px 0; overflow: hidden; position: relative; z-index: 50; }
+    .market-ticker { background: #0f172a; border-bottom: 1px solid rgba(255,255,255,.05); padding: 8px 0; overflow: hidden; position: relative; z-index: 10; }
     .ticker-wrap { display: flex; gap: 40px; animation: ticker 40s linear infinite; width: max-content; }
     .ticker-item { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: #94a3b8; white-space: nowrap; }
     .ticker-name { color: #fff; }
@@ -120,7 +120,7 @@
           <div class="notif-dropdown" id="notif-dropdown">
             <div class="notif-header">
               <span style="font-weight:700; font-size:14px;">Thông báo</span>
-              <button onclick="markAllNotifRead(event)"><i class="fas fa-check-double"></i> Đánh dấu đã đọc</button>
+              <button onclick="window.markAllNotifRead(event)"><i class="fas fa-check-double"></i> Đánh dấu đã đọc</button>
             </div>
             <div class="notif-list" id="notif-list"></div>
           </div>
@@ -2545,9 +2545,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/sync.js"></script>
-  <script src="js/script.js"></script>
+  <script src="js/firebase-config.js?v=2.1"></script>
+  <script src="js/sync.js?v=2.1"></script>
+  <script src="js/script.js?v=2.1"></script>
 </body>
 
 </html>

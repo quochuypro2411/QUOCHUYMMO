@@ -165,7 +165,7 @@
               <label for="deposit-note">Mã giao dịch / Ghi chú</label>
               <input id="deposit-note" type="text" placeholder="Nhập mã giao dịch để duyệt nhanh hơn">
             </div>
-            <button id="deposit-submit" class="btn-submit" onclick="submitDeposit()"><i class="fas fa-check-circle"></i> Xác nhận đã chuyển</button>
+            <button id="deposit-submit" class="btn-submit" onclick="window.submitDeposit()"><i class="fas fa-check-circle"></i> Xác nhận đã chuyển</button>
             <div style="font-size:13px; color:#64748b; margin-top:8px; text-align:center;">Vui lòng chuyển khoản đúng số tiền và nội dung.</div>
           </div>
         </div>
@@ -203,7 +203,7 @@
             <input id="card-pin" type="text" placeholder="Nhập mã thẻ cào">
           </div>
           <div class="field full">
-            <button id="card-submit" class="btn-submit" onclick="submitCard()"><i class="fas fa-mobile-alt"></i> Nạp Thẻ Ngay</button>
+            <button id="card-submit" class="btn-submit" onclick="window.submitCard()"><i class="fas fa-mobile-alt"></i> Nạp Thẻ Ngay</button>
             <div style="font-size:12px; color:#ef4444; margin-top:12px; text-align:center; font-weight: 600;">Lưu ý: Chọn sai mệnh giá sẽ bị trừ 50% hoặc mất thẻ.</div>
           </div>
         </div>
@@ -228,8 +228,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/sync.js"></script>
+<script src="js/firebase-config.js?v=2.1"></script>
+<script src="js/sync.js?v=2.1"></script>
 <script>
   function getCurrentUser() {
     try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch (e) { return null; }
@@ -291,8 +291,9 @@
     }
   }
 
-  async function submitDeposit() {
-    const btn = document.querySelector('#form-bank .submit-btn');
+  window.submitDeposit = async function() {
+    const btn = document.querySelector('#form-bank .btn-submit');
+    if (!btn || btn.disabled) return;
     const originalText = btn.innerHTML;
     const amountInput = document.getElementById('deposit-amount');
     const noteInput = document.getElementById('deposit-note');
@@ -307,7 +308,7 @@
     
     try {
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi yêu cầu...';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
 
       const users = getUsers();
       const idx = users.findIndex(u => u.email === user.email || (u.user && u.user === user.user));
@@ -325,18 +326,16 @@
       users[idx].transactions = users[idx].transactions || [];
       users[idx].transactions.unshift(request);
       
-      // Global sync and wait
-      if (window.mmoUpsertUser) {
-        await window.mmoUpsertUser(users[idx]);
-      }
-
       setUsers(users);
       localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
-      
-      // --- BÁO TELEGRAM ---
+
       if (window.mmoSendTelegram) {
         const msg = `💰 <b>YÊU CẦU NẠP TIỀN</b>\n- ID: ${request.id}\n- Khách: ${user.email}\n- Số tiền: ${formatMoney(amount)}\n- Nội dung: ${request.desc}`;
         window.mmoSendTelegram(msg);
+      }
+
+      if (window.mmoUpsertUser) {
+        await window.mmoUpsertUser(users[idx]).catch(e => console.warn("Cloud sync deferred."));
       }
 
       amountInput.value = '';
@@ -345,15 +344,16 @@
       showToast('Đã gửi yêu cầu nạp tiền thành công!');
     } catch (e) {
       console.error(e);
-      showToast('Lỗi gửi yêu cầu, vui lòng thử lại!', true);
+      showToast('Lỗi gửi yêu cầu!', true);
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalText;
     }
   }
 
-  async function submitCard() {
-    const btn = document.querySelector('#form-card .submit-btn');
+  window.submitCard = async function() {
+    const btn = document.querySelector('#form-card .btn-submit');
+    if (!btn || btn.disabled) return;
     const originalText = btn.innerHTML;
     const network = document.getElementById('card-network').value;
     const value = parseInt(document.getElementById('card-value').value);
@@ -384,17 +384,16 @@
       users[idx].transactions = users[idx].transactions || [];
       users[idx].transactions.unshift(newReq);
 
-      if (window.mmoUpsertUser) {
-        await window.mmoUpsertUser(users[idx]);
-      }
-
       setUsers(users);
       localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
 
-      // --- BÁO TELEGRAM ---
       if (window.mmoSendTelegram) {
         const msg = `💳 <b>YÊU CẦU NẠP THẺ</b>\n- ID: ${newReq.id}\n- Khách: ${user.email}\n- Mệnh giá: ${formatMoney(value)}\n- Loại: ${network}\n- Seri: ${serial}`;
         window.mmoSendTelegram(msg);
+      }
+
+      if (window.mmoUpsertUser) {
+        await window.mmoUpsertUser(users[idx]).catch(e => console.warn("Cloud sync deferred."));
       }
 
       document.getElementById('card-serial').value = '';
