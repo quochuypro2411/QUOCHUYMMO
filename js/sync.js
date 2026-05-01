@@ -96,6 +96,18 @@
   // Start syncing
   startRealtimeSync();
 
+  // Sync Global Notifications
+  if (db) {
+    db.collection('global_notifications').orderBy('date', 'desc').limit(10)
+      .onSnapshot(snap => {
+        const notifs = snap.docs.map(doc => doc.data());
+        localStorage.setItem('mmo_global_notifications', JSON.stringify(notifs));
+        console.log("[Sync] Global notifications updated:", notifs.length);
+        // Trigger a refresh of the marquee or news if they exist
+        window.dispatchEvent(new CustomEvent('mmo_global_notifs_synced', { detail: notifs }));
+      }, err => console.warn("[Sync] Global notifs error:", err));
+  }
+
   // Expose for manual trigger
   window.mmoSyncUser = startRealtimeSync;
 })();

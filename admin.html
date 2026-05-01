@@ -1109,15 +1109,25 @@ function sendGlobalNotification() {
     globalNotifs = JSON.parse(localStorage.getItem('mmo_global_notifications')) || [];
   } catch(e) {}
   
-  globalNotifs.unshift({
+  const notif = {
     id: 'GLOB-' + Date.now(),
     title,
     message: content,
     date: new Date().toISOString(),
     type: 'info'
-  });
+  };
+
+  // Push to Cloud
+  if (db) {
+    db.collection('global_notifications').doc(notif.id).set(notif)
+      .then(() => console.log("✅ Đã gửi thông báo chung lên Cloud"))
+      .catch(e => console.error("❌ Lỗi gửi thông báo Cloud:", e));
+  }
   
+  // Local fallback
+  globalNotifs.unshift(notif);
   localStorage.setItem('mmo_global_notifications', JSON.stringify(globalNotifs));
+  
   document.getElementById('notif-title').value = '';
   document.getElementById('notif-content').value = '';
   showToast('Đã gửi thông báo đến toàn bộ người dùng!');
