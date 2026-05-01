@@ -333,6 +333,12 @@
       setUsers(users);
       localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
       
+      // --- BÁO TELEGRAM ---
+      if (window.mmoSendTelegram) {
+        const msg = `💰 <b>YÊU CẦU NẠP TIỀN</b>\n- ID: ${request.id}\n- Khách: ${user.email}\n- Số tiền: ${formatMoney(amount)}\n- Nội dung: ${request.desc}`;
+        window.mmoSendTelegram(msg);
+      }
+
       amountInput.value = '';
       noteInput.value = '';
       refreshDepositPage();
@@ -384,6 +390,12 @@
 
       setUsers(users);
       localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+
+      // --- BÁO TELEGRAM ---
+      if (window.mmoSendTelegram) {
+        const msg = `💳 <b>YÊU CẦU NẠP THẺ</b>\n- ID: ${newReq.id}\n- Khách: ${user.email}\n- Mệnh giá: ${formatMoney(value)}\n- Loại: ${network}\n- Seri: ${serial}`;
+        window.mmoSendTelegram(msg);
+      }
 
       document.getElementById('card-serial').value = '';
       document.getElementById('card-pin').value = '';

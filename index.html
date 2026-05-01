@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="QuocHuy MMO - Chuyên cung cấp tài khoản Facebook, Gmail, Proxy, VPS và các dịch vụ MMO uy tín, giá tốt nhất Việt Nam. Giao hàng tự động, bảo hành 1 đổi 1.">
+    <style>
+    /* MARKET TICKER */
+    .market-ticker { background: #0f172a; border-bottom: 1px solid rgba(255,255,255,.05); padding: 8px 0; overflow: hidden; position: relative; z-index: 50; }
+    .ticker-wrap { display: flex; gap: 40px; animation: ticker 40s linear infinite; width: max-content; }
+    .ticker-item { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: #94a3b8; white-space: nowrap; }
+    .ticker-name { color: #fff; }
+    .ticker-price { color: #38bdf8; }
+    .trend-up { color: #10b981; }
+    .trend-down { color: #ef4444; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .market-ticker:hover .ticker-wrap { animation-play-state: paused; }
+  </style>
   <title>QuocHuy.MMO – Mua Bán Tài Khoản MMO Uy Tín #1 Việt Nam</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +54,26 @@
   </div>
 
   <!-- HEADER -->
-  <header class="header" id="header">
+  <!-- MARKET TICKER (FEATURE 6) -->
+<div class="market-ticker">
+  <div class="ticker-wrap">
+    <div class="ticker-item"><span class="ticker-name">VIA FB VIỆT</span> <span class="ticker-price">125K</span> <span class="trend-up">▲ 2.5%</span></div>
+    <div class="ticker-item"><span class="ticker-name">GMAIL CỔ VIP</span> <span class="ticker-price">99K</span> <span class="trend-down">▼ 1.2%</span></div>
+    <div class="ticker-item"><span class="ticker-name">PROXY VN IPv6</span> <span class="ticker-price">89K</span> <span class="trend-up">▲ 0.8%</span></div>
+    <div class="ticker-item"><span class="ticker-name">CLONE US 2FA</span> <span class="ticker-price">15K</span> <span class="trend-up">▲ 5.4%</span></div>
+    <div class="ticker-item"><span class="ticker-name">TIKTOK 1K SUB</span> <span class="ticker-price">149K</span> <span class="trend-down">▼ 0.5%</span></div>
+    <div class="ticker-item"><span class="ticker-name">VPS LINUX 2GB</span> <span class="ticker-price">299K</span> <span class="trend-up">▲ 1.2%</span></div>
+    <!-- Duplicate for smooth loop -->
+    <div class="ticker-item"><span class="ticker-name">VIA FB VIỆT</span> <span class="ticker-price">125K</span> <span class="trend-up">▲ 2.5%</span></div>
+    <div class="ticker-item"><span class="ticker-name">GMAIL CỔ VIP</span> <span class="ticker-price">99K</span> <span class="trend-down">▼ 1.2%</span></div>
+    <div class="ticker-item"><span class="ticker-name">PROXY VN IPv6</span> <span class="ticker-price">89K</span> <span class="trend-up">▲ 0.8%</span></div>
+    <div class="ticker-item"><span class="ticker-name">CLONE US 2FA</span> <span class="ticker-price">15K</span> <span class="trend-up">▲ 5.4%</span></div>
+    <div class="ticker-item"><span class="ticker-name">TIKTOK 1K SUB</span> <span class="ticker-price">149K</span> <span class="trend-down">▼ 0.5%</span></div>
+    <div class="ticker-item"><span class="ticker-name">VPS LINUX 2GB</span> <span class="ticker-price">299K</span> <span class="trend-up">▲ 1.2%</span></div>
+  </div>
+</div>
+
+<header class="header" id="header">
     <div class="container header-inner">
       <!-- Logo -->
       <a href="index.html" class="logo" id="logo">

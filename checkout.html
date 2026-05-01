@@ -229,6 +229,12 @@
         localStorage.setItem('mmo_currentUser',JSON.stringify(users[idx]));
       }
 
+      // --- BÁO TELEGRAM ---
+      if (window.mmoSendTelegram) {
+        const msg = `📦 <b>ĐƠN HÀNG MỚI</b>\n- ID: ${order.id}\n- Khách: ${user.email}\n- Tổng: ${fmt(total)}\n- Hình thức: ${order.method}\n- Trạng thái: ${order.status}`;
+        window.mmoSendTelegram(msg);
+      }
+
       saveCart([]);
       showToast('Đặt hàng thành công!');
       setTimeout(()=>window.location.href='history.html',1500);
