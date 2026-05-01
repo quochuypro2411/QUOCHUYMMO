@@ -428,6 +428,7 @@
 <div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
@@ -471,15 +472,18 @@ const isFirebaseConfigured = Boolean(
 );
 
 let db = null;
+let auth = null;
 if (isFirebaseConfigured && window.firebase) {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
+  auth = firebase.auth();
   db = firebase.firestore();
 }
 
 function normalizeUser(user) {
   return {
+    uid: user.uid || null,
     name: user.name || '',
     user: user.user || '',
     email: (user.email || '').toLowerCase(),
@@ -504,6 +508,10 @@ function userDocId(email) {
   return (email || '').trim().toLowerCase();
 }
 
+function userDocIdByAuth(user) {
+  return user?.uid || userDocId(user?.email);
+}
+
 async function fetchCloudUsers() {
   if (!db) return [];
   const snap = await db.collection('users').get();
@@ -513,7 +521,8 @@ async function fetchCloudUsers() {
 async function upsertCloudUser(user) {
   if (!db || !user?.email) return;
   const normalized = normalizeUser(user);
-  await db.collection('users').doc(userDocId(normalized.email)).set(normalized, { merge: true });
+  const docId = normalized.uid || userDocId(normalized.email);
+  await db.collection('users').doc(docId).set(normalized, { merge: true });
 }
 
 async function upsertCloudUsers(users) {
@@ -552,7 +561,16 @@ async function getUsersMerged() {
   }
 }
 
+async function findUserByLoginInput(input) {
+  const users = await getUsersMerged();
+  const normalizedInput = (input || '').trim().toLowerCase();
+  return users.find((u) => {
+    return (u.email || '').toLowerCase() === normalizedInput || (u.user || '').toLowerCase() === normalizedInput;
+  }) || null;
+}
+
 async function ensureAdminAccount() {
+  if (auth && db) return;
   const users = await getUsersMerged();
   const adminExists = users.some(u => u.email && u.email.toLowerCase() === ADMIN_EMAIL);
   if (!adminExists) {
@@ -642,35 +660,47 @@ async function handleLogin(e) {
   const p = document.getElementById('login-pass').value;
   if (!u || !p) { showToast('Vui lòng điền đầy đủ thông tin!', true); return; }
 
-  let users = await getUsersMerged();
+  try {
+    let profile = await findUserByLoginInput(u);
+    const loginEmail = profile?.email || u;
 
-  const userIndex = users.findIndex(user => (user.user === u || user.email === u) && user.pass === p);
+    if (auth) {
+      const cred = await auth.signInWithEmailAndPassword(loginEmail, p);
+      const authUser = cred.user;
+      let snapshot = null;
+      if (db && authUser?.uid) {
+        snapshot = await db.collection('users').doc(authUser.uid).get();
+      }
 
-  if (userIndex !== -1) {
-    const foundUser = users[userIndex];
-    localStorage.setItem('mmo_currentUser', JSON.stringify(foundUser));
-    if (!foundUser.permissions) {
-      const isAdminUser = foundUser.role === 'admin' || foundUser.isAdmin;
-      foundUser.permissions = {
-        approveOrders: isAdminUser,
-        manageUsers: isAdminUser,
-        manageBalances: isAdminUser,
-        approveDeposits: isAdminUser,
-        viewReports: isAdminUser
-      };
-      users[userIndex] = foundUser;
-      saveLocalUsers(users);
-      await upsertCloudUser(foundUser);
-    }
-    if (foundUser.role === 'admin' || foundUser.isAdmin) {
-      showToast('Đăng nhập admin thành công! Chuyển đến giao diện quản trị...', false);
-      setTimeout(() => { window.location.href = 'admin.html'; }, 1500);
+      if (snapshot && snapshot.exists) {
+        profile = normalizeUser(snapshot.data());
+      } else {
+        profile = normalizeUser({
+          ...(profile || {}),
+          uid: authUser.uid,
+          email: authUser.email || loginEmail
+        });
+        if (db) {
+          await db.collection('users').doc(authUser.uid).set(profile, { merge: true });
+        }
+      }
     } else {
-      showToast('Đăng nhập thành công! Chào mừng ' + foundUser.name + ' 🎉');
-      setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+      const users = await getUsersMerged();
+      const userIndex = users.findIndex(user => (user.user === u || user.email === u) && user.pass === p);
+      if (userIndex === -1) throw new Error('Tài khoản hoặc mật khẩu không chính xác!');
+      profile = users[userIndex];
     }
-  } else {
-    showToast('Tài khoản hoặc mật khẩu không chính xác!', true);
+
+    localStorage.setItem('mmo_currentUser', JSON.stringify(profile));
+    if (profile.role === 'admin' || profile.isAdmin) {
+      showToast('Đăng nhập admin thành công! Chuyển đến giao diện quản trị...', false);
+      setTimeout(() => { window.location.href = 'admin.html'; }, 1200);
+    } else {
+      showToast('Đăng nhập thành công! Chào mừng ' + (profile.name || profile.user || 'bạn') + ' 🎉');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+    }
+  } catch (err) {
+    showToast(err.message || 'Tài khoản hoặc mật khẩu không chính xác!', true);
   }
 }
 
@@ -745,26 +775,66 @@ async function handleRegister(e) {
   btn.disabled = false;
 
   const isAdmin = email.toLowerCase() === ADMIN_EMAIL;
-  const newUser = normalizeUser({
-    name,
-    user,
-    email,
-    pass: p1,
-    role: isAdmin ? 'admin' : 'user',
-    isAdmin,
-    permissions: {
-      approveOrders: isAdmin,
-      manageUsers: isAdmin,
-      manageBalances: isAdmin,
-      approveDeposits: isAdmin,
-      viewReports: isAdmin
-    },
-    orders: [],
-    createdAt: new Date().toISOString()
-  });
-  users.push(newUser);
-  saveLocalUsers(users);
-  await upsertCloudUser(newUser);
+  let newUser = null;
+  try {
+    if (auth && db) {
+      const cred = await auth.createUserWithEmailAndPassword(email, p1);
+      const uid = cred.user.uid;
+      newUser = normalizeUser({
+        uid,
+        name,
+        user,
+        email,
+        pass: '',
+        role: isAdmin ? 'admin' : 'user',
+        isAdmin,
+        permissions: {
+          approveOrders: isAdmin,
+          manageUsers: isAdmin,
+          manageBalances: isAdmin,
+          approveDeposits: isAdmin,
+          viewReports: isAdmin
+        },
+        orders: [],
+        createdAt: new Date().toISOString()
+      });
+      await db.collection('users').doc(uid).set(newUser, { merge: true });
+      if (isAdmin) {
+        await db.collection('admins').doc(uid).set({
+          uid,
+          email: email.toLowerCase(),
+          createdAt: new Date().toISOString()
+        }, { merge: true });
+      }
+    } else {
+      newUser = normalizeUser({
+        name,
+        user,
+        email,
+        pass: p1,
+        role: isAdmin ? 'admin' : 'user',
+        isAdmin,
+        permissions: {
+          approveOrders: isAdmin,
+          manageUsers: isAdmin,
+          manageBalances: isAdmin,
+          approveDeposits: isAdmin,
+          viewReports: isAdmin
+        },
+        orders: [],
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    users.push(newUser);
+    saveLocalUsers(users);
+    await upsertCloudUser(newUser);
+  } catch (err) {
+    btn.innerHTML = oldHtml;
+    btn.disabled = false;
+    showToast(err.message || 'Đăng ký thất bại, vui lòng thử lại.', true);
+    return;
+  }
 
   showToast('Đăng ký thành công! Vui lòng đăng nhập lại 🎉');
   e.target.reset();

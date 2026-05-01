@@ -289,6 +289,7 @@
 <div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
@@ -299,16 +300,19 @@ const isFirebaseConfigured = Boolean(
   firebaseConfig.projectId
 );
 let db = null;
+let auth = null;
 if (isFirebaseConfigured && window.firebase) {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
+  auth = firebase.auth();
   db = firebase.firestore();
 }
 let usersCache = [];
 
 function normalizeUser(user) {
   return {
+    uid: user.uid || null,
     name: user.name || '',
     user: user.user || '',
     email: (user.email || '').toLowerCase(),
@@ -336,12 +340,16 @@ async function fetchCloudUsers() {
 
 async function upsertCloudUser(user) {
   if (!db || !user?.email) return;
-  await db.collection('users').doc(userDocId(user.email)).set(normalizeUser(user), { merge: true });
+  const normalized = normalizeUser(user);
+  const docId = normalized.uid || userDocId(normalized.email);
+  await db.collection('users').doc(docId).set(normalized, { merge: true });
 }
 
-async function deleteCloudUser(email) {
-  if (!db || !email) return;
-  await db.collection('users').doc(userDocId(email)).delete();
+async function deleteCloudUser(user) {
+  if (!db || !user) return;
+  const docId = user.uid || userDocId(user.email);
+  if (!docId) return;
+  await db.collection('users').doc(docId).delete();
 }
 
 function loadLocalUsers() {
@@ -405,6 +413,9 @@ function setUsers(users) {
   });
 }
 function logout() {
+  if (auth) {
+    auth.signOut().catch(() => {});
+  }
   localStorage.removeItem('mmo_currentUser');
   window.location.href = 'auth.html?tab=login';
 }
@@ -427,9 +438,22 @@ function showToast(message, isError = false) {
   clearTimeout(window.adminToastTimer);
   window.adminToastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
 }
-function ensureAdmin() {
+async function ensureAdmin() {
   const currentUser = getCurrentUser();
-  if (!currentUser || !hasPermission(currentUser, 'viewReports')) {
+  if (!currentUser) {
+    alert('Chỉ admin mới được phép truy cập trang này.');
+    redirectToAuth();
+    return false;
+  }
+  if (auth && db && auth.currentUser) {
+    const uid = auth.currentUser.uid;
+    const adminSnapshot = await db.collection('admins').doc(uid).get();
+    if (!adminSnapshot.exists) {
+      alert('Tài khoản của bạn không có quyền admin.');
+      redirectToAuth();
+      return false;
+    }
+  } else if (!hasPermission(currentUser, 'viewReports')) {
     alert('Chỉ admin mới được phép truy cập trang này.');
     redirectToAuth();
     return false;
@@ -447,8 +471,8 @@ function updateStats(orders) {
   document.getElementById('success-orders').textContent = orders.filter(o => o.status === 'Thành công').length;
   document.getElementById('failed-orders').textContent = orders.filter(o => o.status === 'Thất bại').length;
 }
-function loadOrders() {
-  if (!ensureAdmin()) return;
+async function loadOrders() {
+  if (!(await ensureAdmin())) return;
   const allOrders = getAllOrders().sort((a,b) => new Date(b.ts) - new Date(a.ts));
   updateStats(allOrders);
   const orders = allOrders.filter(order => {
@@ -517,7 +541,7 @@ function updateOrderStatus(orderId, status) {
   }
   setUsers(users);
   showToast(`Đã cập nhật trạng thái đơn ${orderId} sang ${status}`);
-  loadOrders();
+  loadOrders().catch(() => {});
 }
 function showOrderDetails(orderId) {
   const order = getAllOrders().find(o => o.id === orderId);
@@ -537,8 +561,8 @@ function setOrderFilter(filter) {
   });
   loadOrders();
 }
-function loadAccounts() {
-  if (!ensureAdmin()) return;
+async function loadAccounts() {
+  if (!(await ensureAdmin())) return;
   const users = getUsers().sort((a,b) => (a.email || '').localeCompare(b.email || ''));
   const body = document.getElementById('users-body');
   if (!users.length) {
@@ -560,8 +584,8 @@ function getDepositRequests() {
     .filter(tx => tx.type === 'deposit-request')
     .map(req => ({ ...req, userEmail: user.email || '', userName: user.user || user.name || user.email || 'Khách hàng' })));
 }
-function loadDepositRequests() {
-  if (!ensureAdmin()) return;
+async function loadDepositRequests() {
+  if (!(await ensureAdmin())) return;
   const requests = getDepositRequests().sort((a,b) => new Date(b.date) - new Date(a.date));
   const body = document.getElementById('deposit-requests-body');
   if (!requests.length) {
@@ -801,9 +825,10 @@ function deleteAccount(email) {
     showToast('Tài khoản không tồn tại.', true);
     return;
   }
+  const userToDelete = users[idx];
   users.splice(idx, 1);
   setUsers(users);
-  deleteCloudUser(email).catch(() => {});
+  deleteCloudUser(userToDelete).catch(() => {});
   showToast(`Đã xóa tài khoản ${email}.`);
   if (selectedEmail === email) {
     clearSelectedAccount();
@@ -845,10 +870,28 @@ function sendGlobalNotification() {
   document.getElementById('notif-content').value = '';
   showToast('Đã gửi thông báo đến toàn bộ người dùng!');
 }
-initializeUsers().finally(() => {
-  loadOrders();
-  loadAccounts();
-  loadDepositRequests();
+const startAdmin = async () => {
+  if (auth) {
+    await new Promise((resolve) => {
+      const unsub = auth.onAuthStateChanged((fbUser) => {
+        unsub();
+        if (!fbUser) {
+          redirectToAuth();
+          resolve();
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+  await initializeUsers();
+  await loadOrders();
+  await loadAccounts();
+  await loadDepositRequests();
+};
+
+startAdmin().catch(() => {
+  redirectToAuth();
 });
 </script>
 </body>
