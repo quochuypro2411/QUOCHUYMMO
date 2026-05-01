@@ -451,5 +451,15 @@
     renderNotifications(currentUser);
   }
 
+  // Listen for global notifications sync from Cloud
+  window.addEventListener('mmo_global_notifs_synced', (e) => {
+    console.log("[Script] Global notifs synced, updating UI...");
+    const notifs = e.detail || [];
+    const marquee = document.querySelector('.marquee-text');
+    if (marquee && notifs.length > 0) {
+      marquee.innerHTML = notifs.map(n => `<span><i class="fas fa-bullhorn"></i>&nbsp;${n.title}: ${n.message} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`).join('');
+    }
+  });
+
   console.log('🚀 QuocHuy.MMO loaded – Premium Edition');
 })();
