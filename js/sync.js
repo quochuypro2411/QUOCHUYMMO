@@ -80,16 +80,18 @@
     }
   }
 
-  // Global function to push data to cloud
+  // Global function to push data to cloud (Returns a Promise for better error handling)
   window.mmoUpsertUser = async function(user) {
-    if (!db || !user || !user.email) return;
+    if (!db || !user || !user.email) return Promise.reject("Missing DB or User info");
     try {
       const email = user.email.toLowerCase().trim();
       const docId = user.uid || email;
       await db.collection('users').doc(docId).set(user, { merge: true });
       console.log("[Sync] Data pushed to cloud for:", email);
+      return true;
     } catch (e) {
       console.error("[Sync] Push failed:", e);
+      throw e;
     }
   };
 
