@@ -602,16 +602,29 @@
             <input type="email" id="detail-email" value="${user.email || ''}" readonly>
           </div>
           <div class="form-group">
+            <label>Họ tên</label>
+            <input type="text" id="detail-name" value="${user.name || ''}" placeholder="Nhập họ tên">
+          </div>
+          <div class="form-group">
             <label>Username</label>
-            <input type="text" id="detail-username" value="${user.user || ''}" readonly>
+            <input type="text" id="detail-username" value="${user.user || ''}" placeholder="Nhập username">
           </div>
           <div class="form-group">
             <label>Role</label>
-            <input type="text" value="${user.role || 'user'}" readonly>
+            <select id="detail-role">
+              <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+              <option value="premium" ${user.role === 'premium' ? 'selected' : ''}>Premium</option>
+              <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+            </select>
           </div>
           <div class="form-group">
-            <label>Số dư hiện tại</label>
-            <input type="text" value="${formatMoney(user.balance || 0)}" readonly>
+            <label>Số dư</label>
+            <input type="number" id="detail-balance" value="${user.balance || 0}" min="0" placeholder="Nhập số dư">
+          </div>
+          <div class="form-actions">
+            <button class="primary" onclick="saveUserDetails('${user.email}')">
+              <i class="fas fa-save"></i> Lưu thay đổi
+            </button>
           </div>
         </div>
         
@@ -633,7 +646,7 @@
         </div>
         
         <div class="user-detail-section">
-          <h4>Điều chỉnh số dư</h4>
+          <h4>Điều chỉnh nhanh số dư</h4>
           <div class="balance-actions">
             <input type="number" id="balance-amount" placeholder="Nhập số tiền" min="0">
             <button class="success" onclick="adjustBalance('${user.email}', true)">
@@ -647,6 +660,47 @@
       `;
       
       document.getElementById('user-modal').classList.add('show');
+    }
+    
+    async function saveUserDetails(email) {
+      const name = document.getElementById('detail-name').value.trim();
+      const username = document.getElementById('detail-username').value.trim();
+      const role = document.getElementById('detail-role').value;
+      const balance = parseInt(document.getElementById('detail-balance').value) || 0;
+      
+      if (!username) {
+        showToast('Username không được để trống.', true);
+        return;
+      }
+      
+      const users = getUsers();
+      const userIndex = users.findIndex(u => u.email === email);
+      
+      if (userIndex === -1) {
+        showToast('Không tìm thấy tài khoản.', true);
+        return;
+      }
+      
+      // Check duplicate username
+      const duplicate = users.find((u, i) => i !== userIndex && u.user === username);
+      if (duplicate) {
+        showToast('Username đã tồn tại.', true);
+        return;
+      }
+      
+      // Update user data
+      users[userIndex].name = name;
+      users[userIndex].user = username;
+      users[userIndex].role = role;
+      users[userIndex].isAdmin = role === 'admin';
+      users[userIndex].balance = balance;
+      
+      setUsers(users);
+      await upsertCloudUser(users[userIndex]);
+      
+      showToast('✅ Đã lưu thay đổi thành công.');
+      closeUserModal();
+      await loadAccounts();
     }
     
     function closeUserModal() {
