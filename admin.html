@@ -68,8 +68,8 @@
     .modal-close:hover { color: var(--danger); }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-    .form-group input, .form-group select { width: 100%; padding: 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--blue); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); }
     .form-group input[readonly] { background: rgba(148, 163, 184, 0.1); cursor: not-allowed; }
     .form-actions { display: flex; gap: 12px; margin-top: 20px; }
     .form-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; }
@@ -160,6 +160,27 @@
             <tr><td colspan="6" class="empty-state">Đang tải yêu cầu nạp tiền...</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <div class="section-title">Gửi thông báo toàn hệ thống</div>
+      <div class="users-table-wrap">
+        <div style="padding: 20px;">
+          <div class="form-group">
+            <label>Tiêu đề thông báo</label>
+            <input type="text" id="notif-title" placeholder="VD: Khuyến mãi nạp thẻ 20%">
+          </div>
+          <div class="form-group">
+            <label>Nội dung</label>
+            <textarea id="notif-content" rows="3" placeholder="VD: Bắt đầu từ hôm nay, khi nạp thẻ mệnh giá từ 100k..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="primary" onclick="sendGlobalNotification()">
+              <i class="fas fa-paper-plane"></i> Gửi thông báo
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -774,6 +795,65 @@
       }
     }
     
+    // Global Notifications
+    async function sendGlobalNotification() {
+      const title = document.getElementById('notif-title').value.trim();
+      const content = document.getElementById('notif-content').value.trim();
+      
+      if (!title || !content) {
+        showToast('Vui lòng nhập tiêu đề và nội dung.', true);
+        return;
+      }
+      
+      if (!db) {
+        showToast('Firebase chưa cấu hình.', true);
+        return;
+      }
+      
+      try {
+        const notification = {
+          id: 'notif_' + Date.now(),
+          title,
+          message: content,
+          createdAt: new Date().toISOString(),
+          type: 'global'
+        };
+        
+        console.log('📤 Sending global notification:', notification);
+        
+        await db.collection('global_notifications').doc(notification.id).set(notification);
+        console.log('✅ Notification saved to Firebase');
+        
+        // Request browser notification permission and send
+        if ('Notification' in window && Notification.permission === 'granted') {
+          console.log('🔔 Sending browser notification');
+          new Notification(title, {
+            body: content,
+            icon: '/favicon.ico'
+          });
+        } else if ('Notification' in window && Notification.permission !== 'denied') {
+          console.log('🔔 Requesting notification permission');
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              new Notification(title, {
+                body: content,
+                icon: '/favicon.ico'
+              });
+            }
+          });
+        }
+        
+        showToast('✅ Đã gửi thông báo toàn hệ thống.');
+        
+        // Clear form
+        document.getElementById('notif-title').value = '';
+        document.getElementById('notif-content').value = '';
+      } catch (error) {
+        console.error('Error sending notification:', error);
+        showToast('❌ Lỗi gửi thông báo.', true);
+      }
+    }
+    
     async function initializeUsers() {
       const localUsers = loadLocalUsers();
       usersCache = localUsers;
@@ -917,6 +997,14 @@
       await loadAccounts();
       await loadOrders();
       await loadDepositRequests();
+      
+      // Request notification permission
+      if ('Notification' in window && Notification.permission === 'default') {
+        console.log('🔔 Requesting notification permission...');
+        Notification.requestPermission().then(permission => {
+          console.log('🔔 Notification permission:', permission);
+        });
+      }
       
       console.log('🚀 Admin panel fully loaded with cloud sync');
     };
