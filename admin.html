@@ -288,12 +288,90 @@
 
 <div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
 <script>
+const firebaseConfig = window.MMO_FIREBASE_CONFIG || {};
+const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId
+);
+let db = null;
+if (isFirebaseConfigured && window.firebase) {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  db = firebase.firestore();
+}
+let usersCache = [];
+
+function normalizeUser(user) {
+  return {
+    name: user.name || '',
+    user: user.user || '',
+    email: (user.email || '').toLowerCase(),
+    pass: user.pass || '',
+    role: user.role || (user.isAdmin ? 'admin' : 'user'),
+    isAdmin: Boolean(user.isAdmin || user.role === 'admin'),
+    permissions: user.permissions || getDefaultPermissions(user.role === 'admin' || user.isAdmin),
+    orders: Array.isArray(user.orders) ? user.orders : [],
+    transactions: Array.isArray(user.transactions) ? user.transactions : [],
+    notifications: Array.isArray(user.notifications) ? user.notifications : [],
+    createdAt: user.createdAt || null,
+    balance: Number(user.balance || 0)
+  };
+}
+
+function userDocId(email) {
+  return (email || '').trim().toLowerCase();
+}
+
+async function fetchCloudUsers() {
+  if (!db) return [];
+  const snap = await db.collection('users').get();
+  return snap.docs.map(doc => normalizeUser(doc.data()));
+}
+
+async function upsertCloudUser(user) {
+  if (!db || !user?.email) return;
+  await db.collection('users').doc(userDocId(user.email)).set(normalizeUser(user), { merge: true });
+}
+
+async function deleteCloudUser(email) {
+  if (!db || !email) return;
+  await db.collection('users').doc(userDocId(email)).delete();
+}
+
+function loadLocalUsers() {
+  try {
+    return (JSON.parse(localStorage.getItem('mmo_users')) || []).map(normalizeUser);
+  } catch (e) {
+    return [];
+  }
+}
+
+async function initializeUsers() {
+  const localUsers = loadLocalUsers();
+  usersCache = localUsers;
+  if (!db) return;
+
+  try {
+    const cloudUsers = await fetchCloudUsers();
+    if (cloudUsers.length) {
+      usersCache = cloudUsers;
+      localStorage.setItem('mmo_users', JSON.stringify(usersCache));
+    }
+  } catch (e) {
+    // Keep local fallback when cloud is unreachable.
+  }
+}
 function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch(e) { return null; }
 }
 function getUsers() {
-  try { return JSON.parse(localStorage.getItem('mmo_users')) || []; } catch(e) { return []; }
+  return usersCache;
 }
 function getDefaultPermissions(isAdmin = false) {
   if (!isAdmin) {
@@ -320,7 +398,11 @@ function normalizeUserPermissions(user) {
   return user;
 }
 function setUsers(users) {
-  localStorage.setItem('mmo_users', JSON.stringify(users));
+  usersCache = users.map(normalizeUser);
+  localStorage.setItem('mmo_users', JSON.stringify(usersCache));
+  usersCache.forEach((user) => {
+    upsertCloudUser(user).catch(() => {});
+  });
 }
 function logout() {
   localStorage.removeItem('mmo_currentUser');
@@ -721,6 +803,7 @@ function deleteAccount(email) {
   }
   users.splice(idx, 1);
   setUsers(users);
+  deleteCloudUser(email).catch(() => {});
   showToast(`Đã xóa tài khoản ${email}.`);
   if (selectedEmail === email) {
     clearSelectedAccount();
@@ -762,9 +845,11 @@ function sendGlobalNotification() {
   document.getElementById('notif-content').value = '';
   showToast('Đã gửi thông báo đến toàn bộ người dùng!');
 }
-loadOrders();
-loadAccounts();
-loadDepositRequests();
+initializeUsers().finally(() => {
+  loadOrders();
+  loadAccounts();
+  loadDepositRequests();
+});
 </script>
 </body>
 </html>
