@@ -1118,10 +1118,24 @@ function saveSelectedAccount() {
   const idx = users.findIndex(u => u.email === selectedEmail);
   if (idx === -1) {
     showToast('Tài khoản không tồn tại.', true);
+    return;
+  }
+  const username = document.getElementById('detail-username').value.trim();
+  const name = document.getElementById('detail-name').value.trim();
+  const password = document.getElementById('detail-password').value;
+  const permissions = document.getElementById('detail-permissions');
+  const showPerms = !permissions.classList.contains('hidden');
+  if (!username || !name) {
+    showToast('Tên đăng nhập và họ tên không được để trống.', true);
+    return;
+  }
+  const duplicate = users.find((u, i) => i !== idx && (u.user === username || u.email === selectedEmail));
   if (duplicate) {
     showToast('Tên đăng nhập đã tồn tại trên tài khoản khác.', true);
     return;
   }
+  
+  // Update user data
   users[idx].user = username;
   users[idx].name = name;
   if (password) users[idx].pass = password;
@@ -1135,14 +1149,34 @@ function saveSelectedAccount() {
       viewReports: document.getElementById('perm-viewReports').checked
     };
   }
+  
+  // Save to local storage
   setUsers(users);
+  
+  // Sync to cloud
+  upsertCloudUser(users[idx])
+    .then(() => {
+      showToast(`✅ Đã cập nhật tài khoản ${users[idx].email} (Đồng bộ Cloud thành công)`);
+      updateCloudStatus(true, 'Đồng bộ Cloud thành công');
+    })
+    .catch((error) => {
+      showToast(`⚠️ Đã cập nhật tài khoản ${users[idx].email} (Lỗi đồng bộ Cloud)`, true);
+      updateCloudStatus(false, 'Lỗi đồng bộ: ' + error.message);
+    });
+  
+  // Update current user session if editing current user
   const updatedUser = getCurrentUser();
   if (updatedUser && updatedUser.email === selectedEmail) {
     localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
   }
+  
   showToast('Cập nhật tài khoản thành công.');
-  loadAccounts();
-  selectAccount(selectedEmail);
+  
+  // Reload account list to show changes
+  setTimeout(() => {
+    loadAccounts();
+    selectAccount(selectedEmail);
+  }, 500);
 }
 function adjustBalance(email, amount) {
   const currentUser = getCurrentUser();
