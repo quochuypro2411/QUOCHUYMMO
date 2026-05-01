@@ -50,12 +50,20 @@
       }
     };
 
-    // Listen by UID first
-    if (uid) {
-      db.collection('users').doc(uid).onSnapshot(handleData, err => console.warn("[Sync] UID listener error:", err));
-    } else if (email) {
-      // Fallback to Email if UID is missing
-      db.collection('users').doc(email).onSnapshot(handleData, err => console.warn("[Sync] Email listener error:", err));
+    // Use a query on the 'email' field to be 100% sure we find the right doc
+    if (email) {
+      console.log("[Sync] Listening for updates on email:", email);
+      db.collection('users').where('email', '==', email)
+        .onSnapshot(snap => {
+          if (!snap.empty) {
+            handleData(snap.docs[0]);
+          } else if (uid) {
+            // Fallback to direct UID if query fails
+            db.collection('users').doc(uid).get().then(handleData);
+          }
+        }, err => console.warn("[Sync] Listener error:", err));
+    } else if (uid) {
+      db.collection('users').doc(uid).onSnapshot(handleData);
     }
   }
 
