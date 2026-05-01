@@ -46,6 +46,77 @@
     .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #e2e8f0; }
     .account-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; margin-bottom: 28px; }
     .account-card { background: rgba(15,23,42,.75); border: 1px solid rgba(148,163,184,.12); border-radius: 24px; padding: 22px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); }
+    
+    /* User Role Management Styles */
+    .role-badge { 
+      display: inline-block; 
+      padding: 4px 12px; 
+      border-radius: 12px; 
+      font-size: 11px; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+    }
+    .role-user { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+    .role-premium { 
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3)); 
+      color: #a78bfa; 
+      border: 1px solid rgba(139, 92, 246, 0.4);
+    }
+    .role-admin { 
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(245, 158, 11, 0.3)); 
+      color: #f87171; 
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    
+    .role-actions { 
+      display: flex; 
+      gap: 8px; 
+      flex-wrap: wrap; 
+    }
+    .role-btn { 
+      padding: 6px 12px; 
+      border: none; 
+      border-radius: 8px; 
+      font-size: 11px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      text-transform: uppercase; 
+      letter-spacing: 0.3px;
+    }
+    .btn-upgrade { 
+      background: linear-gradient(135deg, #8B5CF6, #EC4899); 
+      color: white; 
+    }
+    .btn-upgrade:hover { 
+      transform: translateY(-1px); 
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); 
+    }
+    .btn-downgrade { 
+      background: rgba(239, 68, 68, 0.2); 
+      color: #f87171; 
+      border: 1px solid rgba(239, 68, 68, 0.3); 
+    }
+    .btn-downgrade:hover { 
+      background: rgba(239, 68, 68, 0.3); 
+    }
+    
+    .user-search { 
+      width: 100%; 
+      padding: 12px 16px; 
+      border: 1px solid rgba(148, 163, 184, 0.2); 
+      border-radius: 12px; 
+      background: rgba(15, 23, 42, 0.8); 
+      color: var(--text); 
+      font-size: 14px; 
+      margin-bottom: 16px; 
+    }
+    .user-search:focus { 
+      outline: none; 
+      border-color: var(--blue); 
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1); 
+    }
     .users-table { width: 100%; border-collapse: collapse; }
     .users-table th, .users-table td { padding: 14px 12px; border-bottom: 1px solid rgba(148,163,184,.14); text-align: left; vertical-align: middle; }
     .users-table th { background: rgba(15,23,42,.95); color: #94a3b8; font-weight: 700; font-size: 12px; letter-spacing: .04em; }
@@ -148,6 +219,7 @@
       <div class="account-grid">
         <div class="account-card">
           <div class="section-title">Danh sách tài khoản</div>
+          <input type="text" class="user-search" id="user-search" placeholder="🔍 Tìm kiếm theo email, username...">
           <div class="users-table-wrap">
             <table class="users-table">
               <thead>
@@ -155,11 +227,12 @@
                   <th>Email</th>
                   <th>Username</th>
                   <th>Role</th>
+                  <th>Tham gia</th>
                   <th>Hành động</th>
                 </tr>
               </thead>
               <tbody id="users-body">
-                <tr><td colspan="4" class="empty-state">Đang tải tài khoản...</td></tr>
+                <tr><td colspan="5" class="empty-state">Đang tải tài khoản...</td></tr>
               </tbody>
             </table>
           </div>
@@ -659,18 +732,27 @@ async function loadAccounts() {
   const users = getUsers().sort((a,b) => (a.email || '').localeCompare(b.email || ''));
   const body = document.getElementById('users-body');
   if (!users.length) {
-    body.innerHTML = '<tr><td colspan="4" class="empty-state">Chưa có tài khoản nào.</td></tr>';
+    body.innerHTML = '<tr><td colspan="5" class="empty-state">Chưa có tài khoản nào.</td></tr>';
     return;
   }
-  body.innerHTML = users.map(user => `
+  body.innerHTML = users.map(user => {
+    const role = user.role || (user.isAdmin ? 'admin' : 'user');
+    const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : '-';
+    return `
     <tr>
       <td>${user.email || '-'}</td>
       <td>${user.user || '-'}</td>
-      <td>${user.role || (user.isAdmin ? 'admin' : 'user')}</td>
+      <td><span class="role-badge role-${role}">${role}</span></td>
+      <td>${createdDate}</td>
       <td>
-        <button class="button-small details" onclick="selectAccount('${user.email ? user.email.replace(/'/g, "\\'") : ''}')"><i class="fas fa-eye"></i> Xem</button>
+        <div class="role-actions">
+          <button class="button-small details" onclick="selectAccount('${user.email ? user.email.replace(/'/g, "\\'") : ''}')"><i class="fas fa-eye"></i> Xem</button>
+          ${role === 'user' ? `<button class="role-btn btn-upgrade" onclick="upgradeToPremium('${user.id || user.email}')"><i class="fas fa-star"></i> Premium</button>` : ''}
+          ${role === 'premium' ? `<button class="role-btn btn-downgrade" onclick="removePremium('${user.id || user.email}')"><i class="fas fa-star-half-alt"></i> Gỡ Premium</button>` : ''}
+        </div>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 function getDepositRequests() {
   return getUsers().flatMap(user => (user.transactions || [])
@@ -1168,6 +1250,84 @@ const startAdmin = async () => {
 startAdmin().catch(() => {
   redirectToAuth();
 });
-</script>
-</body>
-</html>
+
+// ===== ROLE MANAGEMENT FUNCTIONS =====
+function upgradeToPremium(userId) {
+  if (!confirm('Xác nhận nâng cấp user này lên Premium?')) return;
+  
+  const users = getUsers();
+  const userIndex = users.findIndex(u => u.id === userId || u.email === userId);
+  
+  if (userIndex === -1) {
+    showToast('Không tìm thấy người dùng.', true);
+    return;
+  }
+  
+  users[userIndex].role = 'premium';
+  users[userIndex].premiumSince = new Date().toISOString();
+  setUsers(users);
+  upsertCloudUser(users[userIndex]).catch(() => {});
+  
+  showToast(`Đã nâng cấp ${users[userIndex].email} lên Premium.`);
+  loadAccounts();
+}
+
+function removePremium(userId) {
+  if (!confirm('Xác nhận gỡ quyền Premium của user này?')) return;
+  
+  const users = getUsers();
+  const userIndex = users.findIndex(u => u.id === userId || u.email === userId);
+  
+  if (userIndex === -1) {
+    showToast('Không tìm thấy người dùng.', true);
+    return;
+  }
+  
+  users[userIndex].role = 'user';
+  delete users[userIndex].premiumSince;
+  setUsers(users);
+  upsertCloudUser(users[userIndex]).catch(() => {});
+  
+  showToast(`Đã gỡ quyền Premium của ${users[userIndex].email}.`);
+  loadAccounts();
+}
+
+// ===== USER SEARCH FUNCTIONALITY =====
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('user-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const rows = document.querySelectorAll('#users-body tr');
+      
+      rows.forEach(row => {
+        const email = row.cells[0]?.textContent.toLowerCase() || '';
+        const username = row.cells[1]?.textContent.toLowerCase() || '';
+        const role = row.cells[2]?.textContent.toLowerCase() || '';
+        
+        if (email.includes(searchTerm) || username.includes(searchTerm) || role.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  }
+});
+
+// ===== ENHANCED USER LOADING WITH SEARCH =====
+async function loadAccountsWithSearch() {
+  await loadAccounts();
+  // Trigger search to apply any existing filter
+  const searchInput = document.getElementById('user-search');
+  if (searchInput && searchInput.value) {
+    searchInput.dispatchEvent(new Event('input'));
+  }
+}
+
+// Update the initialization to use the enhanced function
+document.addEventListener('DOMContentLoaded', function() {
+  // Replace existing loadAccounts calls with loadAccountsWithSearch
+  const originalLoadAccounts = window.loadAccounts;
+  window.loadAccounts = loadAccountsWithSearch;
+});

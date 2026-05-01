@@ -1,6 +1,13 @@
-/**
- * QuocHuy MMO - Frontend Logic (Main)
- */
+console.log('🏁 Script loading start...');
+
+// Global Safety Guard
+if (!window.MMO) {
+  window.MMO = { 
+    fmt: (n) => (n || 0).toLocaleString('vi-VN') + ' đ',
+    getUser: () => null,
+    notify: (m, t) => console.log(`[Fallback Notif] ${t}: ${m}`)
+  };
+}
 
 // ─── PARTICLES ─────────────────────────────────────────────────────────────
 const canvas = document.getElementById('particles-canvas');
@@ -78,13 +85,17 @@ if (slides.length > 0) {
 
 // ─── CART UI ────────────────────────────────────────────────────────────────
 function refreshCartUI() {
-  const cart = JSON.parse(localStorage.getItem('mmo_cart') || '[]');
-  const badge = document.getElementById('cart-badge');
-  const amount = document.getElementById('cart-amount');
-  const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-  const count = cart.reduce((s, i) => s + i.qty, 0);
-  if (badge) badge.textContent = count;
-  if (amount) amount.textContent = window.MMO.fmt(total);
+  try {
+    const cart = JSON.parse(localStorage.getItem('mmo_cart') || '[]');
+    const badge = document.getElementById('cart-badge');
+    const amount = document.getElementById('cart-amount');
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    if (badge) badge.textContent = count;
+    if (amount) amount.textContent = window.MMO.fmt(total);
+  } catch (e) {
+    console.error('Cart UI Error:', e);
+  }
 }
 refreshCartUI();
 
@@ -150,5 +161,23 @@ function updateAuthUI() {
   }
 }
 updateAuthUI();
+
+// ─── SCROLL ANIMATIONS (INTERSECTION OBSERVER) ─────────────────────────────
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+const scrollObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      scrollObserver.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.anim-up').forEach(el => scrollObserver.observe(el));
+
+// Fallback: If for some reason observer doesn't trigger, show after 2s
+setTimeout(() => {
+  document.querySelectorAll('.anim-up:not(.visible)').forEach(el => el.classList.add('visible'));
+}, 2000);
 
 console.log('🚀 QuocHuy.MMO Script Ready');

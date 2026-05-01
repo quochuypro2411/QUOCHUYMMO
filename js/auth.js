@@ -32,6 +32,34 @@ const Auth = {
         return user.permissions?.[key] === true;
     },
 
+    isPremium: (user) => {
+        return user && (user.role === 'premium' || user.role === 'admin');
+    },
+
+    upgradeToPremium: (userId) => {
+        const users = Auth.getUsers();
+        const userIndex = users.findIndex(u => u.id === userId);
+        if (userIndex !== -1) {
+            users[userIndex].role = 'premium';
+            users[userIndex].premiumSince = new Date().toISOString();
+            localStorage.setItem('mmo_users', JSON.stringify(users));
+            return true;
+        }
+        return false;
+    },
+
+    removePremium: (userId) => {
+        const users = Auth.getUsers();
+        const userIndex = users.findIndex(u => u.id === userId);
+        if (userIndex !== -1) {
+            users[userIndex].role = 'user';
+            delete users[userIndex].premiumSince;
+            localStorage.setItem('mmo_users', JSON.stringify(users));
+            return true;
+        }
+        return false;
+    },
+
     hashPassword: async (password) => {
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
@@ -90,6 +118,7 @@ const Auth = {
                 }
                 const isAdminUser = username.toLowerCase() === 'admin';
                 const newUser = { 
+                    id: Date.now().toString(),
                     username, 
                     email,
                     passwordHash,

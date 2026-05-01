@@ -35,7 +35,18 @@ input,select{font-family:var(--font);border:none;outline:none}
 .container{max-width:1320px;margin:0 auto;padding:0 24px}
 
 /* ===== PARTICLES ===== */
-#particles-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.35}
+#particles-canvas{position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:0.35}
+
+/* ===== MARKET TICKER ===== */
+.market-ticker { background: #0f172a; border-bottom: 1px solid rgba(255,255,255,.05); padding: 8px 0; overflow: hidden; position: relative; z-index: 5; }
+.ticker-wrap { display: flex; gap: 40px; animation: ticker 40s linear infinite; width: max-content; }
+.ticker-item { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: #94a3b8; white-space: nowrap; }
+.ticker-name { color: #fff; }
+.ticker-price { color: #38bdf8; }
+.trend-up { color: #10b981; }
+.trend-down { color: #ef4444; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.market-ticker:hover .ticker-wrap { animation-play-state: paused; }
 
 /* ===== TOP BAR ===== */
 .top-bar{background:linear-gradient(135deg,#06091f 0%,#111630 100%);padding:7px 0;position:relative;z-index:102;border-bottom:1px solid rgba(255,255,255,0.06)}
@@ -49,7 +60,7 @@ input,select{font-family:var(--font);border:none;outline:none}
 @keyframes marquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 
 /* ===== HEADER ===== */
-.header{background:#fff;padding:12px 0;box-shadow:0 2px 12px rgba(0,0,0,0.07);position:relative;z-index:101}
+.header{background:#fff;padding:12px 0;box-shadow:0 2px 12px rgba(0,0,0,0.07);position:relative;z-index:101;display:block !important}
 .header-inner{display:flex;align-items:center;gap:16px}
 
 /* Logo */
@@ -142,8 +153,8 @@ input,select{font-family:var(--font);border:none;outline:none}
 
 /* ===== HERO SLIDER ===== */
 .hero-slider{position:relative;height:440px;overflow:hidden;background:#0c1445}
-.slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;display:flex;align-items:center;z-index:0}
-.slide.active{opacity:1;z-index:1}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;display:flex;align-items:center;z-index:1}
+.slide.active{opacity:1;z-index:2}
 .slide-bg{position:absolute;inset:0;z-index:0}
 .slide-inner{position:relative;z-index:2;display:flex;align-items:center;gap:40px;width:100%;max-width:1320px;margin:0 auto;padding:40px 24px}
 .slide-text{flex:1;min-width:0}
@@ -448,7 +459,7 @@ input,select{font-family:var(--font);border:none;outline:none}
 .toast-box.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ===== SCROLL ANIMATIONS ===== */
-.anim-up{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease}
+.anim-up{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease}
 .anim-up.visible{opacity:1;transform:translateY(0)}
 
 /* ===== SCROLLBAR ===== */

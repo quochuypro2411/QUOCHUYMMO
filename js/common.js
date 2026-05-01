@@ -1,6 +1,7 @@
 /**
  * QuocHuy MMO - Common Utilities
  */
+console.log('📦 Common Utilities loading...');
 window.MMO = {
   // Get current user from local storage
   getUser: function() {

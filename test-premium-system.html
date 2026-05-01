@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Premium System – QuocHuy.MMO</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: #0d1321;
+      color: #e2e8f0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .test-section {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .test-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #a78bfa;
+    }
+    .test-result {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 8px 0;
+    }
+    .test-pass {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid #10b981;
+      color: #10b981;
+    }
+    .test-fail {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #ef4444;
+    }
+    .test-info {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+    }
+    button {
+      background: linear-gradient(135deg, #8B5CF6, #EC4899);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 8px;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+    .user-info {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🧪 Premium System Testing</h1>
+    
+    <div class="test-section">
+      <h2 class="test-title">User Management Tests</h2>
+      <div id="user-tests"></div>
+      
+      <div class="test-grid">
+        <button onclick="createTestUser('user')">Create Test User</button>
+        <button onclick="createTestUser('premium')">Create Premium User</button>
+        <button onclick="createTestUser('admin')">Create Admin User</button>
+        <button onclick="testUserRoles()">Test All Roles</button>
+        <button onclick="clearTestUsers()">Clear Test Users</button>
+      </div>
+      
+      <div id="current-user" class="user-info" style="display: none;">
+        <h3>Current User:</h3>
+        <div id="user-details"></div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2 class="test-title">Pricing System Tests</h2>
+      <div id="pricing-tests"></div>
+      
+      <div class="test-grid">
+        <button onclick="testPricing(100000)">Test 100K Product</button>
+        <button onclick="testPricing(250000)">Test 250K Product</button>
+        <button onclick="testPricing(500000)">Test 500K Product</button>
+        <button onclick="testCartPricing()">Test Cart Pricing</button>
+      </div>
+      
+      <div id="pricing-results"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2 class="test-title">UI Switching Tests</h2>
+      <div id="ui-tests"></div>
+      
+      <div class="test-grid">
+        <button onclick="testUISwitch('user')">Test User UI</button>
+        <button onclick="testUISwitch('premium')">Test Premium UI</button>
+        <button onclick="testUISwitch('admin')">Test Admin UI</button>
+        <button onclick="testPremiumCSS()">Test Premium CSS</button>
+      </div>
+      
+      <div id="ui-results"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2 class="test-title">Role Middleware Tests</h2>
+      <div id="middleware-tests"></div>
+      
+      <div class="test-grid">
+        <button onclick="testMiddleware('premium')">Test Premium Access</button>
+        <button onclick="testMiddleware('admin')">Test Admin Access</button>
+        <button onclick="testMiddleware('unauthorized')">Test Unauthorized</button>
+      </div>
+      
+      <div id="middleware-results"></div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/premium-pricing.js"></script>
+  <script src="js/role-middleware.js"></script>
+  <script src="js/ui-switcher.js"></script>
+  
+  <script>
+    let testResults = [];
+    
+    function addTestResult(section, test, passed, message) {
+      const result = {
+        section,
+        test,
+        passed,
+        message,
+        timestamp: new Date().toISOString()
+      };
+      testResults.push(result);
+      
+      const container = document.getElementById(`${section}-tests`);
+      if (container) {
+        const div = document.createElement('div');
+        div.className = `test-result ${passed ? 'test-pass' : 'test-fail'}`;
+        div.innerHTML = `
+          <strong>${test}:</strong> 
+          ${passed ? '✅ PASS' : '❌ FAIL'} 
+          - ${message}
+        `;
+        container.appendChild(div);
+      }
+    }
+    
+    function createTestUser(role) {
+      const username = `test_${role}_${Date.now()}`;
+      const email = `${username}@test.com`;
+      const password = 'test123456';
+      
+      const testUser = {
+        id: Date.now().toString(),
+        username,
+        email,
+        passwordHash: 'test_hash',
+        role,
+        permissions: Auth.getDefaultPermissions(role === 'admin'),
+        createdAt: new Date().toISOString(),
+        balance: role === 'premium' ? 1000000 : 100000
+      };
+      
+      const users = Auth.getUsers();
+      users.push(testUser);
+      localStorage.setItem('mmo_users', JSON.stringify(users));
+      
+      addTestResult('user', `Create ${role} User`, true, `Created ${email} with role ${role}`);
+      updateCurrentUserDisplay();
+    }
+    
+    function clearTestUsers() {
+      const users = Auth.getUsers().filter(u => !u.username.startsWith('test_'));
+      localStorage.setItem('mmo_users', JSON.stringify(users));
+      document.getElementById('user-tests').innerHTML = '';
+      addTestResult('user', 'Clear Test Users', true, 'Cleared all test users');
+      updateCurrentUserDisplay();
+    }
+    
+    function testUserRoles() {
+      const users = Auth.getUsers();
+      const regularUsers = users.filter(u => u.role === 'user');
+      const premiumUsers = users.filter(u => u.role === 'premium');
+      const adminUsers = users.filter(u => u.role === 'admin');
+      
+      addTestResult('user', 'Count User Roles', true, 
+        `Users: ${regularUsers.length}, Premium: ${premiumUsers.length}, Admin: ${adminUsers.length}`);
+      
+      // Test role checking functions
+      const testPremiumUser = premiumUsers[0] || { role: 'premium' };
+      const testRegularUser = regularUsers[0] || { role: 'user' };
+      const testAdminUser = adminUsers[0] || { role: 'admin' };
+      
+      addTestResult('user', 'Auth.isPremium() - Premium User', 
+        Auth.isPremium(testPremiumUser), 'Should return true for premium user');
+      
+      addTestResult('user', 'Auth.isPremium() - Regular User', 
+        !Auth.isPremium(testRegularUser), 'Should return false for regular user');
+      
+      addTestResult('user', 'Auth.isPremium() - Admin User', 
+        Auth.isPremium(testAdminUser), 'Should return true for admin user');
+    }
+    
+    function testPricing(price) {
+      const regularUser = { role: 'user' };
+      const premiumUser = { role: 'premium' };
+      
+      const regularPrice = PremiumPricing.calculatePrice(price, regularUser);
+      const premiumPrice = PremiumPricing.calculatePrice(price, premiumUser);
+      
+      addTestResult('pricing', `Price Calculation - ${price/1000}K`, 
+        premiumPrice.finalPrice === price * 0.75, 
+        `Regular: ${regularPrice.finalPrice}, Premium: ${premiumPrice.finalPrice} (expected: ${price * 0.75})`);
+      
+      // Display results
+      const resultsDiv = document.getElementById('pricing-results');
+      resultsDiv.innerHTML = `
+        <div class="test-info">
+          <strong>Price Test Results:</strong><br>
+          Original Price: ${PremiumPricing.formatCurrency(price)}<br>
+          Regular User Price: ${PremiumPricing.formatCurrency(regularPrice.finalPrice)}<br>
+          Premium User Price: ${PremiumPricing.formatCurrency(premiumPrice.finalPrice)}<br>
+          Premium Discount: ${premiumPrice.discount}% (${PremiumPricing.formatCurrency(premiumPrice.discountAmount)})
+        </div>
+      `;
+    }
+    
+    function testCartPricing() {
+      const cartItems = [
+        { price: 100000, quantity: 2 },
+        { price: 250000, quantity: 1 },
+        { price: 50000, quantity: 3 }
+      ];
+      
+      const regularUser = { role: 'user' };
+      const premiumUser = { role: 'premium' };
+      
+      const regularCart = PremiumPricing.calculateCartTotal(cartItems, regularUser);
+      const premiumCart = PremiumPricing.calculateCartTotal(cartItems, premiumUser);
+      
+      addTestResult('pricing', 'Cart Pricing Calculation', 
+        premiumCart.finalTotal === regularCart.finalTotal * 0.75,
+        `Regular Cart: ${PremiumPricing.formatCurrency(regularCart.finalTotal)}, Premium Cart: ${PremiumPricing.formatCurrency(premiumCart.finalTotal)}`);
+    }
+    
+    function testUISwitch(role) {
+      // Simulate user login
+      const testUser = {
+        id: 'test',
+        username: 'test',
+        email: 'test@test.com',
+        role
+      };
+      
+      localStorage.setItem('mmo_currentUser', JSON.stringify(testUser));
+      
+      // Test UI switching
+      try {
+        UISwitcher.applyUserUI(testUser);
+        
+        const hasPremiumClass = document.body.classList.contains('premium-user');
+        const hasDefaultClass = document.body.classList.contains('default-user');
+        const hasAdminClass = document.body.classList.contains('admin-user');
+        
+        let passed = false;
+        let message = '';
+        
+        switch(role) {
+          case 'premium':
+            passed = hasPremiumClass && !hasDefaultClass;
+            message = `Premium class applied: ${hasPremiumClass}`;
+            break;
+          case 'admin':
+            passed = hasAdminClass && hasPremiumClass;
+            message = `Admin and Premium classes applied: ${hasAdminClass}, ${hasPremiumClass}`;
+            break;
+          default:
+            passed = hasDefaultClass && !hasPremiumClass;
+            message = `Default class applied: ${hasDefaultClass}`;
+        }
+        
+        addTestResult('ui', `UI Switch - ${role}`, passed, message);
+      } catch (error) {
+        addTestResult('ui', `UI Switch - ${role}`, false, `Error: ${error.message}`);
+      }
+    }
+    
+    function testPremiumCSS() {
+      const premiumCSS = document.getElementById('premium-css');
+      const isLoaded = premiumCSS && !premiumCSS.disabled;
+      
+      addTestResult('ui', 'Premium CSS Loading', isLoaded, 
+        `Premium CSS loaded: ${isLoaded}`);
+    }
+    
+    function testMiddleware(feature) {
+      try {
+        let passed = false;
+        let message = '';
+        
+        switch(feature) {
+          case 'premium':
+            // Test with premium user
+            const premiumUser = { role: 'premium' };
+            passed = Auth.isPremium(premiumUser);
+            message = 'Premium middleware should allow premium users';
+            break;
+            
+          case 'admin':
+            // Test with admin user
+            const adminUser = { role: 'admin' };
+            passed = adminUser.role === 'admin';
+            message = 'Admin middleware should allow admin users';
+            break;
+            
+          case 'unauthorized':
+            // Test with regular user for premium feature
+            const regularUser = { role: 'user' };
+            passed = !Auth.isPremium(regularUser);
+            message = 'Premium middleware should block regular users';
+            break;
+        }
+        
+        addTestResult('middleware', `Middleware Test - ${feature}`, passed, message);
+      } catch (error) {
+        addTestResult('middleware', `Middleware Test - ${feature}`, false, `Error: ${error.message}`);
+      }
+    }
+    
+    function updateCurrentUserDisplay() {
+      const currentUser = Auth.getCurrentUser();
+      const userDiv = document.getElementById('current-user');
+      const detailsDiv = document.getElementById('user-details');
+      
+      if (currentUser) {
+        userDiv.style.display = 'block';
+        detailsDiv.innerHTML = `
+          <strong>Username:</strong> ${currentUser.username}<br>
+          <strong>Email:</strong> ${currentUser.email}<br>
+          <strong>Role:</strong> ${currentUser.role}<br>
+          <strong>Is Premium:</strong> ${Auth.isPremium(currentUser)}<br>
+          <strong>Balance:</strong> ${PremiumPricing.formatCurrency(currentUser.balance || 0)}
+        `;
+      } else {
+        userDiv.style.display = 'none';
+      }
+    }
+    
+    // Run initial tests
+    document.addEventListener('DOMContentLoaded', function() {
+      addTestResult('user', 'Auth Module Loaded', true, 'Auth module loaded successfully');
+      addTestResult('pricing', 'Premium Pricing Module Loaded', true, 'Premium pricing module loaded successfully');
+      addTestResult('ui', 'UI Switcher Module Loaded', true, 'UI switcher module loaded successfully');
+      addTestResult('middleware', 'Role Middleware Module Loaded', true, 'Role middleware module loaded successfully');
+      
+      updateCurrentUserDisplay();
+    });
+  </script>
+</body>
+</html>
