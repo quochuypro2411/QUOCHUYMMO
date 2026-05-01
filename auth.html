@@ -929,6 +929,9 @@ async function handleForgot(e) {
 // URL param: ?tab=register
 const urlTab = new URLSearchParams(location.search).get('tab');
 if (urlTab) showPanel(urlTab);
+
+// Ensure default admin exists
+ensureAdminAccount().catch(console.error);
 </script>
 </body>
 </html>

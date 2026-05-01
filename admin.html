@@ -353,6 +353,7 @@ if (isFirebaseConfigured && window.firebase) {
   auth = firebase.auth();
   db = firebase.firestore();
 }
+const ADMIN_EMAIL = 'admin@quochuy.mmo';
 let usersCache = [];
 
 function normalizeUser(user) {
@@ -517,14 +518,14 @@ async function ensureAdmin() {
     
     // Check if cloud data confirms admin status OR if local data already confirmed it
     const isCloudAdmin = userData && (userData.isAdmin || userData.role === 'admin');
-    const isLocalAdmin = currentUser.isAdmin || currentUser.role === 'admin';
+    const isLocalAdmin = (currentUser.isAdmin || currentUser.role === 'admin') || (currentUser.email.toLowerCase() === ADMIN_EMAIL);
     
     if (!isCloudAdmin && !isLocalAdmin) {
       alert('Tài khoản của bạn không có quyền admin.');
       redirectToAuth();
       return false;
     }
-  } else if (!hasPermission(currentUser, 'viewReports')) {
+  } else if (!hasPermission(currentUser, 'viewReports') && currentUser.email.toLowerCase() !== ADMIN_EMAIL) {
     alert('Chỉ admin mới được phép truy cập trang này.');
     redirectToAuth();
     return false;
