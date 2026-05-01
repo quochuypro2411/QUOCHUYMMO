@@ -23,25 +23,15 @@
       --danger: #f87171;
     }
     body { font-family: 'Be Vietnam Pro', sans-serif; background: radial-gradient(circle at top left, rgba(56,189,248,.18), transparent 22%), radial-gradient(circle at bottom right, rgba(99,102,241,.16), transparent 18%), linear-gradient(180deg, #08101f 0%, #0d1321 100%); color: var(--text); min-height: 100vh; }
-    a { color: inherit; text-decoration: none; }
     .topbar { background: rgba(15, 23, 42, 0.96); border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding: 18px 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px); }
     .topbar .brand { display: flex; align-items: center; gap: 14px; font-weight: 700; }
     .topbar .brand .logo { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--blue), var(--blue2)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; box-shadow: 0 18px 40px rgba(56,189,248,0.25); }
     .topbar .brand .brand-title { font-size: 16px; letter-spacing: .03em; }
     .topbar .brand .brand-meta { font-size: 12px; color: #cbd5e1; }
     .topbar .actions { display: flex; align-items: center; gap: 10px; }
-    .topbar button, .topbar a.button-link { border: 1px solid rgba(148, 163, 184, 0.22); background: rgba(15, 23, 42, 0.82); color: var(--text); padding: 12px 16px; border-radius: 14px; cursor: pointer; transition: all .25s ease; }
-    .topbar button:hover, .topbar a.button-link:hover { transform: translateY(-1px); border-color: var(--blue); color: #fff; }
+    .topbar button { border: 1px solid rgba(148, 163, 184, 0.22); background: rgba(15, 23, 42, 0.82); color: var(--text); padding: 12px 16px; border-radius: 14px; cursor: pointer; transition: all .25s ease; }
+    .topbar button:hover { transform: translateY(-1px); border-color: var(--blue); color: #fff; }
     .admin-wrap { max-width: 1200px; margin: 32px auto; padding: 0 20px 48px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
-    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: center; backdrop-filter: blur(12px); }
-    .stat-card .icon { width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .stat-card .icon.primary { background: linear-gradient(135deg, var(--blue), var(--blue2)); color: white; }
-    .stat-card .icon.success { background: linear-gradient(135deg, var(--success), #22c55e); color: white; }
-    .stat-card .icon.danger { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
-    .stat-card .icon.warning { background: linear-gradient(135deg, var(--warning), #f59e0b); color: white; }
-    .stat-card .value { font-size: 32px; font-weight: 800; margin: 8px 0 4px; }
-    .stat-card .label { color: var(--muted); font-size: 13px; }
     .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
     .admin-note { background: linear-gradient(180deg, rgba(56,189,248,.12), rgba(15,23,42,.95)); border: 1px solid rgba(56,189,248,.18); border-radius: 12px; padding: 16px; margin-bottom: 24px; backdrop-filter: blur(12px); }
     .admin-note i { margin-right: 8px; color: var(--blue); }
@@ -51,9 +41,6 @@
     .users-table td { padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); }
     .users-table tr:hover { background: rgba(56,189,248,.08); }
     .empty-state { text-align: center; padding: 32px; color: var(--muted); font-style: italic; }
-    .search-bar { display: flex; gap: 12px; margin-bottom: 16px; }
-    .search-bar input { flex: 1; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text); font-size: 14px; }
-    .search-bar input:focus { outline: none; border-color: var(--blue); }
     .role-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
     .role-badge.role-user { background: rgba(148, 163, 184, 0.2); color: var(--muted); }
     .role-badge.role-premium { background: linear-gradient(135deg, rgba(251,191,36,.2), rgba(245,158,11,.2)); color: var(--warning); }
@@ -72,37 +59,23 @@
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.error { border-color: var(--danger); background: rgba(248,113,113,.1); }
     .toast i { margin-right: 8px; }
-    #toast { display: none; }
-    .cloud-status { background: linear-gradient(180deg, rgba(16,185,129,.12), rgba(15,23,42,.95)); border: 1px solid rgba(16,185,129,.18); border-radius: 12px; padding: 16px; margin-bottom: 24px; backdrop-filter: blur(12px); }
-    .cloud-status i { margin-right: 8px; }
-    .cloud-status.connected { background: linear-gradient(180deg, rgba(16,185,129,.12), rgba(15,23,42,.95)); border-color: rgba(16,185,129,.18); }
-    .cloud-status.disconnected { background: linear-gradient(180deg, rgba(239,68,68,.12), rgba(15,23,42,.95)); border-color: rgba(239,68,68,.18); }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
     .modal.show { display: flex; }
     .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; backdrop-filter: blur(12px); }
-    .modal-content { pointer-events: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .modal-header h3 { font-size: 18px; font-weight: 700; }
     .modal-close { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
     .modal-close:hover { color: var(--danger); }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-    .form-group input, .form-group textarea { width: 100%; padding: 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
-    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); }
+    .form-group input, .form-group select { width: 100%; padding: 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--blue); }
     .form-group input[readonly] { background: rgba(148, 163, 184, 0.1); cursor: not-allowed; }
     .form-actions { display: flex; gap: 12px; margin-top: 20px; }
     .form-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; }
     .form-actions button.primary { background: linear-gradient(135deg, var(--blue), var(--blue2)); color: white; }
     .form-actions button.danger { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
     .form-actions button.success { background: linear-gradient(135deg, var(--success), #22c55e); color: white; }
-    .user-detail-section { margin-bottom: 20px; padding: 16px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); }
-    .user-detail-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--blue); }
-    .balance-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .balance-actions input { flex: 1; padding: 8px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
-    .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .status-pill.pending { background: rgba(251,191,36,.2); color: var(--warning); }
-    .status-pill.approved { background: rgba(52,211,153,.2); color: var(--success); }
-    .status-pill.rejected { background: rgba(248,113,113,.2); color: var(--danger); }
   </style>
 </head>
 <body>
@@ -126,18 +99,15 @@
       <span id="cloud-message">Đang kiểm tra kết nối Cloud...</span>
     </div>
 
-    <div class="section-title">Quản lý tài khoản hiện có</div>
+    <div class="section-title">Quản lý tài khoản</div>
     <div class="users-table-wrap">
-      <div class="search-bar">
-        <input type="text" id="user-search" placeholder="Tìm kiếm theo email, username, role...">
-      </div>
       <table class="users-table">
         <thead>
           <tr>
             <th>Email</th>
             <th>Username</th>
             <th>Role</th>
-            <th>Tham gia</th>
+            <th>Số dư</th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -150,85 +120,30 @@
     <div style="margin-top: 32px;">
       <div class="section-title">Tạo tài khoản mới</div>
       <div class="users-table-wrap">
-        <table class="users-table">
-          <tr>
-            <td><input type="email" id="new-email" placeholder="Email" style="width: 100%; padding: 8px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text);"></td>
-            <td><input type="text" id="new-username" placeholder="Username" style="width: 100%; padding: 8px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text);"></td>
-            <td>
-              <select id="new-role" style="width: 100%; padding: 8px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
-                <option value="user">User</option>
-                <option value="premium">Premium</option>
-                <option value="admin">Admin</option>
-              </select>
-            </td>
-            <td><input type="password" id="new-password" placeholder="Password" style="width: 100%; padding: 8px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text);"></td>
-            <td>
-              <button class="button-small approve" onclick="createNewUser()">
-                <i class="fas fa-plus"></i> Tạo
-              </button>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <div style="margin-top: 32px;">
-      <div class="section-title">Quản lý đơn hàng</div>
-      <div class="users-table-wrap">
-        <table class="users-table">
-          <thead>
-            <tr>
-              <th>Mã đơn</th>
-              <th>Khách hàng</th>
-              <th>Sản phẩm</th>
-              <th>Tổng tiền</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody id="orders-body">
-            <tr><td colspan="6" class="empty-state">Đang tải đơn hàng...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div style="margin-top: 32px;">
-      <div class="section-title">Yêu cầu nạp tiền</div>
-      <div class="users-table-wrap">
-        <table class="users-table">
-          <thead>
-            <tr>
-              <th>Mã yêu cầu</th>
-              <th>Khách hàng</th>
-              <th>Số tiền</th>
-              <th>Ngày</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody id="deposits-body">
-            <tr><td colspan="6" class="empty-state">Đang tải yêu cầu nạp tiền...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div style="margin-top: 32px;">
-      <div class="section-title">Gửi thông báo toàn hệ thống</div>
-      <div class="users-table-wrap">
         <div style="padding: 20px;">
           <div class="form-group">
-            <label>Tiêu đề thông báo</label>
-            <input type="text" id="notif-title" placeholder="VD: Khuyến mãi nạp thẻ 20%">
+            <label>Email</label>
+            <input type="email" id="new-email" placeholder="Nhập email">
           </div>
           <div class="form-group">
-            <label>Nội dung</label>
-            <textarea id="notif-content" rows="3" placeholder="VD: Bắt đầu từ hôm nay, khi nạp thẻ mệnh giá từ 100k..."></textarea>
+            <label>Username</label>
+            <input type="text" id="new-username" placeholder="Nhập username">
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="new-role">
+              <option value="user">User</option>
+              <option value="premium">Premium</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="new-password" placeholder="Nhập mật khẩu">
           </div>
           <div class="form-actions">
-            <button class="primary" onclick="sendGlobalNotification()">
-              <i class="fas fa-paper-plane"></i> Gửi thông báo
+            <button class="primary" onclick="createNewUser()">
+              <i class="fas fa-plus"></i> Tạo tài khoản
             </button>
           </div>
         </div>
@@ -277,7 +192,6 @@
     const ADMIN_EMAIL = 'admin@quochuy.mmo';
     let usersCache = [];
     
-    // Cloud connection status
     function updateCloudStatus(connected, message = '') {
       const statusElement = document.getElementById('cloud-status');
       const iconElement = document.getElementById('cloud-icon');
@@ -298,25 +212,6 @@
       }
     }
     
-    // Test cloud connection
-    async function testCloudConnection() {
-      if (!db) {
-        updateCloudStatus(false, 'Chưa cấu hình Firebase');
-        return false;
-      }
-      
-      try {
-        const testDoc = await db.collection('connection_test').limit(1).get();
-        updateCloudStatus(true, 'Đã kết nối Cloud ✓');
-        return true;
-      } catch (error) {
-        console.error('Cloud connection error:', error);
-        updateCloudStatus(false, 'Lỗi kết nối Cloud: ' + error.message);
-        return false;
-      }
-    }
-    
-    // User management functions
     function normalizeUser(user) {
       const email = (user && user.email) ? String(user.email).toLowerCase().trim() : '';
       return {
@@ -408,7 +303,7 @@
         return false;
       }
       
-      if (!hasPermission(currentUser, 'viewReports') && currentUser.email.toLowerCase() !== ADMIN_EMAIL) {
+      if (currentUser.email.toLowerCase() !== ADMIN_EMAIL) {
         alert('Chỉ admin mới được phép truy cập trang này.');
         redirectToAuth();
         return false;
@@ -418,13 +313,10 @@
       return true;
     }
     
-    function hasPermission(user, key) {
-      if (!user) return false;
-      if (user.role === 'admin' || user.isAdmin) return true;
-      return false;
+    function formatMoney(n) {
+      return n.toLocaleString('vi-VN') + ' đ';
     }
     
-    // Load and display users
     async function loadAccounts() {
       if (!(await ensureAdmin())) return;
       
@@ -434,7 +326,6 @@
       console.log('Loading accounts:', users.length, 'users:', users);
       
       if (!users.length) {
-        // Create test users if none exist
         console.log('No users found, creating test users...');
         const testUsers = [
           {
@@ -466,7 +357,6 @@
         const allUsers = [...testUsers];
         localStorage.setItem('mmo_users', JSON.stringify(allUsers));
         
-        // Sync test users to cloud
         for (const user of testUsers) {
           await upsertCloudUser(user);
         }
@@ -481,13 +371,12 @@
       
       body.innerHTML = users.map(user => {
         const role = user.role || 'user';
-        const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : '-';
         return `
         <tr>
           <td>${user.email || '-'}</td>
           <td>${user.user || '-'}</td>
           <td><span class="role-badge role-${role}">${role}</span></td>
-          <td>${createdDate}</td>
+          <td>${formatMoney(user.balance || 0)}</td>
           <td>
             <div class="role-actions">
               <button class="button-small details" onclick="openUserModal('${user.email ? user.email.replace(/'/g, "\\'") : ''}')"><i class="fas fa-eye"></i> Xem</button>
@@ -500,14 +389,7 @@
       }).join('');
     }
     
-    // Create new user
     async function createNewUser() {
-      const currentUser = getCurrentUser();
-      if (!currentUser || !hasPermission(currentUser, 'manageUsers')) {
-        showToast('Bạn không có quyền tạo tài khoản.', true);
-        return;
-      }
-      
       const email = document.getElementById('new-email').value.trim();
       const username = document.getElementById('new-username').value.trim();
       const role = document.getElementById('new-role').value;
@@ -537,7 +419,6 @@
       users.push(newUser);
       setUsers(users);
       
-      // Clear form
       document.getElementById('new-email').value = '';
       document.getElementById('new-username').value = '';
       document.getElementById('new-password').value = '';
@@ -547,7 +428,6 @@
       await loadAccounts();
     }
     
-    // Role management
     async function upgradeToPremium(userId) {
       if (!confirm('Xác nhận nâng cấp user này lên Premium?')) return;
       
@@ -596,71 +476,46 @@
       
       const modalBody = document.getElementById('user-modal-body');
       modalBody.innerHTML = `
-        <div class="user-detail-section">
-          <h4>Thông tin cơ bản</h4>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="detail-email" value="${user.email || ''}" readonly>
-          </div>
-          <div class="form-group">
-            <label>Họ tên</label>
-            <input type="text" id="detail-name" value="${user.name || ''}" placeholder="Nhập họ tên">
-          </div>
-          <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="detail-username" value="${user.user || ''}" placeholder="Nhập username">
-          </div>
-          <div class="form-group">
-            <label>Role</label>
-            <select id="detail-role">
-              <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-              <option value="premium" ${user.role === 'premium' ? 'selected' : ''}>Premium</option>
-              <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Số dư</label>
-            <input type="number" id="detail-balance" value="${user.balance || 0}" min="0" placeholder="Nhập số dư">
-          </div>
-          <div class="form-actions">
-            <button class="primary" onclick="saveUserDetails('${user.email}')">
-              <i class="fas fa-save"></i> Lưu thay đổi
-            </button>
-          </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="detail-email" value="${user.email || ''}" readonly>
         </div>
-        
-        <div class="user-detail-section">
-          <h4>Đổi mật khẩu</h4>
-          <div class="form-group">
-            <label>Mật khẩu mới</label>
-            <input type="password" id="new-password-input" placeholder="Nhập mật khẩu mới">
-          </div>
-          <div class="form-group">
-            <label>Xác nhận mật khẩu</label>
-            <input type="password" id="confirm-password-input" placeholder="Xác nhận mật khẩu">
-          </div>
-          <div class="form-actions">
-            <button class="primary" onclick="changeUserPassword('${user.email}')">
-              <i class="fas fa-key"></i> Đổi mật khẩu
-            </button>
-          </div>
+        <div class="form-group">
+          <label>Họ tên</label>
+          <input type="text" id="detail-name" value="${user.name || ''}" placeholder="Nhập họ tên">
         </div>
-        
-        <div class="user-detail-section">
-          <h4>Điều chỉnh nhanh số dư</h4>
-          <div class="balance-actions">
-            <input type="number" id="balance-amount" placeholder="Nhập số tiền" min="0">
-            <button class="success" onclick="adjustBalance('${user.email}', true)">
-              <i class="fas fa-plus"></i> Cộng
-            </button>
-            <button class="danger" onclick="adjustBalance('${user.email}', false)">
-              <i class="fas fa-minus"></i> Trừ
-            </button>
-          </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="detail-username" value="${user.user || ''}" placeholder="Nhập username">
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="detail-role">
+            <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+            <option value="premium" ${user.role === 'premium' ? 'selected' : ''}>Premium</option>
+            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Số dư</label>
+          <input type="number" id="detail-balance" value="${user.balance || 0}" min="0" placeholder="Nhập số dư">
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu mới</label>
+          <input type="password" id="new-password-input" placeholder="Nhập mật khẩu mới">
+        </div>
+        <div class="form-actions">
+          <button class="primary" onclick="saveUserDetails('${user.email}')">
+            <i class="fas fa-save"></i> Lưu thay đổi
+          </button>
         </div>
       `;
       
       document.getElementById('user-modal').classList.add('show');
+    }
+    
+    function closeUserModal() {
+      document.getElementById('user-modal').classList.remove('show');
     }
     
     async function saveUserDetails(email) {
@@ -668,6 +523,7 @@
       const username = document.getElementById('detail-username').value.trim();
       const role = document.getElementById('detail-role').value;
       const balance = parseInt(document.getElementById('detail-balance').value) || 0;
+      const newPassword = document.getElementById('new-password-input').value;
       
       if (!username) {
         showToast('Username không được để trống.', true);
@@ -682,97 +538,26 @@
         return;
       }
       
-      // Check duplicate username
       const duplicate = users.find((u, i) => i !== userIndex && u.user === username);
       if (duplicate) {
         showToast('Username đã tồn tại.', true);
         return;
       }
       
-      // Update user data
       users[userIndex].name = name;
       users[userIndex].user = username;
       users[userIndex].role = role;
       users[userIndex].isAdmin = role === 'admin';
       users[userIndex].balance = balance;
       
+      if (newPassword) {
+        users[userIndex].password = newPassword;
+      }
+      
       setUsers(users);
       await upsertCloudUser(users[userIndex]);
       
       showToast('✅ Đã lưu thay đổi thành công.');
-      closeUserModal();
-      await loadAccounts();
-    }
-    
-    function closeUserModal() {
-      document.getElementById('user-modal').classList.remove('show');
-    }
-    
-    function formatMoney(n) {
-      return n.toLocaleString('vi-VN') + ' đ';
-    }
-    
-    async function changeUserPassword(email) {
-      const newPassword = document.getElementById('new-password-input').value;
-      const confirmPassword = document.getElementById('confirm-password-input').value;
-      
-      if (!newPassword || !confirmPassword) {
-        showToast('Vui lòng nhập đầy đủ mật khẩu.', true);
-        return;
-      }
-      
-      if (newPassword !== confirmPassword) {
-        showToast('Mật khẩu xác nhận không khớp.', true);
-        return;
-      }
-      
-      const users = getUsers();
-      const userIndex = users.findIndex(u => u.email === email);
-      
-      if (userIndex === -1) {
-        showToast('Không tìm thấy tài khoản.', true);
-        return;
-      }
-      
-      users[userIndex].password = newPassword;
-      setUsers(users);
-      
-      await upsertCloudUser(users[userIndex]);
-      
-      showToast('✅ Đã đổi mật khẩu thành công.');
-      closeUserModal();
-    }
-    
-    async function adjustBalance(email, isAdd) {
-      const amount = parseInt(document.getElementById('balance-amount').value);
-      
-      if (!amount || amount <= 0) {
-        showToast('Vui lòng nhập số tiền hợp lệ.', true);
-        return;
-      }
-      
-      const users = getUsers();
-      const userIndex = users.findIndex(u => u.email === email);
-      
-      if (userIndex === -1) {
-        showToast('Không tìm thấy tài khoản.', true);
-        return;
-      }
-      
-      const currentBalance = users[userIndex].balance || 0;
-      const newBalance = isAdd ? currentBalance + amount : currentBalance - amount;
-      
-      if (newBalance < 0) {
-        showToast('Số dư không đủ để trừ.', true);
-        return;
-      }
-      
-      users[userIndex].balance = newBalance;
-      setUsers(users);
-      
-      await upsertCloudUser(users[userIndex]);
-      
-      showToast(`✅ Đã ${isAdd ? 'cộng' : 'trừ'} ${formatMoney(amount)} cho ${email}.`);
       closeUserModal();
       await loadAccounts();
     }
@@ -800,7 +585,6 @@
       users.splice(userIndex, 1);
       setUsers(users);
       
-      // Delete from Firebase
       if (db && userToDelete.uid) {
         try {
           await db.collection('users').doc(userToDelete.uid).delete();
@@ -813,297 +597,13 @@
       await loadAccounts();
     }
     
-    // Order Management
-    async function loadOrders() {
-      if (!db) {
-        document.getElementById('orders-body').innerHTML = '<tr><td colspan="6" class="empty-state">Firebase chưa cấu hình</td></tr>';
-        return;
-      }
-      
-      try {
-        const snap = await db.collection('orders').get();
-        if (snap.empty) {
-          document.getElementById('orders-body').innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có đơn hàng nào</td></tr>';
-          return;
-        }
-        
-        const orders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const body = document.getElementById('orders-body');
-        
-        body.innerHTML = orders.map(order => {
-          const statusClass = order.status === 'Đã duyệt' ? 'approved' : 
-                              order.status === 'Đã từ chối' ? 'rejected' : 'pending';
-          const itemCount = order.items ? order.items.length : 0;
-          const customer = order.customerEmail || order.customer || 'Không rõ';
-          
-          return `
-          <tr>
-            <td>${order.id || '-'}</td>
-            <td>${customer}</td>
-            <td>${itemCount} sản phẩm</td>
-            <td>${formatMoney(order.total || 0)}</td>
-            <td><span class="status-pill ${statusClass}">${order.status || 'Chờ duyệt'}</span></td>
-            <td>
-              <div class="role-actions">
-                ${order.status !== 'Đã duyệt' && order.status !== 'Đã từ chối' ? `
-                  <button class="button-small approve" onclick="approveOrder('${order.id}')">
-                    <i class="fas fa-check"></i> Duyệt
-                  </button>
-                  <button class="button-small reject" onclick="rejectOrder('${order.id}')">
-                    <i class="fas fa-times"></i> Từ chối
-                  </button>
-                ` : ''}
-                <button class="button-small details" onclick="viewOrderDetails('${order.id}')">
-                  <i class="fas fa-eye"></i> Xem
-                </button>
-              </div>
-            </td>
-          </tr>`;
-        }).join('');
-      } catch (error) {
-        console.error('Error loading orders:', error);
-        document.getElementById('orders-body').innerHTML = '<tr><td colspan="6" class="empty-state">Lỗi tải đơn hàng</td></tr>';
-      }
-    }
-    
-    async function approveOrder(orderId) {
-      if (!confirm('Xác nhận duyệt đơn hàng này?')) return;
-      
-      try {
-        await db.collection('orders').doc(orderId).update({
-          status: 'Đã duyệt',
-          updatedAt: new Date().toISOString()
-        });
-        
-        showToast('✅ Đã duyệt đơn hàng.');
-        await loadOrders();
-      } catch (error) {
-        console.error('Error approving order:', error);
-        showToast('❌ Lỗi duyệt đơn hàng.', true);
-      }
-    }
-    
-    async function rejectOrder(orderId) {
-      if (!confirm('Xác nhận từ chối đơn hàng này?')) return;
-      
-      try {
-        await db.collection('orders').doc(orderId).update({
-          status: 'Đã từ chối',
-          updatedAt: new Date().toISOString()
-        });
-        
-        showToast('✅ Đã từ chối đơn hàng.');
-        await loadOrders();
-      } catch (error) {
-        console.error('Error rejecting order:', error);
-        showToast('❌ Lỗi từ chối đơn hàng.', true);
-      }
-    }
-    
-    async function viewOrderDetails(orderId) {
-      try {
-        const doc = await db.collection('orders').doc(orderId).get();
-        if (!doc.exists) {
-          showToast('Không tìm thấy đơn hàng.', true);
-          return;
-        }
-        
-        const order = doc.data();
-        const itemsHtml = order.items ? order.items.map(item => 
-          `<li>${item.name || item.product} x ${item.qty || 1} - ${formatMoney(item.price || 0)}</li>`
-        ).join('') : 'Không có thông tin';
-        
-        alert(`Đơn hàng: ${orderId}\n\nKhách hàng: ${order.customerEmail || order.customer}\nTổng tiền: ${formatMoney(order.total || 0)}\nTrạng thái: ${order.status || 'Chờ duyệt'}\n\nSản phẩm:\n${itemsHtml}`);
-      } catch (error) {
-        console.error('Error viewing order:', error);
-        showToast('❌ Lỗi xem chi tiết đơn hàng.', true);
-      }
-    }
-    
-    // Deposit Requests Management
-    async function loadDepositRequests() {
-      if (!db) {
-        document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Firebase chưa cấu hình</td></tr>';
-        return;
-      }
-      
-      try {
-        const snap = await db.collection('deposit_requests').get();
-        if (snap.empty) {
-          document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có yêu cầu nạp tiền nào</td></tr>';
-          return;
-        }
-        
-        const deposits = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const body = document.getElementById('deposits-body');
-        
-        body.innerHTML = deposits.map(deposit => {
-          const statusClass = deposit.status === 'Đã duyệt' ? 'approved' : 
-                              deposit.status === 'Đã từ chối' ? 'rejected' : 'pending';
-          const customer = deposit.customerEmail || deposit.customer || 'Không rõ';
-          const date = deposit.createdAt ? new Date(deposit.createdAt).toLocaleDateString('vi-VN') : '-';
-          
-          return `
-          <tr>
-            <td>${deposit.id || '-'}</td>
-            <td>${customer}</td>
-            <td>${formatMoney(deposit.amount || 0)}</td>
-            <td>${date}</td>
-            <td><span class="status-pill ${statusClass}">${deposit.status || 'Chờ duyệt'}</span></td>
-            <td>
-              <div class="role-actions">
-                ${deposit.status !== 'Đã duyệt' && deposit.status !== 'Đã từ chối' ? `
-                  <button class="button-small approve" onclick="approveDeposit('${deposit.id}', '${deposit.customerEmail || deposit.customer}', ${deposit.amount || 0})">
-                    <i class="fas fa-check"></i> Duyệt
-                  </button>
-                  <button class="button-small reject" onclick="rejectDeposit('${deposit.id}')">
-                    <i class="fas fa-times"></i> Từ chối
-                  </button>
-                ` : ''}
-              </div>
-            </td>
-          </tr>`;
-        }).join('');
-      } catch (error) {
-        console.error('Error loading deposits:', error);
-        document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Lỗi tải yêu cầu nạp tiền</td></tr>';
-      }
-    }
-    
-    async function approveDeposit(depositId, customerEmail, amount) {
-      if (!confirm(`Xác nhận duyệt yêu cầu nạp ${formatMoney(amount)}?`)) return;
-      
-      try {
-        // Update deposit status
-        await db.collection('deposit_requests').doc(depositId).update({
-          status: 'Đã duyệt',
-          updatedAt: new Date().toISOString()
-        });
-        
-        // Add balance to user
-        const users = getUsers();
-        const userIndex = users.findIndex(u => u.email === customerEmail);
-        
-        if (userIndex !== -1) {
-          users[userIndex].balance = (users[userIndex].balance || 0) + amount;
-          setUsers(users);
-          await upsertCloudUser(users[userIndex]);
-        }
-        
-        showToast('✅ Đã duyệt yêu cầu nạp tiền.');
-        await loadDepositRequests();
-      } catch (error) {
-        console.error('Error approving deposit:', error);
-        showToast('❌ Lỗi duyệt yêu cầu nạp tiền.', true);
-      }
-    }
-    
-    async function rejectDeposit(depositId) {
-      if (!confirm('Xác nhận từ chối yêu cầu nạp tiền này?')) return;
-      
-      try {
-        await db.collection('deposit_requests').doc(depositId).update({
-          status: 'Đã từ chối',
-          updatedAt: new Date().toISOString()
-        });
-        
-        showToast('✅ Đã từ chối yêu cầu nạp tiền.');
-        await loadDepositRequests();
-      } catch (error) {
-        console.error('Error rejecting deposit:', error);
-        showToast('❌ Lỗi từ chối yêu cầu nạp tiền.', true);
-      }
-    }
-    
-    // Global Notifications
-    async function sendGlobalNotification() {
-      const title = document.getElementById('notif-title').value.trim();
-      const content = document.getElementById('notif-content').value.trim();
-      
-      if (!title || !content) {
-        showToast('Vui lòng nhập tiêu đề và nội dung.', true);
-        return;
-      }
-      
-      if (!db) {
-        showToast('Firebase chưa cấu hình.', true);
-        return;
-      }
-      
-      try {
-        const notification = {
-          id: 'notif_' + Date.now(),
-          title,
-          message: content,
-          createdAt: new Date().toISOString(),
-          type: 'global'
-        };
-        
-        await db.collection('global_notifications').doc(notification.id).set(notification);
-        
-        // Request browser notification permission and send
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification(title, {
-            body: content,
-            icon: '/favicon.ico'
-          });
-        } else if ('Notification' in window && Notification.permission !== 'denied') {
-          Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-              new Notification(title, {
-                body: content,
-                icon: '/favicon.ico'
-              });
-            }
-          });
-        }
-        
-        showToast('✅ Đã gửi thông báo toàn hệ thống.');
-        
-        // Clear form
-        document.getElementById('notif-title').value = '';
-        document.getElementById('notif-content').value = '';
-      } catch (error) {
-        console.error('Error sending notification:', error);
-        showToast('❌ Lỗi gửi thông báo.', true);
-      }
-    }
-    
-    // Search functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const searchInput = document.getElementById('user-search');
-      if (searchInput) {
-        searchInput.addEventListener('input', function() {
-          const searchTerm = this.value.toLowerCase();
-          const rows = document.querySelectorAll('#users-body tr');
-          
-          rows.forEach(row => {
-            const email = row.cells[0]?.textContent.toLowerCase() || '';
-            const username = row.cells[1]?.textContent.toLowerCase() || '';
-            const role = row.cells[2]?.textContent.toLowerCase() || '';
-            
-            if (email.includes(searchTerm) || username.includes(searchTerm) || role.includes(searchTerm)) {
-              row.style.display = '';
-            } else {
-              row.style.display = 'none';
-            }
-          });
-        });
-      }
-      
-      // Request notification permission
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
-    });
-    
-    // Initialize
     async function initializeUsers() {
       const localUsers = loadLocalUsers();
+      usersCache = localUsers;
       
       if (!db) {
         console.log('Firebase not configured, using local storage only');
-        usersCache = localUsers;
+        updateCloudStatus(false, 'Chưa cấu hình Firebase');
         return;
       }
       
@@ -1111,13 +611,11 @@
         console.log('Initializing Firebase sync...');
         updateCloudStatus(true, 'Đang đồng bộ với Firebase...');
         
-        const cloudUsers = await fetchCloudUsers();
-        console.log(`Fetched ${cloudUsers.length} users from Firebase:`, cloudUsers);
+        const snap = await db.collection('users').get();
+        const cloudUsers = snap.docs.map(doc => normalizeUser({ uid: doc.id, ...doc.data() }));
+        console.log(`Fetched ${cloudUsers.length} users from Firebase`);
         
-        // Merge local and cloud users, cloud users take priority
         const mergedUsers = [...cloudUsers];
-        
-        // Add local users that don't exist in cloud
         localUsers.forEach(localUser => {
           const existsInCloud = cloudUsers.some(cloudUser => 
             cloudUser.email === localUser.email || cloudUser.id === localUser.id
@@ -1128,10 +626,8 @@
         });
         
         usersCache = mergedUsers;
-        
         localStorage.setItem('mmo_users', JSON.stringify(mergedUsers));
         console.log(`Merged users: ${mergedUsers.length} total`);
-        console.log('Final users cache:', usersCache);
         
         updateCloudStatus(true, `Đồng bộ thành công (${mergedUsers.length} users)`);
       } catch (e) {
@@ -1141,55 +637,17 @@
       }
     }
     
-    async function fetchCloudUsers() {
-      if (!db) {
-        console.log('❌ Firebase db not initialized');
-        return [];
-      }
-      
-      try {
-        console.log('🔍 Attempting to fetch users from Firebase...');
-        console.log('📡 Firebase config:', firebaseConfig);
-        
-        // Try to access the users collection
-        const snap = await db.collection('users').get();
-        console.log('📊 Firestore snapshot:', snap);
-        console.log('📊 Number of docs:', snap.size);
-        console.log('📊 Snapshot empty:', snap.empty);
-        
-        if (snap.empty) {
-          console.log('⚠️ No documents found in users collection');
-          return [];
-        }
-        
-        const users = snap.docs.map(doc => {
-          console.log('📄 Document data:', doc.id, doc.data());
-          return normalizeUser({ uid: doc.id, ...doc.data() });
-        });
-        
-        console.log('✅ Fetched users:', users);
-        return users;
-      } catch (error) {
-        console.error('❌ Error fetching from Firebase:', error);
-        console.error('❌ Error code:', error.code);
-        console.error('❌ Error message:', error.message);
-        
-        // Try alternative collection names in case of naming issues
-        try {
-          console.log('🔄 Trying alternative collection name...');
-          const altSnap = await db.collection('mmo_users').get();
-          console.log('📊 Alternative collection found:', altSnap.size, 'docs');
-          return altSnap.docs.map(doc => normalizeUser({ uid: doc.id, ...doc.data() }));
-        } catch (altError) {
-          console.error('❌ Alternative collection also failed:', altError);
-        }
-        
-        return [];
-      }
-    }
-    
     const startAdmin = async () => {
-      await testCloudConnection();
+      if (db) {
+        try {
+          await db.collection('users').limit(1).get();
+          updateCloudStatus(true, 'Đã kết nối Cloud ✓');
+        } catch (error) {
+          updateCloudStatus(false, 'Lỗi kết nối Cloud');
+        }
+      } else {
+        updateCloudStatus(false, 'Chưa cấu hình Firebase');
+      }
       
       if (auth) {
         await new Promise((resolve) => {
@@ -1207,16 +665,6 @@
       
       await initializeUsers();
       await loadAccounts();
-      await loadOrders();
-      await loadDepositRequests();
-      
-      // Real-time listener for deposit requests
-      if (db) {
-        db.collection('deposit_requests').onSnapshot((snapshot) => {
-          console.log('Deposit requests updated');
-          loadDepositRequests();
-        });
-      }
     };
     
     startAdmin().catch(() => {
