@@ -559,15 +559,18 @@ async function getUsersMerged() {
     };
 
     [...localUsers, ...cloudUsers].forEach((u) => {
-      if (u.email) {
-        const emailKey = userDocId(u.email);
-        if (byEmail.has(emailKey)) {
-          const existing = byEmail.get(emailKey);
+      const emailKey = u.email ? userDocId(u.email) : null;
+      const userKey = u.user ? u.user.toLowerCase() : null;
+      const key = emailKey || userKey;
+      
+      if (key) {
+        if (byEmail.has(key)) {
+          const existing = byEmail.get(key);
           u.transactions = mergeArrays(existing.transactions, u.transactions);
           u.orders = mergeArrays(existing.orders, u.orders);
           u.notifications = mergeArrays(existing.notifications, u.notifications);
         }
-        byEmail.set(emailKey, normalizeUser(u));
+        byEmail.set(key, normalizeUser(u));
       }
     });
     const merged = Array.from(byEmail.values());
