@@ -285,10 +285,35 @@
       try {
         const normalized = normalizeUser(user);
         const docId = normalized.uid || userDocId(normalized.email);
+        
+        console.log('📤 Syncing user to cloud:', normalized.email);
+        console.log('📤 User data:', normalized);
+        console.log('📤 Document ID:', docId);
+        
         await db.collection('users').doc(docId).set(normalized, { merge: true });
         console.log("✅ Đã đồng bộ lên Cloud cho:", normalized.email);
+        
+        // Verify the sync worked
+        const verifySnap = await db.collection('users').doc(docId).get();
+        if (verifySnap.exists) {
+          console.log('✅ Verification successful - data saved to cloud');
+        } else {
+          console.error('❌ Verification failed - data not found in cloud');
+        }
       } catch (err) {
         console.error("❌ Lỗi đồng bộ Cloud:", err);
+        console.error("❌ Error details:", err.code, err.message);
+        
+        // Try alternative collection if main fails
+        try {
+          console.log('🔄 Trying alternative collection mmo_users...');
+          const normalized = normalizeUser(user);
+          const docId = normalized.uid || userDocId(normalized.email);
+          await db.collection('mmo_users').doc(docId).set(normalized, { merge: true });
+          console.log("✅ Đã đồng bộ lên alternative collection cho:", normalized.email);
+        } catch (altErr) {
+          console.error("❌ Alternative collection also failed:", altErr);
+        }
       }
     }
     
@@ -825,36 +850,85 @@
       usersCache = localUsers;
       
       if (!db) {
-        console.log('Firebase not configured, using local storage only');
+        console.log('❌ Firebase not configured, using local storage only');
         updateCloudStatus(false, 'Chưa cấu hình Firebase');
         return;
       }
       
       try {
-        console.log('Initializing Firebase sync...');
+        console.log('🔍 Initializing Firebase sync...');
+        console.log('📡 Firebase config:', firebaseConfig);
         updateCloudStatus(true, 'Đang đồng bộ với Firebase...');
         
-        const snap = await db.collection('users').get();
-        const cloudUsers = snap.docs.map(doc => normalizeUser({ uid: doc.id, ...doc.data() }));
-        console.log(`Fetched ${cloudUsers.length} users from Firebase`);
+        // Test connection first
+        console.log('🔗 Testing Firebase connection...');
+        await db.collection('connection_test').limit(1).get();
+        console.log('✅ Firebase connection successful');
         
+        // Try to access the users collection
+        console.log('📊 Attempting to fetch users from Firebase...');
+        const snap = await db.collection('users').get();
+        console.log('📊 Firestore snapshot:', snap);
+        console.log('📊 Number of docs:', snap.size);
+        console.log('📊 Snapshot empty:', snap.empty);
+        
+        if (snap.empty) {
+          console.log('⚠️ No documents found in users collection, trying alternative collection...');
+          const altSnap = await db.collection('mmo_users').get();
+          console.log('📊 Alternative collection found:', altSnap.size, 'docs');
+          const cloudUsers = altSnap.docs.map(doc => normalizeUser({ uid: doc.id, ...doc.data() }));
+          console.log(`✅ Fetched ${cloudUsers.length} users from alternative collection`);
+          
+          const mergedUsers = [...cloudUsers];
+          localUsers.forEach(localUser => {
+            const existsInCloud = cloudUsers.some(cloudUser => 
+              cloudUser.email === localUser.email || cloudUser.id === localUser.id
+            );
+            if (!existsInCloud) {
+              mergedUsers.push(localUser);
+            }
+          });
+          
+          usersCache = mergedUsers;
+          localStorage.setItem('mmo_users', JSON.stringify(mergedUsers));
+          console.log(`Merged users: ${mergedUsers.length} total`);
+          
+          updateCloudStatus(true, `Đồng bộ thành công (${mergedUsers.length} users)`);
+          return;
+        }
+        
+        const cloudUsers = snap.docs.map(doc => {
+          console.log('📄 Document data:', doc.id, doc.data());
+          return normalizeUser({ uid: doc.id, ...doc.data() });
+        });
+        
+        console.log(`✅ Fetched ${cloudUsers.length} users from Firebase:`, cloudUsers);
+        
+        // Merge local and cloud users, cloud users take priority
         const mergedUsers = [...cloudUsers];
+        
+        // Add local users that don't exist in cloud
         localUsers.forEach(localUser => {
           const existsInCloud = cloudUsers.some(cloudUser => 
             cloudUser.email === localUser.email || cloudUser.id === localUser.id
           );
           if (!existsInCloud) {
             mergedUsers.push(localUser);
+            console.log('📤 Syncing local user to cloud:', localUser.email);
+            upsertCloudUser(localUser);
           }
         });
         
         usersCache = mergedUsers;
         localStorage.setItem('mmo_users', JSON.stringify(mergedUsers));
         console.log(`Merged users: ${mergedUsers.length} total`);
+        console.log('Final users cache:', usersCache);
         
         updateCloudStatus(true, `Đồng bộ thành công (${mergedUsers.length} users)`);
       } catch (e) {
-        console.error("Lỗi khi tải dữ liệu từ Cloud:", e);
+        console.error('❌ Error fetching from Firebase:', e);
+        console.error('❌ Error code:', e.code);
+        console.error('❌ Error message:', e.message);
         usersCache = localUsers;
         updateCloudStatus(false, 'Lỗi đồng bộ: ' + e.message);
       }
@@ -865,8 +939,32 @@
         try {
           await db.collection('users').limit(1).get();
           updateCloudStatus(true, 'Đã kết nối Cloud ✓');
+          
+          // Set up real-time listeners for automatic sync
+          console.log('🔄 Setting up real-time listeners...');
+          
+          // Listen for users collection changes
+          db.collection('users').onSnapshot((snapshot) => {
+            console.log('👥 Users collection updated, refreshing...');
+            initializeUsers().then(() => loadAccounts());
+          });
+          
+          // Listen for orders collection changes
+          db.collection('orders').onSnapshot((snapshot) => {
+            console.log('📦 Orders collection updated, refreshing...');
+            loadOrders();
+          });
+          
+          // Listen for deposit requests changes
+          db.collection('deposit_requests').onSnapshot((snapshot) => {
+            console.log('💰 Deposit requests updated, refreshing...');
+            loadDepositRequests();
+          });
+          
+          console.log('✅ Real-time listeners set up successfully');
         } catch (error) {
-          updateCloudStatus(false, 'Lỗi kết nối Cloud');
+          console.error('❌ Error setting up Firebase:', error);
+          updateCloudStatus(false, 'Lỗi kết nối Cloud: ' + error.message);
         }
       } else {
         updateCloudStatus(false, 'Chưa cấu hình Firebase');
@@ -890,6 +988,8 @@
       await loadAccounts();
       await loadOrders();
       await loadDepositRequests();
+      
+      console.log('🚀 Admin panel fully loaded with cloud sync');
     };
     
     startAdmin().catch(() => {
