@@ -559,9 +559,50 @@
     }
     
     async function fetchCloudUsers() {
-      if (!db) return [];
-      const snap = await db.collection('users').get();
-      return snap.docs.map(doc => normalizeUser({ uid: doc.id, ...doc.data() }));
+      if (!db) {
+        console.log('❌ Firebase db not initialized');
+        return [];
+      }
+      
+      try {
+        console.log('🔍 Attempting to fetch users from Firebase...');
+        console.log('📡 Firebase config:', firebaseConfig);
+        
+        // Try to access the users collection
+        const snap = await db.collection('users').get();
+        console.log('📊 Firestore snapshot:', snap);
+        console.log('📊 Number of docs:', snap.size);
+        console.log('📊 Snapshot empty:', snap.empty);
+        
+        if (snap.empty) {
+          console.log('⚠️ No documents found in users collection');
+          return [];
+        }
+        
+        const users = snap.docs.map(doc => {
+          console.log('📄 Document data:', doc.id, doc.data());
+          return normalizeUser({ uid: doc.id, ...doc.data() });
+        });
+        
+        console.log('✅ Fetched users:', users);
+        return users;
+      } catch (error) {
+        console.error('❌ Error fetching from Firebase:', error);
+        console.error('❌ Error code:', error.code);
+        console.error('❌ Error message:', error.message);
+        
+        // Try alternative collection names in case of naming issues
+        try {
+          console.log('🔄 Trying alternative collection name...');
+          const altSnap = await db.collection('mmo_users').get();
+          console.log('📊 Alternative collection found:', altSnap.size, 'docs');
+          return altSnap.docs.map(doc => normalizeUser({ uid: doc.id, ...doc.data() }));
+        } catch (altError) {
+          console.error('❌ Alternative collection also failed:', altError);
+        }
+        
+        return [];
+      }
     }
     
     const startAdmin = async () => {
