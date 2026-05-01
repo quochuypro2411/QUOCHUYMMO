@@ -686,10 +686,11 @@ async function handleLogin(e) {
         const cred = await auth.signInWithEmailAndPassword(loginEmail, p);
         authUser = cred.user;
       } catch (authErr) {
-        // Fallback for default admin if Firebase Auth fails
-        if (loginEmail.toLowerCase() === ADMIN_EMAIL && p === ADMIN_PASSWORD) {
-          profile = (await getUsersMerged()).find(u => u.email.toLowerCase() === ADMIN_EMAIL);
-          if (!profile) throw authErr;
+        // Fallback for ANY user found in local storage if password matches
+        const localProfile = await findUserByLoginInput(u);
+        if (localProfile && localProfile.pass === p) {
+          profile = localProfile;
+          // Successfully authenticated locally, skip Firebase profile sync
         } else {
           throw authErr;
         }
