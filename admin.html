@@ -286,6 +286,51 @@
   </div>
 </div>
 
+<div class="notification-section" style="margin-top:32px;">
+  <div class="section-title">Quản lý quyền admin</div>
+  <div class="account-card">
+    <div class="detail-row">
+      <div class="field">
+        <label>Email tài khoản</label>
+        <input type="email" id="admin-email" placeholder="VD: user@example.com">
+      </div>
+      <div class="detail-actions">
+        <button class="button-small approve" onclick="grantAdminRole()"><i class="fas fa-user-shield"></i> Cấp quyền admin</button>
+        <button class="button-small reject" onclick="revokeAdminRole()"><i class="fas fa-user-times"></i> Thu hồi admin</button>
+        <button class="button-small details" onclick="loadAdminList()"><i class="fas fa-sync-alt"></i> Làm mới danh sách</button>
+      </div>
+      <div class="users-table-wrap" style="margin-top:14px;">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>UID</th>
+              <th>Ngày cấp</th>
+            </tr>
+          </thead>
+          <tbody id="admins-body">
+            <tr><td colspan="3" class="empty-state">Đang tải danh sách admin...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notification-section" style="margin-top:32px;">
+  <div class="section-title">Backup & khôi phục dữ liệu</div>
+  <div class="account-card">
+    <div class="detail-row">
+      <p class="account-info">Xuất toàn bộ người dùng + thông báo hệ thống thành file JSON, hoặc nhập lại từ file backup.</p>
+      <div class="detail-actions">
+        <button class="button-small approve" onclick="exportBackup()"><i class="fas fa-file-export"></i> Xuất backup</button>
+        <button class="button-small details" onclick="document.getElementById('backup-input').click()"><i class="fas fa-file-import"></i> Nhập backup</button>
+        <input type="file" id="backup-input" accept="application/json" style="display:none" onchange="importBackup(event)">
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -698,6 +743,172 @@ function clearSelectedAccount() {
   document.getElementById('user-detail-form').classList.add('hidden');
   document.getElementById('user-detail-panel').querySelector('.account-info').textContent = 'Chọn một tài khoản để xem chi tiết và chỉnh sửa thông tin.';
 }
+function findUserByEmail(email) {
+  const normalized = (email || '').trim().toLowerCase();
+  return getUsers().find((u) => (u.email || '').toLowerCase() === normalized) || null;
+}
+function updateUserRoleByEmail(email, isAdminRole) {
+  const users = getUsers();
+  const idx = users.findIndex((u) => (u.email || '').toLowerCase() === (email || '').toLowerCase());
+  if (idx === -1) return false;
+  users[idx].isAdmin = isAdminRole;
+  users[idx].role = isAdminRole ? 'admin' : 'user';
+  users[idx].permissions = isAdminRole ? getDefaultPermissions(true) : getDefaultPermissions(false);
+  setUsers(users);
+  if ((getCurrentUser()?.email || '').toLowerCase() === (email || '').toLowerCase()) {
+    localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+  }
+  return true;
+}
+async function loadAdminList() {
+  const body = document.getElementById('admins-body');
+  if (!body) return;
+  body.innerHTML = '<tr><td colspan="3" class="empty-state">Đang tải danh sách admin...</td></tr>';
+
+  if (db) {
+    try {
+      const snap = await db.collection('admins').get();
+      if (snap.empty) {
+        body.innerHTML = '<tr><td colspan="3" class="empty-state">Chưa có admin nào.</td></tr>';
+        return;
+      }
+      body.innerHTML = snap.docs.map((doc) => {
+        const data = doc.data() || {};
+        const dt = data.createdAt ? new Date(data.createdAt).toLocaleString('vi-VN') : '-';
+        return `<tr><td>${data.email || '-'}</td><td>${data.uid || doc.id}</td><td>${dt}</td></tr>`;
+      }).join('');
+      return;
+    } catch (e) {
+      // Fall back to local role list.
+    }
+  }
+
+  const admins = getUsers().filter((u) => u.role === 'admin' || u.isAdmin);
+  if (!admins.length) {
+    body.innerHTML = '<tr><td colspan="3" class="empty-state">Chưa có admin nào.</td></tr>';
+    return;
+  }
+  body.innerHTML = admins.map((u) => {
+    return `<tr><td>${u.email || '-'}</td><td>${u.uid || '-'}</td><td>${u.createdAt ? new Date(u.createdAt).toLocaleString('vi-VN') : '-'}</td></tr>`;
+  }).join('');
+}
+async function grantAdminRole() {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'manageUsers')) {
+    showToast('Bạn không có quyền cấp admin.', true);
+    return;
+  }
+  const emailInput = document.getElementById('admin-email');
+  const email = (emailInput?.value || '').trim().toLowerCase();
+  if (!email) {
+    showToast('Vui lòng nhập email tài khoản.', true);
+    return;
+  }
+
+  const target = findUserByEmail(email);
+  if (!target || !target.uid) {
+    showToast('Không tìm thấy tài khoản hoặc tài khoản chưa có UID.', true);
+    return;
+  }
+
+  try {
+    if (db) {
+      await db.collection('admins').doc(target.uid).set({
+        uid: target.uid,
+        email,
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+    }
+    updateUserRoleByEmail(email, true);
+    showToast(`Đã cấp quyền admin cho ${email}.`);
+    await loadAdminList();
+    loadAccounts();
+    if (selectedEmail && selectedEmail.toLowerCase() === email) selectAccount(selectedEmail);
+  } catch (e) {
+    showToast('Cấp quyền admin thất bại.', true);
+  }
+}
+async function revokeAdminRole() {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'manageUsers')) {
+    showToast('Bạn không có quyền thu hồi admin.', true);
+    return;
+  }
+  const emailInput = document.getElementById('admin-email');
+  const email = (emailInput?.value || '').trim().toLowerCase();
+  if (!email) {
+    showToast('Vui lòng nhập email tài khoản.', true);
+    return;
+  }
+  if ((currentUser.email || '').toLowerCase() === email) {
+    showToast('Không thể tự thu hồi quyền admin của chính bạn.', true);
+    return;
+  }
+
+  const target = findUserByEmail(email);
+  if (!target) {
+    showToast('Không tìm thấy tài khoản cần thu hồi.', true);
+    return;
+  }
+
+  try {
+    if (db && target.uid) {
+      await db.collection('admins').doc(target.uid).delete();
+    }
+    updateUserRoleByEmail(email, false);
+    showToast(`Đã thu hồi quyền admin của ${email}.`);
+    await loadAdminList();
+    loadAccounts();
+    if (selectedEmail && selectedEmail.toLowerCase() === email) selectAccount(selectedEmail);
+  } catch (e) {
+    showToast('Thu hồi admin thất bại.', true);
+  }
+}
+function exportBackup() {
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    users: getUsers(),
+    globalNotifications: JSON.parse(localStorage.getItem('mmo_global_notifications') || '[]')
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mmo-backup-${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Đã xuất file backup dữ liệu.');
+}
+async function importBackup(event) {
+  const file = event?.target?.files?.[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    const incomingUsers = Array.isArray(data.users) ? data.users : [];
+    if (!incomingUsers.length) {
+      showToast('File backup không hợp lệ hoặc không có users.', true);
+      return;
+    }
+    if (!confirm(`Xác nhận khôi phục ${incomingUsers.length} tài khoản từ backup?`)) return;
+    setUsers(incomingUsers);
+    if (Array.isArray(data.globalNotifications)) {
+      localStorage.setItem('mmo_global_notifications', JSON.stringify(data.globalNotifications));
+    }
+    await loadAccounts();
+    await loadOrders();
+    await loadDepositRequests();
+    await loadAdminList();
+    clearSelectedAccount();
+    showToast('Khôi phục backup thành công.');
+  } catch (e) {
+    showToast('Không thể đọc file backup.', true);
+  } finally {
+    event.target.value = '';
+  }
+}
 function saveSelectedAccount() {
   const currentUser = getCurrentUser();
   if (!currentUser || !hasPermission(currentUser, 'manageUsers')) {
@@ -888,6 +1099,7 @@ const startAdmin = async () => {
   await loadOrders();
   await loadAccounts();
   await loadDepositRequests();
+  await loadAdminList();
 };
 
 startAdmin().catch(() => {
