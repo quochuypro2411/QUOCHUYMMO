@@ -96,14 +96,16 @@
   // Start syncing
   startRealtimeSync();
 
-  // Sync Global Notifications
+  // Sync Global Notifications (Simplified to work without Index)
   if (db) {
-    db.collection('global_notifications').orderBy('date', 'desc').limit(10)
+    db.collection('global_notifications')
       .onSnapshot(snap => {
-        const notifs = snap.docs.map(doc => doc.data());
+        const notifs = snap.docs.map(doc => doc.data())
+          .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort locally instead
+          .slice(0, 10); // Limit locally
+          
         localStorage.setItem('mmo_global_notifications', JSON.stringify(notifs));
         console.log("[Sync] Global notifications updated:", notifs.length);
-        // Trigger a refresh of the marquee or news if they exist
         window.dispatchEvent(new CustomEvent('mmo_global_notifs_synced', { detail: notifs }));
       }, err => console.warn("[Sync] Global notifs error:", err));
   }
