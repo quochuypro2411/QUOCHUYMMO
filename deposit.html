@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Nạp tiền tài khoản QuocHuy.MMO - Gửi yêu cầu nạp tiền cho admin duyệt, tiền sẽ được cộng vào số dư sau khi chấp nhận.">
+  <title>Nạp tiền – QuocHuy.MMO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .deposit-panel { display: grid; grid-template-columns: 1.25fr 0.9fr; gap: 24px; margin: 0 auto; max-width: 1120px; align-items: start; }
+    .deposit-card, .deposit-history { background: #fff; border: 1px solid rgba(15,23,42,.06); border-radius: 20px; padding: 28px; box-shadow: 0 10px 40px rgba(15,23,42,.04); }
+    .card-title { font-size: 18px; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; color: #0f172a; }
+    
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; max-width: 1120px; margin-left: auto; margin-right: auto; padding: 0 16px; }
+    .page-header h1 { font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; }
+    .page-header p { font-size: 14px; color: #64748b; margin-top: 4px; }
+    .user-bal-pill { background: #f0f9ff; color: #0ea5e9; padding: 10px 20px; border-radius: 999px; font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 8px; border: 1px solid #bae6fd; box-shadow: 0 4px 12px rgba(14,165,233,.1); }
+
+    .pay-methods { display: flex; background: #f1f5f9; border-radius: 12px; padding: 4px; margin-bottom: 24px; }
+    .pay-method { flex: 1; text-align: center; padding: 12px; border-radius: 10px; cursor: pointer; transition: all .2s; font-weight: 700; color: #64748b; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .pay-method.active { background: #fff; color: #0f172a; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    
+    .deposit-form { display: none; }
+    .deposit-form.active { display: block; animation: fade .3s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .bank-layout { display: flex; gap: 24px; align-items: stretch; margin-bottom: 16px; }
+    .qr-box { width: 180px; flex-shrink: 0; background: #fff; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .qr-box img { width: 130px; border-radius: 10px; margin-bottom: 12px; }
+    .bank-inputs { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    
+    .card-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .card-layout .full { grid-column: span 2; }
+    
+    .field label { display: block; margin-bottom: 6px; font-weight: 700; color: #334155; font-size: 13px; }
+    .field input, .field select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; background: #f8fafc; transition: all .2s; }
+    .field input:focus, .field select:focus { border-color: #0ea5e9; background: #fff; box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+    .field select { appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="none" height="24" stroke="%23475569" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><polyline points="6 9 12 15 18 9"/></svg>'); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; }
+    
+    .btn-submit { width: 100%; padding: 16px; border: none; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: transform .2s, box-shadow .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); }
+
+    .deposit-history table { width:100%; border-collapse:collapse; font-size:13px; }
+    .deposit-history th, .deposit-history td { padding:14px; border-bottom:1px solid #f1f5f9; }
+    .deposit-history th { text-align:left; color:#64748b; font-weight:700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+    .deposit-history tr:last-child td { border-bottom:none; }
+    .status-pill { display:inline-flex; align-items:center; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:700; }
+    .status-pending { background:#fef3c7; color:#92400e; }
+    .status-approve { background:#dcfce7; color:#166534; }
+    .status-failed { background:#fee2e2; color:#991b1b; }
+    
+    .toast-box { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(15,23,42,.96); color: #fff; padding: 14px 20px; border-radius: 999px; box-shadow: 0 16px 40px rgba(15,23,42,.18); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 9999; }
+    .toast-box.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (max-width: 920px) { .deposit-panel { grid-template-columns: 1fr; } .bank-layout { flex-direction: column; } .qr-box { width: 100%; } .page-header { flex-direction: column; align-items: flex-start; gap: 16px; } }
+    @media (max-width: 640px) { .deposit-hero { padding: 50px 0 30px; } .deposit-hero h1 { font-size: 34px; } }
+  </style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="top-bar">
+  <div class="container top-bar-inner">
+    <div class="top-links">
+      <a href="index.html"><i class="fas fa-home"></i>Trang chủ</a>
+      <a href="news.html"><i class="fas fa-newspaper"></i>Tin tức</a>
+      <a href="guide.html"><i class="fas fa-question-circle"></i>Hướng dẫn</a>
+      <a href="history.html"><i class="fas fa-history"></i>Lịch sử giao dịch</a>
+      <a href="deposit.html"><i class="fas fa-wallet"></i>Nạp tiền</a>
+    </div>
+    <div class="marquee-wrap">
+      <span class="marquee-text">
+        <i class="fas fa-bullhorn"></i>&nbsp;Nạp tiền nhanh chóng - gửi yêu cầu cho admin, tiền sẽ được cộng khi duyệt thành công. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+    </div>
+  </div>
+</div>
+<header class="header" id="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo" id="logo"><img src="logo.png" alt="QuocHuy MMO"></a>
+            <div class="hdr-actions">
+      <a href="deposit.html" class="action-box" id="wallet-btn" style="display:none;">
+        <div class="action-icon" style="background:#e0f2fe; color:#0ea5e9;"><i class="fas fa-wallet"></i></div>
+        <div class="action-info">
+          <span class="action-label">Số dư</span>
+          <span class="action-value" id="wallet-amount">0 đ</span>
+        </div>
+      </a>
+      <a href="checkout.html" class="action-box" id="cart-btn">
+        <div class="action-icon">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-badge" id="cart-badge">0</span>
+        </div>
+        <div class="action-info">
+          <span class="action-label">Giỏ hàng</span>
+          <span class="action-value" id="cart-amount">0 đ</span>
+        </div>
+      </a>
+      <div class="action-box notif-box" id="notif-btn" style="position:relative; display:none; cursor:pointer;">
+        <div class="action-icon"><i class="fas fa-bell"></i><span class="notif-badge" id="notif-badge" style="display:none;">0</span></div>
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-header">
+            <span style="font-weight:700; font-size:14px;">Thông báo</span>
+            <button onclick="markAllNotifRead(event)"><i class="fas fa-check-double"></i> Đánh dấu đã đọc</button>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+        </div>
+      </div>
+      <div class="action-box" id="auth-btn">
+        <div class="action-icon auth"><i class="fas fa-user"></i></div>
+        <div class="auth-texts">
+          <a href="auth.html?tab=login" id="link-login">ĐĂNG NHẬP</a>
+          <a href="auth.html?tab=register" id="link-register">ĐĂNG KÝ</a>
+        </div>
+      </div>
+      <a href="tel:0336556137" class="contact-cta" id="contact-cta">
+        <div class="ring"><i class="fab fa-whatsapp"></i></div>
+        <div class="cta-info">
+          <span class="cta-label">LIÊN HỆ NGAY</span>
+          <span class="cta-phone">033.655.6137</span>
+        </div>
+      </a>
+      <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<main style="padding:40px 0 80px; background: #f8fafc; min-height: 100vh;">
+  <div class="page-header">
+    <div>
+      <h1>Nạp Tiền</h1>
+      <p>Chọn phương thức nạp tiền bên dưới. Giao dịch sẽ được xử lý tự động hoặc duyệt nhanh chóng.</p>
+    </div>
+    <div class="user-bal-pill">
+      <i class="fas fa-wallet"></i>
+      <span id="user-balance">0 đ</span>
+    </div>
+  </div>
+
+  <div class="deposit-panel">
+    <div class="deposit-card">
+      <div class="card-title"><i class="fas fa-bolt" style="color: #0ea5e9;"></i> Tạo yêu cầu nạp tiền</div>
+      
+      <div class="pay-methods">
+        <div class="pay-method active" onclick="switchMethod('bank')"><i class="fas fa-university"></i> Chuyển khoản</div>
+        <div class="pay-method" onclick="switchMethod('card')"><i class="fas fa-mobile-alt"></i> Thẻ điện thoại</div>
+      </div>
+
+      <!-- Form Chuyển Khoản -->
+      <div id="form-bank" class="deposit-form active">
+        <div class="bank-layout">
+          <div class="qr-box">
+            <img src="payment-qr.svg" alt="QR Code" onerror="this.src='data:image/svg+xml;utf8,<svg fill=\'%23e2e8f0\' viewBox=\'0 0 24 24\' xmlns=\'http://www.w3.org/2000/svg\'><rect height=\'24\' width=\'24\'/></svg>'">
+            <div style="font-weight:800;color:#0f172a;font-size:14px;letter-spacing:0.5px;">TECHCOMBANK</div>
+            <div style="color:#64748b;font-size:12px;margin-bottom:6px;font-weight:600;">1903 xxxx xxxx</div>
+            <div style="font-size:11px;color:#ef4444;font-weight:700;">Nội dung: NAP <span class="usr-id">...</span></div>
+          </div>
+          <div class="bank-inputs">
+            <div class="field">
+              <label for="deposit-amount">Số tiền đã chuyển</label>
+              <input id="deposit-amount" type="number" min="10000" step="1000" placeholder="Tối thiểu 10.000đ">
+            </div>
+            <div class="field">
+              <label for="deposit-note">Mã giao dịch / Ghi chú</label>
+              <input id="deposit-note" type="text" placeholder="Nhập mã giao dịch để duyệt nhanh hơn">
+            </div>
+            <button id="deposit-submit" class="btn-submit" onclick="submitDeposit()"><i class="fas fa-check-circle"></i> Xác nhận đã chuyển</button>
+            <div style="font-size:13px; color:#64748b; margin-top:8px; text-align:center;">Vui lòng chuyển khoản đúng số tiền và nội dung.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Thẻ Cào -->
+      <div id="form-card" class="deposit-form">
+        <div class="card-layout">
+          <div class="field">
+            <label for="card-network">Nhà mạng</label>
+            <select id="card-network">
+              <option value="Viettel">Viettel</option>
+              <option value="Vinaphone">Vinaphone</option>
+              <option value="Mobifone">Mobifone</option>
+              <option value="Zing">Zing</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="card-value">Mệnh giá</label>
+            <select id="card-value">
+              <option value="10000">10.000 đ</option>
+              <option value="20000">20.000 đ</option>
+              <option value="50000">50.000 đ</option>
+              <option value="100000">100.000 đ</option>
+              <option value="200000">200.000 đ</option>
+              <option value="500000">500.000 đ</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="card-serial">Số Seri</label>
+            <input id="card-serial" type="text" placeholder="Nhập số seri thẻ">
+          </div>
+          <div class="field">
+            <label for="card-pin">Mã Thẻ (PIN)</label>
+            <input id="card-pin" type="text" placeholder="Nhập mã thẻ cào">
+          </div>
+          <div class="field full">
+            <button id="card-submit" class="btn-submit" onclick="submitCard()"><i class="fas fa-mobile-alt"></i> Nạp Thẻ Ngay</button>
+            <div style="font-size:12px; color:#ef4444; margin-top:12px; text-align:center; font-weight: 600;">Lưu ý: Chọn sai mệnh giá sẽ bị trừ 50% hoặc mất thẻ.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="deposit-history">
+      <h2>Lịch sử yêu cầu nạp tiền</h2>
+      <div style="overflow-x:auto;">
+        <table id="deposit-table">
+          <thead>
+            <tr><th>Mã GD</th><th>Số tiền</th><th>Ngày</th><th>Trạng thái</th></tr>
+          </thead>
+          <tbody id="deposit-rows">
+            <tr><td colspan="4" style="padding:22px 14px; text-align:center; color:#64748b;">Chưa có yêu cầu nạp tiền nào.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+<div id="toast" class="toast-box">Đã gửi yêu cầu thành công.</div>
+<script>
+  function getCurrentUser() {
+    try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch (e) { return null; }
+  }
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem('mmo_users')) || []; } catch (e) { return []; }
+  }
+  function setUsers(users) {
+    localStorage.setItem('mmo_users', JSON.stringify(users));
+  }
+  function formatMoney(value) {
+    return Number(value || 0).toLocaleString('vi-VN') + ' đ';
+  }
+  function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.background = isError ? 'rgba(220,38,38,.95)' : 'rgba(15,23,42,.96)';
+    toast.classList.add('show');
+    clearTimeout(window.depositToastTimer);
+    window.depositToastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+  function renderDepositHistory(user) {
+    const rows = document.getElementById('deposit-rows');
+    const history = (user.transactions || []).filter(tx => tx.type === 'deposit-request');
+    if (!history.length) {
+      rows.innerHTML = '<tr><td colspan="4" style="padding:22px 14px; text-align:center; color:#64748b;">Chưa có yêu cầu nạp tiền nào.</td></tr>';
+      return;
+    }
+    rows.innerHTML = history.map(tx => {
+      const statusClass = tx.status === 'Thành công' ? 'status-approve' : tx.status === 'Thất bại' ? 'status-failed' : 'status-pending';
+      return `<tr>
+        <td>${tx.id}</td>
+        <td>${formatMoney(tx.amount)}</td>
+        <td>${new Date(tx.date).toLocaleString('vi-VN')}</td>
+        <td><span class="status-pill ${statusClass}">${tx.status}</span></td>
+      </tr>`;
+    }).join('');
+  }
+  function refreshDepositPage() {
+    const user = getCurrentUser();
+    if (!user) {
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:60px 20px; background:#f8fafc;">
+          <div style="max-width:520px; text-align:center; background:#fff; border:1px solid #e2e8f0; border-radius:24px; padding:40px; box-shadow:0 28px 80px rgba(15,23,42,.08);">
+            <h2>Vui lòng đăng nhập trước khi nạp tiền</h2>
+            <p style="color:#64748b; margin:18px 0 28px; line-height:1.8;">Chỉ người dùng đã đăng nhập mới có thể gửi yêu cầu nạp tiền và quản lý số dư.</p>
+            <a href="auth.html?tab=login" style="display:inline-flex; padding:14px 24px; background:#10b981; color:#fff; border-radius:14px; text-decoration:none; font-weight:700;">Đăng nhập ngay</a>
+          </div>
+        </div>`;
+      return;
+    }
+    document.getElementById('user-balance').textContent = formatMoney(user.balance);
+    const usrIdEl = document.querySelector('.usr-id');
+    if (usrIdEl) usrIdEl.textContent = (user.user || user.email || 'Khach').split('@')[0].toUpperCase();
+    renderDepositHistory(user);
+  }
+  function submitDeposit() {
+    const amountInput = document.getElementById('deposit-amount');
+    const noteInput = document.getElementById('deposit-note');
+    const amount = parseInt(amountInput.value, 10);
+    if (Number.isNaN(amount) || amount < 10000) {
+      showToast('Vui lòng nhập số tiền hợp lệ tối thiểu 10.000đ', true);
+      return;
+    }
+    const user = getCurrentUser();
+    if (!user) {
+      showToast('Bạn cần đăng nhập để gửi yêu cầu nạp tiền.', true);
+      return;
+    }
+    const users = getUsers();
+    const idx = users.findIndex(u => u.email === user.email);
+    if (idx === -1) {
+      showToast('Không tìm thấy tài khoản của bạn.', true);
+      return;
+    }
+    const request = {
+      id: 'DEP-' + Date.now(),
+      date: new Date().toISOString(),
+      amount,
+      type: 'deposit-request',
+      status: 'Đang xử lý',
+      desc: noteInput.value.trim() || 'Yêu cầu nạp tiền',
+    };
+    users[idx].transactions = users[idx].transactions || [];
+    users[idx].transactions.unshift(request);
+    setUsers(users);
+    localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+    amountInput.value = '';
+    noteInput.value = '';
+    refreshDepositPage();
+    showToast('Yêu cầu nạp tiền của bạn đã được gửi. Vui lòng đợi admin duyệt.');
+  }
+
+  function switchMethod(method) {
+    document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.deposit-form').forEach(el => el.classList.remove('active'));
+    
+    if (method === 'bank') {
+      document.querySelectorAll('.pay-method')[0].classList.add('active');
+      document.getElementById('form-bank').classList.add('active');
+    } else {
+      document.querySelectorAll('.pay-method')[1].classList.add('active');
+      document.getElementById('form-card').classList.add('active');
+    }
+  }
+
+  function submitCard() {
+    const network = document.getElementById('card-network').value;
+    const value = parseInt(document.getElementById('card-value').value, 10);
+    const serial = document.getElementById('card-serial').value.trim();
+    const pin = document.getElementById('card-pin').value.trim();
+
+    if (!serial || !pin) {
+      showToast('Vui lòng nhập đầy đủ Số Seri và Mã Thẻ', true);
+      return;
+    }
+
+    const user = getCurrentUser();
+    if (!user) {
+      showToast('Bạn cần đăng nhập để gửi yêu cầu nạp tiền.', true);
+      return;
+    }
+    const users = getUsers();
+    const idx = users.findIndex(u => u.email === user.email);
+    if (idx === -1) {
+      showToast('Không tìm thấy tài khoản của bạn.', true);
+      return;
+    }
+    
+    const request = {
+      id: 'CARD-' + Date.now(),
+      date: new Date().toISOString(),
+      amount: value,
+      type: 'deposit-request',
+      status: 'Đang xử lý',
+      desc: `Nạp thẻ ${network} - Seri: ${serial} - PIN: ${pin}`,
+    };
+    users[idx].transactions = users[idx].transactions || [];
+    users[idx].transactions.unshift(request);
+    setUsers(users);
+    localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+    
+    document.getElementById('card-serial').value = '';
+    document.getElementById('card-pin').value = '';
+    refreshDepositPage();
+    showToast('Yêu cầu nạp thẻ đã được gửi. Admin sẽ duyệt trong 1-3 phút.');
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    refreshDepositPage();
+    
+    let currentUser = getCurrentUser();
+    const authTexts = document.querySelector('.auth-texts');
+    const walletBtn = document.getElementById('wallet-btn');
+    const walletAmount = document.getElementById('wallet-amount');
+    
+    if (currentUser) {
+      const users = getUsers();
+      const latestUser = users.find(u => u.email === currentUser.email);
+      if (latestUser) {
+        currentUser = latestUser;
+        localStorage.setItem('mmo_currentUser', JSON.stringify(currentUser));
+      }
+      if (walletBtn) walletBtn.style.display = 'flex';
+      if (walletAmount) walletAmount.textContent = formatMoney(currentUser.balance);
+      if (authTexts) {
+        authTexts.innerHTML = `
+          <span style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Xin chào,</span>
+          <span style="font-size:13px;font-weight:800;color:var(--text-primary);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;display:block;">${currentUser.name}</span>
+          <a href="#" id="link-logout" style="color:var(--accent-red);font-size:10px;font-weight:700;margin-top:2px;">ĐĂNG XUẤT</a>
+        `;
+        document.getElementById('link-logout')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('mmo_currentUser');
+          window.location.reload();
+        });
+      }
+    }
+
+    const cartBadge = document.getElementById('cart-badge');
+    const cartAmount = document.getElementById('cart-amount');
+    if (cartBadge && cartAmount) {
+      const cart = JSON.parse(localStorage.getItem('mmo_cart') || '[]');
+      const total = cart.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0);
+      const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      cartBadge.textContent = count;
+      cartAmount.textContent = total ? total.toLocaleString('vi-VN') + ' đ' : '0 đ';
+    }
+  });
+</script>
+</body>
+</html>

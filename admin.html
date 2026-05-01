@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – QuocHuy.MMO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d1321;
+      --bg-soft: #111827;
+      --card: rgba(15, 23, 42, 0.92);
+      --border: rgba(148, 163, 184, 0.22);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --blue: #38bdf8;
+      --blue2: #6366f1;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+    }
+    body { font-family: 'Be Vietnam Pro', sans-serif; background: radial-gradient(circle at top left, rgba(56,189,248,.18), transparent 22%), radial-gradient(circle at bottom right, rgba(99,102,241,.16), transparent 18%), linear-gradient(180deg, #08101f 0%, #0d1321 100%); color: var(--text); min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    .topbar { background: rgba(15, 23, 42, 0.96); border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding: 18px 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px); }
+    .topbar .brand { display: flex; align-items: center; gap: 14px; font-weight: 700; }
+    .topbar .brand .logo { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--blue), var(--blue2)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; box-shadow: 0 18px 40px rgba(56,189,248,0.25); }
+    .topbar .brand .brand-title { font-size: 16px; letter-spacing: .03em; }
+    .topbar .brand .brand-meta { font-size: 12px; color: #cbd5e1; }
+    .topbar .actions { display: flex; align-items: center; gap: 10px; }
+    .topbar button, .topbar a.button-link { border: 1px solid rgba(148, 163, 184, 0.22); background: rgba(15, 23, 42, 0.82); color: var(--text); padding: 12px 16px; border-radius: 14px; cursor: pointer; transition: all .25s ease; }
+    .topbar button:hover, .topbar a.button-link:hover { transform: translateY(-1px); border-color: var(--blue); color: #fff; }
+    .admin-wrap { max-width: 1200px; margin: 32px auto; padding: 0 20px 48px; }
+    .admin-card { background: linear-gradient(180deg, rgba(15,23,42,.98), rgba(15,23,42,.92)); border: 1px solid rgba(148,163,184,.16); border-radius: 28px; padding: 32px; box-shadow: 0 40px 120px rgba(0,0,0,.28); backdrop-filter: blur(8px); }
+    .admin-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+    .admin-title h1 { font-size: 32px; margin-bottom: 10px; color: #fff; letter-spacing: -.03em; }
+    .admin-title p { color: var(--muted); line-height: 1.7; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; margin-bottom: 24px; }
+    .summary-card { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 22px; padding: 20px 22px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
+    .summary-card span { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .08em; }
+    .summary-card strong { font-size: 26px; display: block; color: #fff; }
+    .admin-note { background: linear-gradient(180deg, rgba(2,132,199,.12), rgba(15,23,42,.95)); border: 1px solid rgba(56,189,248,.18); border-radius: 20px; padding: 18px 20px; margin-bottom: 28px; color: #bfdbfe; display: flex; align-items: center; gap: 12px; }
+    .account-section { margin-bottom: 32px; }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #e2e8f0; }
+    .account-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; margin-bottom: 28px; }
+    .account-card { background: rgba(15,23,42,.75); border: 1px solid rgba(148,163,184,.12); border-radius: 24px; padding: 22px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); }
+    .users-table { width: 100%; border-collapse: collapse; }
+    .users-table th, .users-table td { padding: 14px 12px; border-bottom: 1px solid rgba(148,163,184,.14); text-align: left; vertical-align: middle; }
+    .users-table th { background: rgba(15,23,42,.95); color: #94a3b8; font-weight: 700; font-size: 12px; letter-spacing: .04em; }
+    .users-table tbody tr:hover { background: rgba(56, 189, 248, 0.08); }
+    .detail-row { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .detail-row .field { margin-bottom: 0; }
+    .detail-row .field label { font-size: 12px; color: #94a3b8; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: .06em; }
+    .detail-row .field input { width: 100%; padding: 14px 16px; background: rgba(15,23,42,.9); border: 1px solid rgba(148,163,184,.16); border-radius: 14px; font-family: inherit; color: #e2e8f0; }
+    .detail-row .field input::placeholder { color: #94a3b8; }
+    .detail-row .field input[readonly] { background: rgba(255,255,255,.04); }
+    .detail-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+    .detail-actions button { border: 1px solid rgba(148,163,184,.18); background: rgba(255,255,255,.05); color: var(--text); padding: 12px 16px; border-radius: 14px; cursor: pointer; transition: all .25s ease; }
+    .detail-actions button:hover { transform: translateY(-1px); border-color: var(--blue); color: #fff; }
+    .permission-group { margin-top: 14px; padding: 18px; border-radius: 18px; background: rgba(255,255,255,.05); border: 1px solid rgba(148,163,184,.14); }
+    .permission-group .permission-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .permission-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    .permission-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(148,163,184,.12); border-radius: 14px; padding: 10px 12px; }
+    .permission-item input { transform: scale(1.1); }
+    .order-filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .order-filter-bar .button-small.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .account-info { font-size: 13px; color: #94a3b8; line-height: 1.7; }
+    .account-info strong { color: #fff; }
+    @media (max-width: 900px) { .account-grid { grid-template-columns: 1fr; } }
+    .orders-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,.03); border-radius: 18px; overflow: hidden; }
+    .orders-table th, .orders-table td { padding: 14px 14px; border-bottom: 1px solid rgba(148,163,184,.16); text-align: left; vertical-align: middle; }
+    .orders-table th { background: rgba(15,23,42,.95); color: var(--muted); font-weight: 700; font-size: 13px; letter-spacing: .04em; }
+    .orders-table tbody tr:hover { background: rgba(56,189,248,.08); }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+    .status-pending { background: rgba(251,191,36,.15); color: #b45309; }
+    .status-success { background: rgba(52,211,153,.15); color: #16a34a; }
+    .status-failed { background: rgba(248,113,113,.16); color: #991b1b; }
+    .action-btn { border: none; background: transparent; cursor: pointer; padding: 8px; border-radius: 12px; transition: background .2s; }
+    .action-btn:hover { background: rgba(24,119,242,.12); }
+    .button-small { padding: 10px 14px; border-radius: 14px; border: 1px solid rgba(148,163,184,.18); background: rgba(255,255,255,.05); color: var(--text); cursor: pointer; transition: all .2s ease; }
+    .button-small:hover { background: rgba(56,189,248,.12); }
+    .button-small.approve { color: var(--success); }
+    .button-small.reject { color: var(--danger); }
+    .button-small.details { color: var(--blue); }
+    .admin-title .heading-large { font-size:14px; font-weight:700; }
+    .admin-title .text-muted { font-size:12px; color:var(--muted); }
+    .admin-title .text-right { text-align:right; }
+    .admin-title .admin-name { font-size:18px; font-weight:700; margin-top:6px; color:var(--text); }
+    .brand-meta { font-size:12px; color:var(--muted); }
+    .brand-title { font-size:14px; font-weight:700; }
+    .hidden { display: none !important; }
+    .empty-state { text-align: center; padding: 40px 0; color: var(--muted); }
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #10b981; color:#fff; padding: 12px 22px; border-radius: 999px; box-shadow: 0 18px 50px rgba(16,185,129,.25); display:flex; align-items:center; gap:10px; transition: transform .3s ease; z-index:999; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { background: #ef4444; }
+    @media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+    @media (max-width: 720px) { .admin-title { flex-direction: column; } .orders-table th, .orders-table td { padding: 12px 8px; } }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <div class="logo"><i class="fas fa-crown"></i></div>
+    <div>
+      <div class="brand-title">Admin Dashboard</div>
+      <div class="brand-meta">Quản lý đơn hàng và phê duyệt</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+  </div>
+</div>
+
+<div class="admin-wrap">
+  <div class="admin-card">
+    <div class="admin-title">
+      <div>
+        <h1>Xin chào, Admin</h1>
+        <p>Chào mừng bạn đến trang quản trị. Chỉ admin mới có quyền duyệt đơn và xem tất cả giao dịch.</p>
+        <p class="text-muted">Đăng nhập dưới email: <strong>admin@quochuy.mmo</strong></p>
+      </div>
+      <div class="text-right">
+        <div class="text-muted">Tài khoản đang dùng</div>
+        <div id="admin-user" class="admin-name">Admin</div>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card"><span>Tổng đơn</span><strong id="total-orders">0</strong></div>
+      <div class="summary-card"><span>Đang xử lý</span><strong id="pending-orders">0</strong></div>
+      <div class="summary-card"><span>Thành công</span><strong id="success-orders">0</strong></div>
+      <div class="summary-card"><span>Thất bại</span><strong id="failed-orders">0</strong></div>
+    </div>
+
+    <div class="admin-note"><i class="fas fa-info-circle"></i> Chỉ admin được phép duyệt hoặc hủy yêu cầu đơn. Mọi thay đổi sẽ được lưu vào dữ liệu người dùng.</div>
+
+    <div class="account-section">
+      <div class="section-title">Quản lý tài khoản hiện có</div>
+      <div class="account-grid">
+        <div class="account-card">
+          <div class="section-title">Danh sách tài khoản</div>
+          <div class="users-table-wrap">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="users-body">
+                <tr><td colspan="4" class="empty-state">Đang tải tài khoản...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="account-card">
+          <div class="section-title">Thông tin tài khoản</div>
+          <div id="user-detail-panel">
+            <p class="account-info">Chọn một tài khoản để xem chi tiết và chỉnh sửa thông tin.</p>
+            <div class="detail-row hidden" id="user-detail-form">
+              <div class="field">
+                <label>Email</label>
+                <input type="email" id="detail-email" readonly>
+              </div>
+              <div class="field">
+                <label>Tên đăng nhập</label>
+                <input type="text" id="detail-username">
+              </div>
+              <div class="field">
+                <label>Họ và tên</label>
+                <input type="text" id="detail-name">
+              </div>
+              <div class="field">
+                <label>Mật khẩu mới</label>
+                <input type="password" id="detail-password" placeholder="Để trống nếu không đổi">
+              </div>
+              <div class="field">
+                <label>Vai trò</label>
+                <input type="text" id="detail-role" readonly>
+              </div>
+              <div class="field permission-group hidden" id="detail-permissions">
+                <div class="permission-title">Quyền admin</div>
+                <div class="permission-list">
+                  <label class="permission-item"><input type="checkbox" id="perm-approveOrders"> Duyệt đơn</label>
+                  <label class="permission-item"><input type="checkbox" id="perm-manageUsers"> Quản lý tài khoản</label>
+                  <label class="permission-item"><input type="checkbox" id="perm-manageBalances"> Điều chỉnh số dư</label>
+                  <label class="permission-item"><input type="checkbox" id="perm-approveDeposits"> Duyệt yêu cầu nạp tiền</label>
+                  <label class="permission-item"><input type="checkbox" id="perm-viewReports"> Xem báo cáo</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>Số dư hiện tại</label>
+                <input type="text" id="detail-balance" readonly>
+              </div>
+              <div class="field">
+                <label>Số tiền điều chỉnh</label>
+                <input type="number" id="detail-balance-adjust" placeholder="Nhập số tiền..." min="0" step="1000">
+              </div>
+              <div class="field">
+                <label>Ngày tạo</label>
+                <input type="text" id="detail-created" readonly>
+              </div>
+              <div class="detail-actions">
+                <button class="button-small approve" onclick="saveSelectedAccount()"><i class="fas fa-save"></i> Lưu thay đổi</button>
+                <button class="button-small approve" onclick="adjustSelectedBalance(true)"><i class="fas fa-plus"></i> Cộng tiền</button>
+                <button class="button-small reject" onclick="adjustSelectedBalance(false)"><i class="fas fa-minus"></i> Trừ tiền</button>
+                <button class="button-small reject" onclick="deleteSelectedAccount()"><i class="fas fa-trash"></i> Xóa tài khoản</button>
+                <button class="button-small" onclick="clearSelectedAccount()"><i class="fas fa-times"></i> Hủy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-table-wrap">
+      <div class="order-filter-bar">
+        <button class="button-small details active" data-filter="all" onclick="setOrderFilter('all')">Tất cả</button>
+        <button class="button-small" data-filter="pending" onclick="setOrderFilter('pending')">Chờ duyệt</button>
+        <button class="button-small" data-filter="approved" onclick="setOrderFilter('approved')">Đã duyệt</button>
+        <button class="button-small" data-filter="rejected" onclick="setOrderFilter('rejected')">Bị từ chối</button>
+      </div>
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Mã GD</th>
+            <th>Thời gian</th>
+            <th>Khách hàng</th>
+            <th>Sản phẩm</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="orders-body">
+          <tr><td colspan="7" class="empty-state">Đang tải đơn hàng...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="deposit-section">
+  <div class="section-title">Yêu cầu nạp tiền</div>
+  <div class="account-card">
+    <div class="users-table-wrap">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Mã yêu cầu</th>
+            <th>Khách hàng</th>
+            <th>Số tiền</th>
+            <th>Ngày</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="deposit-requests-body">
+          <tr><td colspan="6" class="empty-state">Đang tải yêu cầu nạp tiền...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="notification-section" style="margin-top:32px;">
+  <div class="section-title">Gửi thông báo toàn hệ thống</div>
+  <div class="account-card">
+    <div class="detail-row">
+      <div class="field">
+        <label>Tiêu đề thông báo</label>
+        <input type="text" id="notif-title" placeholder="VD: Khuyến mãi nạp thẻ 20%">
+      </div>
+      <div class="field">
+        <label>Nội dung</label>
+        <input type="text" id="notif-content" placeholder="VD: Bắt đầu từ hôm nay, khi nạp thẻ mệnh giá từ 100k...">
+      </div>
+      <div class="detail-actions">
+        <button class="button-small approve" onclick="sendGlobalNotification()"><i class="fas fa-paper-plane"></i> Gửi thông báo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
+
+<script>
+function getCurrentUser() {
+  try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch(e) { return null; }
+}
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem('mmo_users')) || []; } catch(e) { return []; }
+}
+function getDefaultPermissions(isAdmin = false) {
+  if (!isAdmin) {
+    return { viewDashboard: true };
+  }
+  return {
+    approveOrders: true,
+    manageUsers: true,
+    manageBalances: true,
+    approveDeposits: true,
+    viewReports: true
+  };
+}
+function hasPermission(user, key) {
+  if (!user) return false;
+  if (user.role === 'admin' || user.isAdmin) return true;
+  return Boolean(user.permissions && user.permissions[key]);
+}
+function normalizeUserPermissions(user) {
+  if (!user) return user;
+  if (!user.permissions) {
+    user.permissions = getDefaultPermissions(user.role === 'admin' || user.isAdmin);
+  }
+  return user;
+}
+function setUsers(users) {
+  localStorage.setItem('mmo_users', JSON.stringify(users));
+}
+function logout() {
+  localStorage.removeItem('mmo_currentUser');
+  window.location.href = 'auth.html?tab=login';
+}
+function redirectToAuth() {
+  window.location.href = 'auth.html?tab=login';
+}
+function formatMoney(n) {
+  return n.toLocaleString('vi-VN') + ' đ';
+}
+function orderStatusClass(status) {
+  if (status.includes('Thành công')) return 'status-success';
+  if (status.includes('Thất bại')) return 'status-failed';
+  return 'status-pending';
+}
+function showToast(message, isError = false) {
+  const toast = document.getElementById('toast');
+  const msg = document.getElementById('toast-msg');
+  msg.textContent = message;
+  toast.className = isError ? 'error show' : 'show';
+  clearTimeout(window.adminToastTimer);
+  window.adminToastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+function ensureAdmin() {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'viewReports')) {
+    alert('Chỉ admin mới được phép truy cập trang này.');
+    redirectToAuth();
+    return false;
+  }
+  normalizeUserPermissions(currentUser);
+  document.getElementById('admin-user').textContent = currentUser.name || currentUser.user || currentUser.email || 'Admin';
+  return true;
+}
+function getAllOrders() {
+  return getUsers().flatMap(user => (user.orders || []).map(order => ({ ...order, customer: user.name || user.user || user.email || 'Khách hàng' })));
+}
+function updateStats(orders) {
+  document.getElementById('total-orders').textContent = orders.length;
+  document.getElementById('pending-orders').textContent = orders.filter(o => o.status === 'Đang xử lý').length;
+  document.getElementById('success-orders').textContent = orders.filter(o => o.status === 'Thành công').length;
+  document.getElementById('failed-orders').textContent = orders.filter(o => o.status === 'Thất bại').length;
+}
+function loadOrders() {
+  if (!ensureAdmin()) return;
+  const allOrders = getAllOrders().sort((a,b) => new Date(b.ts) - new Date(a.ts));
+  updateStats(allOrders);
+  const orders = allOrders.filter(order => {
+    if (orderFilter === 'pending') return order.status === 'Đang xử lý';
+    if (orderFilter === 'approved') return order.status === 'Thành công';
+    if (orderFilter === 'rejected') return order.status === 'Thất bại';
+    return true;
+  });
+  const body = document.getElementById('orders-body');
+  if (!orders.length) {
+    body.innerHTML = '<tr><td colspan="7" class="empty-state">Chưa có đơn hàng nào.</td></tr>';
+    return;
+  }
+  body.innerHTML = orders.map(order => {
+    const count = order.items ? order.items.reduce((s, item) => s + (item.qty || 1), 0) : 0;
+    const label = orderStatusClass(order.status);
+    const actions = order.status === 'Đang xử lý'
+      ? `
+          <button class="button-small approve" onclick="updateOrderStatus('${order.id}','Thành công')"><i class="fas fa-check"></i></button>
+          <button class="button-small reject" onclick="updateOrderStatus('${order.id}','Thất bại')"><i class="fas fa-times"></i></button>
+          <button class="button-small details" onclick="showOrderDetails('${order.id}')"><i class="fas fa-eye"></i></button>`
+      : `<button class="button-small details" onclick="showOrderDetails('${order.id}')"><i class="fas fa-eye"></i></button>`;
+    return `
+      <tr>
+        <td>${order.id}</td>
+        <td>${new Date(order.ts).toLocaleString('vi-VN')}</td>
+        <td>${order.customer}</td>
+        <td>${count} sản phẩm</td>
+        <td>${formatMoney(order.total)}</td>
+        <td><span class="status-pill ${label}">${order.status}</span></td>
+        <td>${actions}</td>
+      </tr>`;
+  }).join('');
+}
+function updateOrderStatus(orderId, status) {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'approveOrders')) {
+    showToast('Bạn không có quyền thực hiện thao tác này.', true);
+    return;
+  }
+  const users = getUsers();
+  let updated = false;
+  for (const user of users) {
+    if (!user.orders) continue;
+    const order = user.orders.find(o => o.id === orderId);
+    if (order) {
+      order.status = status;
+      updated = true;
+      
+      // Gửi thông báo
+      user.notifications = user.notifications || [];
+      user.notifications.unshift({
+        id: 'NOTIF-' + Date.now(),
+        title: status === 'Thành công' ? 'Đơn hàng thành công' : 'Đơn hàng thất bại',
+        message: status === 'Thành công' ? `Đơn hàng ${orderId} của bạn đã được xử lý thành công.` : `Đơn hàng ${orderId} của bạn đã bị từ chối. Vui lòng liên hệ Admin để được hỗ trợ.`,
+        date: new Date().toISOString(),
+        read: false,
+        type: status === 'Thành công' ? 'success' : 'error'
+      });
+      break;
+    }
+  }
+  if (!updated) {
+    showToast('Không tìm thấy đơn hàng.', true);
+    return;
+  }
+  setUsers(users);
+  showToast(`Đã cập nhật trạng thái đơn ${orderId} sang ${status}`);
+  loadOrders();
+}
+function showOrderDetails(orderId) {
+  const order = getAllOrders().find(o => o.id === orderId);
+  if (!order) {
+    showToast('Không tìm thấy đơn hàng.', true);
+    return;
+  }
+  const details = order.items.map(item => `- ${item.name} (${item.qty} x ${formatMoney(item.price)})`).join('\n');
+  alert(`Đơn ${order.id}\nKhách hàng: ${order.customer}\nTrạng thái: ${order.status}\nTổng: ${formatMoney(order.total)}\n\nSản phẩm:\n${details}`);
+}
+let selectedEmail = null;
+let orderFilter = 'all';
+function setOrderFilter(filter) {
+  orderFilter = filter;
+  document.querySelectorAll('.order-filter-bar button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+  loadOrders();
+}
+function loadAccounts() {
+  if (!ensureAdmin()) return;
+  const users = getUsers().sort((a,b) => (a.email || '').localeCompare(b.email || ''));
+  const body = document.getElementById('users-body');
+  if (!users.length) {
+    body.innerHTML = '<tr><td colspan="4" class="empty-state">Chưa có tài khoản nào.</td></tr>';
+    return;
+  }
+  body.innerHTML = users.map(user => `
+    <tr>
+      <td>${user.email || '-'}</td>
+      <td>${user.user || '-'}</td>
+      <td>${user.role || (user.isAdmin ? 'admin' : 'user')}</td>
+      <td>
+        <button class="button-small details" onclick="selectAccount('${user.email ? user.email.replace(/'/g, "\\'") : ''}')"><i class="fas fa-eye"></i> Xem</button>
+      </td>
+    </tr>`).join('');
+}
+function getDepositRequests() {
+  return getUsers().flatMap(user => (user.transactions || [])
+    .filter(tx => tx.type === 'deposit-request')
+    .map(req => ({ ...req, userEmail: user.email || '', userName: user.user || user.name || user.email || 'Khách hàng' })));
+}
+function loadDepositRequests() {
+  if (!ensureAdmin()) return;
+  const requests = getDepositRequests().sort((a,b) => new Date(b.date) - new Date(a.date));
+  const body = document.getElementById('deposit-requests-body');
+  if (!requests.length) {
+    body.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có yêu cầu nạp tiền nào.</td></tr>';
+    return;
+  }
+  body.innerHTML = requests.map(req => {
+    const actions = req.status === 'Đang xử lý'
+      ? `
+          <button class="button-small approve" onclick="updateDepositRequestStatus('${req.id}','Thành công')"><i class="fas fa-check"></i></button>
+          <button class="button-small reject" onclick="updateDepositRequestStatus('${req.id}','Thất bại')"><i class="fas fa-times"></i></button>`
+      : '';
+    return `
+      <tr>
+        <td>${req.id}</td>
+        <td>${req.userName}</td>
+        <td>${formatMoney(req.amount)}</td>
+        <td>${new Date(req.date).toLocaleString('vi-VN')}</td>
+        <td><span class="status-pill ${orderStatusClass(req.status)}">${req.status}</span></td>
+        <td>${actions}</td>
+      </tr>`;
+  }).join('');
+}
+function updateDepositRequestStatus(requestId, status) {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'approveDeposits')) {
+    showToast('Bạn không có quyền thực hiện thao tác này.', true);
+    return;
+  }
+  const users = getUsers();
+  let updated = false;
+  let updatedUserEmail = null;
+  for (const user of users) {
+    if (!user.transactions) continue;
+    const tx = user.transactions.find(t => t.id === requestId && t.type === 'deposit-request');
+    if (tx) {
+      tx.status = status;
+      tx.desc = status === 'Thành công' ? 'Nạp tiền đã được duyệt' : 'Yêu cầu nạp tiền bị từ chối';
+      if (status === 'Thành công') {
+        user.balance = (user.balance || 0) + (tx.amount || 0);
+      }
+      
+      // Gửi thông báo
+      user.notifications = user.notifications || [];
+      user.notifications.unshift({
+        id: 'NOTIF-' + Date.now(),
+        title: status === 'Thành công' ? 'Nạp tiền thành công' : 'Nạp tiền thất bại',
+        message: status === 'Thành công' ? `Yêu cầu nạp ${formatMoney(tx.amount)} đã được duyệt. Số dư của bạn đã được cộng thêm.` : `Yêu cầu nạp ${formatMoney(tx.amount)} đã bị từ chối. Vui lòng liên hệ hỗ trợ nếu có thắc mắc.`,
+        date: new Date().toISOString(),
+        read: false,
+        type: status === 'Thành công' ? 'success' : 'error'
+      });
+      
+      updated = true;
+      updatedUserEmail = user.email || null;
+      break;
+    }
+  }
+  if (!updated) {
+    showToast('Không tìm thấy yêu cầu nạp tiền.', true);
+    return;
+  }
+  setUsers(users);
+  const adminUser = getCurrentUser();
+  if (adminUser) {
+    localStorage.setItem('mmo_currentUser', JSON.stringify(adminUser));
+  }
+  showToast(`Đã cập nhật yêu cầu nạp tiền ${requestId} sang ${status}`);
+  loadDepositRequests();
+  loadAccounts();
+  if (selectedEmail && selectedEmail === updatedUserEmail) {
+    selectAccount(selectedEmail);
+  }
+}
+function selectAccount(email) {
+  const users = getUsers();
+  const user = users.find(u => u.email === email);
+  if (!user) {
+    showToast('Không tìm thấy tài khoản.', true);
+    return;
+  }
+  selectedEmail = email;
+  const detailForm = document.getElementById('user-detail-form');
+  detailForm.classList.remove('hidden');
+  document.getElementById('user-detail-panel').querySelector('.account-info').textContent = 'Chỉnh sửa thông tin và đổi mật khẩu nếu cần.';
+  document.getElementById('detail-email').value = user.email || '';
+  document.getElementById('detail-username').value = user.user || '';
+  document.getElementById('detail-name').value = user.name || '';
+  document.getElementById('detail-password').value = '';
+  document.getElementById('detail-balance').value = formatMoney(user.balance || 0);
+  document.getElementById('detail-balance-adjust').value = '';
+  document.getElementById('detail-role').value = user.role || (user.isAdmin ? 'admin' : 'user');
+  document.getElementById('detail-created').value = user.createdAt ? new Date(user.createdAt).toLocaleString('vi-VN') : 'Không rõ';
+  const permPanel = document.getElementById('detail-permissions');
+  const isAdminUser = user.role === 'admin' || user.isAdmin;
+  if (isAdminUser) {
+    normalizeUserPermissions(user);
+    permPanel.classList.remove('hidden');
+    document.getElementById('perm-approveOrders').checked = Boolean(user.permissions.approveOrders);
+    document.getElementById('perm-manageUsers').checked = Boolean(user.permissions.manageUsers);
+    document.getElementById('perm-manageBalances').checked = Boolean(user.permissions.manageBalances);
+    document.getElementById('perm-approveDeposits').checked = Boolean(user.permissions.approveDeposits);
+    document.getElementById('perm-viewReports').checked = Boolean(user.permissions.viewReports);
+  } else {
+    permPanel.classList.add('hidden');
+  }
+}
+function clearSelectedAccount() {
+  selectedEmail = null;
+  document.getElementById('user-detail-form').classList.add('hidden');
+  document.getElementById('user-detail-panel').querySelector('.account-info').textContent = 'Chọn một tài khoản để xem chi tiết và chỉnh sửa thông tin.';
+}
+function saveSelectedAccount() {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'manageUsers')) {
+    showToast('Bạn không có quyền lưu thay đổi tài khoản.', true);
+    return;
+  }
+  if (!selectedEmail) return;
+  const users = getUsers();
+  const idx = users.findIndex(u => u.email === selectedEmail);
+  if (idx === -1) {
+    showToast('Tài khoản không tồn tại.', true);
+    return;
+  }
+  const username = document.getElementById('detail-username').value.trim();
+  const name = document.getElementById('detail-name').value.trim();
+  const password = document.getElementById('detail-password').value;
+
+  if (!username || !name) {
+    showToast('Tên đăng nhập và họ tên không được để trống.', true);
+    return;
+  }
+  const duplicate = users.find((u, i) => i !== idx && (u.user === username || u.email === selectedEmail));
+  if (duplicate) {
+    showToast('Tên đăng nhập đã tồn tại trên tài khoản khác.', true);
+    return;
+  }
+  users[idx].user = username;
+  users[idx].name = name;
+  if (password) users[idx].pass = password;
+  const permPanel = document.getElementById('detail-permissions');
+  if (!permPanel.classList.contains('hidden')) {
+    users[idx].permissions = {
+      approveOrders: document.getElementById('perm-approveOrders').checked,
+      manageUsers: document.getElementById('perm-manageUsers').checked,
+      manageBalances: document.getElementById('perm-manageBalances').checked,
+      approveDeposits: document.getElementById('perm-approveDeposits').checked,
+      viewReports: document.getElementById('perm-viewReports').checked
+    };
+  }
+  setUsers(users);
+  const updatedUser = getCurrentUser();
+  if (updatedUser && updatedUser.email === selectedEmail) {
+    localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+  }
+  showToast('Cập nhật tài khoản thành công.');
+  loadAccounts();
+  selectAccount(selectedEmail);
+}
+function adjustBalance(email, amount) {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'manageBalances')) {
+    showToast('Bạn không có quyền điều chỉnh số dư.', true);
+    return;
+  }
+  if (!email) return;
+  const users = getUsers();
+  const idx = users.findIndex(u => u.email === email);
+  if (idx === -1) {
+    showToast('Tài khoản không tồn tại.', true);
+    return;
+  }
+  const user = users[idx];
+  const currentBalance = user.balance || 0;
+  const delta = Math.abs(amount);
+  if (delta <= 0) {
+    showToast('Vui lòng nhập số tiền hợp lệ.', true);
+    return;
+  }
+  const newBalance = currentBalance + amount;
+  if (newBalance < 0) {
+    showToast('Không đủ số dư để trừ.', true);
+    return;
+  }
+  user.balance = newBalance;
+
+  // Gửi thông báo cho user
+  user.notifications = user.notifications || [];
+  user.notifications.unshift({
+    id: 'NOTIF-' + Date.now(),
+    title: amount > 0 ? 'Biến động số dư' : 'Biến động số dư',
+    message: amount > 0 
+      ? `Tài khoản của bạn đã được cộng ${formatMoney(Math.abs(amount))} từ Admin. Số dư mới: ${formatMoney(newBalance)}.` 
+      : `Tài khoản của bạn đã bị trừ ${formatMoney(Math.abs(amount))} bởi Admin. Số dư mới: ${formatMoney(newBalance)}.`,
+    date: new Date().toISOString(),
+    read: false,
+    type: amount > 0 ? 'success' : 'error'
+  });
+
+  users[idx] = user;
+  setUsers(users);
+  if (currentUser && currentUser.email === email) {
+    localStorage.setItem('mmo_currentUser', JSON.stringify(user));
+  }
+  showToast(`Đã ${amount > 0 ? 'cộng' : 'trừ'} ${formatMoney(Math.abs(amount))} cho ${email}. Số dư mới: ${formatMoney(newBalance)}.`);
+  loadAccounts();
+  selectAccount(email);
+}
+function adjustSelectedBalance(isCredit) {
+  if (!selectedEmail) return;
+  const amount = parseInt(document.getElementById('detail-balance-adjust').value, 10);
+  if (Number.isNaN(amount) || amount <= 0) {
+    showToast('Vui lòng nhập số tiền hợp lệ lớn hơn 0.', true);
+    return;
+  }
+  adjustBalance(selectedEmail, isCredit ? amount : -amount);
+}
+function deleteAccount(email) {
+  const currentUser = getCurrentUser();
+  if (!currentUser || !hasPermission(currentUser, 'manageUsers')) {
+    showToast('Bạn không có quyền xóa tài khoản.', true);
+    return;
+  }
+  if (!email) return;
+  
+  if (currentUser && currentUser.email === email) {
+    showToast('Không thể xóa chính bạn khi đang đăng nhập.', true);
+    return;
+  }
+  if (!confirm(`Xác nhận xóa tài khoản ${email}? Đây là hành động không thể hoàn tác.`)) {
+    return;
+  }
+  const users = getUsers();
+  const idx = users.findIndex(u => u.email === email);
+  if (idx === -1) {
+    showToast('Tài khoản không tồn tại.', true);
+    return;
+  }
+  users.splice(idx, 1);
+  setUsers(users);
+  showToast(`Đã xóa tài khoản ${email}.`);
+  if (selectedEmail === email) {
+    clearSelectedAccount();
+  }
+  loadAccounts();
+}
+function deleteSelectedAccount() {
+  if (!selectedEmail) return;
+  deleteAccount(selectedEmail);
+}
+function sendGlobalNotification() {
+  const currentUser = getCurrentUser();
+  if (!currentUser || currentUser.role !== 'admin' && !currentUser.isAdmin) {
+    showToast('Chỉ admin mới có quyền gửi thông báo chung.', true);
+    return;
+  }
+  const title = document.getElementById('notif-title').value.trim();
+  const content = document.getElementById('notif-content').value.trim();
+  if (!title || !content) {
+    showToast('Vui lòng nhập đầy đủ tiêu đề và nội dung.', true);
+    return;
+  }
+  
+  let globalNotifs = [];
+  try {
+    globalNotifs = JSON.parse(localStorage.getItem('mmo_global_notifications')) || [];
+  } catch(e) {}
+  
+  globalNotifs.unshift({
+    id: 'GLOB-' + Date.now(),
+    title,
+    message: content,
+    date: new Date().toISOString(),
+    type: 'info'
+  });
+  
+  localStorage.setItem('mmo_global_notifications', JSON.stringify(globalNotifs));
+  document.getElementById('notif-title').value = '';
+  document.getElementById('notif-content').value = '';
+  showToast('Đã gửi thông báo đến toàn bộ người dùng!');
+}
+loadOrders();
+loadAccounts();
+loadDepositRequests();
+</script>
+</body>
+</html>

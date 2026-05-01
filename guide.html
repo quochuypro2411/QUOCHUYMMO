@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hướng dẫn sử dụng & CSBH – QuocHuy.MMO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="background: #f0f2f5;">
+<canvas id="particles-canvas"></canvas>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="container top-bar-inner">
+    <div class="top-links">
+      <a href="index.html"><i class="fas fa-home"></i>Trang chủ</a>
+      <a href="news.html"><i class="fas fa-newspaper"></i>Tin tức</a>
+      <a href="guide.html"><i class="fas fa-question-circle"></i>Hướng dẫn</a>
+      <a href="history.html"><i class="fas fa-history"></i>Lịch sử giao dịch</a>
+      <a href="deposit.html"><i class="fas fa-wallet"></i>Nạp tiền</a>
+    </div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="container header-inner" style="justify-content:space-between">
+    <a href="index.html" class="logo">
+      <img src="logo.png" alt="QuocHuy MMO">
+    </a>
+    <a href="index.html" style="font-size:14px; font-weight:700; color:var(--primary);"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
+  </div>
+</header>
+
+<main class="main-content" style="min-height:70vh; padding-top:40px; padding-bottom:60px;">
+  <div class="container">
+    <div class="section-header" style="margin-bottom:30px">
+      <div class="section-title-wrap">
+        <div class="section-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><i class="fas fa-book-open"></i></div>
+        <h2 class="section-title" style="font-size:24px">Hướng dẫn sử dụng & CSBH</h2>
+      </div>
+    </div>
+    
+    <div class="guide-grid" style="grid-template-columns: 1fr;">
+      <div class="guide-card" style="padding: 24px;">
+        <div class="guide-icon"><i class="fas fa-sign-in-alt"></i></div>
+        <div class="guide-info">
+          <h4 style="font-size: 16px; margin-bottom: 8px;">Hướng dẫn đăng nhập Via/Clone an toàn</h4>
+          <p style="font-size: 14px; line-height: 1.6;">
+            1. Sử dụng link mbasic.facebook.com hoặc m.facebook.com để đăng nhập lần đầu.<br>
+            2. Điền UID và Password.<br>
+            3. Nếu có yêu cầu mã 2FA, copy đoạn mã 2FA Secret vào trang 2fa.live để lấy 6 số đăng nhập.<br>
+            4. Sau khi vào được acc thành công, ngâm acc ít nhất 24h trước khi đổi thông tin hoặc thực hiện hành động.
+          </p>
+        </div>
+      </div>
+      
+      <div class="guide-card" style="padding: 24px;">
+        <div class="guide-icon" style="background:linear-gradient(135deg,#EA4335,#d33426)"><i class="fas fa-envelope"></i></div>
+        <div class="guide-info">
+          <h4 style="font-size: 16px; margin-bottom: 8px;">Cách đổi pass, mail khôi phục Gmail</h4>
+          <p style="font-size: 14px; line-height: 1.6;">
+            1. Tránh đổi Password và Mail khôi phục cùng một lúc. Hãy đổi Password trước.<br>
+            2. Vài ngày sau, bạn mới nên đổi Mail khôi phục để tránh bị Google nghi ngờ hoạt động bất thường.<br>
+            3. Nên đăng nhập bằng profile sạch, proxy sạch để tài khoản không bị dính checkpoint.
+          </p>
+        </div>
+      </div>
+      
+      <div class="guide-card" style="padding: 24px;">
+        <div class="guide-icon" style="background:linear-gradient(135deg,#10b981,#059669)"><i class="fas fa-shield-alt"></i></div>
+        <div class="guide-info">
+          <h4 style="font-size: 16px; margin-bottom: 8px;">Chính sách bảo hành sản phẩm</h4>
+          <p style="font-size: 14px; line-height: 1.6;">
+            - <strong>Bảo hành 1 đổi 1:</strong> Trong vòng 24h nếu tài khoản bị sai pass, sai UID, không thể đăng nhập lần đầu tiên.<br>
+            - <strong>Từ chối bảo hành:</strong> Nếu bạn đã đăng nhập thành công và đổi thông tin (Pass, Mail) hoặc lên Camp quảng cáo khiến tài khoản bị khóa.<br>
+            - Hỗ trợ giải quyết khiếu nại trong thời gian sớm nhất qua Telegram.
+          </p>
+        </div>
+      </div>
+      
+      <div class="guide-card" style="padding: 24px;">
+        <div class="guide-icon" style="background:linear-gradient(135deg,#f59e0b,#f97316)"><i class="fas fa-credit-card"></i></div>
+        <div class="guide-info">
+          <h4 style="font-size: 16px; margin-bottom: 8px;">Hướng dẫn nạp tiền & Thanh toán</h4>
+          <p style="font-size: 14px; line-height: 1.6;">
+            - Web sử dụng hệ thống nạp tự động qua Ngân Hàng và Momo. Bạn chỉ cần quét mã QR kèm nội dung chuyển khoản hệ thống tự sinh.<br>
+            - Tiền sẽ được cộng vào số dư tài khoản trên web trong 1-3 phút.<br>
+            - Có thể dùng số dư để mua ngay hoặc chọn thanh toán trực tiếp ở trang Giỏ hàng.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

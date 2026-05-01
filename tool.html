@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Danh mục phần mềm tool - Tool hỗ trợ MMO, auto seeding, tăng tương tác và quản lý tài khoản.">
+  <title>Phần mềm Tool – QuocHuy.MMO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="top-bar">
+  <div class="container top-bar-inner">
+    <div class="top-links">
+      <a href="index.html"><i class="fas fa-home"></i>Trang chủ</a>
+      <a href="news.html"><i class="fas fa-newspaper"></i>Tin tức</a>
+      <a href="guide.html"><i class="fas fa-question-circle"></i>Hướng dẫn</a>
+      <a href="history.html"><i class="fas fa-history"></i>Lịch sử giao dịch</a>
+      <a href="deposit.html"><i class="fas fa-wallet"></i>Nạp tiền</a>
+    </div>
+    <div class="marquee-wrap">
+      <span class="marquee-text">
+        <i class="fas fa-bullhorn"></i>&nbsp;🔥 Tool MMO chất lượng, hỗ trợ auto seeding, quản lý page và tối ưu bán hàng. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+    </div>
+  </div>
+</div>
+<header class="header" id="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo" id="logo"><img src="logo.png" alt="QuocHuy MMO"></a>
+    <div class="search-bar" id="search-bar">
+      <div class="search-cat"><select id="search-cat"><option>Tất cả</option><option>Facebook</option><option>Gmail</option><option>Proxy/VPS</option><option>Tool</option></select></div>
+      <input type="text" id="search-input" placeholder="Tìm kiếm tài khoản, phần mềm, proxy...">
+      <button class="search-submit" id="search-btn"><i class="fas fa-search"></i>Tìm kiếm</button>
+    </div>
+            <div class="hdr-actions">
+      <a href="deposit.html" class="action-box" id="wallet-btn" style="display:none;">
+        <div class="action-icon" style="background:#e0f2fe; color:#0ea5e9;"><i class="fas fa-wallet"></i></div>
+        <div class="action-info">
+          <span class="action-label">Số dư</span>
+          <span class="action-value" id="wallet-amount">0 đ</span>
+        </div>
+      </a>
+      <a href="checkout.html" class="action-box" id="cart-btn">
+        <div class="action-icon">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-badge" id="cart-badge">0</span>
+        </div>
+        <div class="action-info">
+          <span class="action-label">Giỏ hàng</span>
+          <span class="action-value" id="cart-amount">0 đ</span>
+        </div>
+      </a>
+      <div class="action-box notif-box" id="notif-btn" style="position:relative; display:none; cursor:pointer;">
+        <div class="action-icon"><i class="fas fa-bell"></i><span class="notif-badge" id="notif-badge" style="display:none;">0</span></div>
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-header">
+            <span style="font-weight:700; font-size:14px;">Thông báo</span>
+            <button onclick="markAllNotifRead(event)"><i class="fas fa-check-double"></i> Đánh dấu đã đọc</button>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+        </div>
+      </div>
+      <div class="action-box" id="auth-btn">
+        <div class="action-icon auth"><i class="fas fa-user"></i></div>
+        <div class="auth-texts">
+          <a href="auth.html?tab=login" id="link-login">ĐĂNG NHẬP</a>
+          <a href="auth.html?tab=register" id="link-register">ĐĂNG KÝ</a>
+        </div>
+      </div>
+      <a href="tel:0336556137" class="contact-cta" id="contact-cta">
+        <div class="ring"><i class="fab fa-whatsapp"></i></div>
+        <div class="cta-info">
+          <span class="cta-label">LIÊN HỆ NGAY</span>
+          <span class="cta-phone">033.655.6137</span>
+        </div>
+      </a>
+      <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<nav class="main-nav" id="main-nav">
+  <div class="container nav-inner">
+    <ul class="nav-list" id="nav-list">
+      <li class="nav-item"><a href="best-seller.html"><span class="nav-icon"><i class="fas fa-fire fire-icon"></i></span><span class="nav-text">BÁN CHẠY</span></a></li>
+      <li class="nav-item"><a href="facebook.html"><span class="nav-icon"><i class="fab fa-facebook"></i></span><span class="nav-text">FACEBOOK</span></a></li>
+      <li class="nav-item"><a href="gmail.html"><span class="nav-icon"><i class="fas fa-envelope"></i></span><span class="nav-text">GMAIL / EMAIL</span></a></li>
+      <li class="nav-item active"><a href="tool.html"><span class="nav-icon"><i class="fas fa-tools"></i></span><span class="nav-text">TOOL MMO</span></a></li>
+      <li class="nav-item"><a href="proxy.html"><span class="nav-icon"><i class="fas fa-server"></i></span><span class="nav-text">PROXY / VPS</span></a></li>
+      <li class="nav-item"><a href="seeding.html"><span class="nav-icon"><i class="fas fa-seedling"></i></span><span class="nav-text">SEEDING</span></a></li>
+      <li class="nav-item"><a href="unlock.html"><span class="nav-icon"><i class="fas fa-unlock-alt"></i></span><span class="nav-text">UNLOCK</span></a></li>
+      <li class="nav-item"><a href="buff.html"><span class="nav-icon"><i class="fas fa-thumbs-up"></i></span><span class="nav-text">BUFF LIKE/SUB</span></a></li>
+      <li class="nav-item"><a href="clone.html"><span class="nav-icon"><i class="fas fa-clone"></i></span><span class="nav-text">CLONE / VIA</span></a></li>
+      <li class="nav-item"><a href="tiktok.html"><span class="nav-icon"><i class="fab fa-tiktok"></i></span><span class="nav-text">TIKTOK / IG</span></a></li>
+    </ul>
+  </div>
+</nav>
+<main class="container page-service" style="padding: 40px 0;">
+  <section class="service-hero">
+    <div>
+      <div class="section-title-wrap"><div class="section-title">Phần mềm Tool</div></div>
+      <p class="section-subtitle">Tool MMO chuyên nghiệp hỗ trợ auto seeding, quản lý fanpage, tăng tương tác, phân tích hiệu suất và chạy chiến dịch.</p>
+      <p style="color:var(--text-secondary);margin:18px 0 20px;max-width:720px;line-height:1.75;">Công cụ tự động dành cho nhà bán hàng MMO: từ seeding, quản lý đến chạy quảng cáo, giúp tiết kiệm thời gian và tăng hiệu quả.</p>
+      <div class="hero-badges">
+        <span class="hero-badge"><i class="fas fa-check"></i>Auto seeding</span><span class="hero-badge"><i class="fas fa-check"></i>Quản lý Fanpage</span><span class="hero-badge"><i class="fas fa-check"></i>Tăng tương tác</span>
+      </div>
+    </div>
+    <div class="service-hero-card">
+      <div class="hero-callout">
+        <div class="hero-callout-title">Ưu điểm nổi bật</div>
+        <ul class="hero-list">
+          <li><i class="fas fa-check-circle"></i> Giao dịch nhanh chóng, hỗ trợ 24/7.</li>
+          <li><i class="fas fa-check-circle"></i> Chất lượng uy tín, an toàn, kiểm định rõ ràng.</li>
+          <li><i class="fas fa-check-circle"></i> Linh hoạt nhiều gói, phù hợp mọi nhu cầu MMO.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <section class="product-section">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-icon"><i class="fas fa-box-open"></i></div>
+        <div>
+          <h2 class="section-title">Gợi ý gói dịch vụ</h2>
+          <p class="section-subtitle">Đã chọn lọc các gói phổ biến nhất, phù hợp với nhu cầu mua nhanh và sử dụng hiệu quả.</p>
+        </div>
+      </div>
+    </div>
+    <div class="product-grid">
+      <div class="product-card">
+  <div class="card-img"><div class="card-icon ic-gm-orange"><i class="fas fa-robot"></i></div></div>
+  <div class="card-body">
+    <div class="card-name">Tool Auto seeding</div>
+    <div class="card-desc">Tự động tăng tương tác: like, comment, share cho nội dung.</div>
+    <div class="card-pricing"><span class="price-new">199k</span><button class="buy-btn">Mua ngay</button></div>
+  </div>
+</div><div class="product-card">
+  <div class="card-img"><div class="card-icon ic-gm-green"><i class="fas fa-cogs"></i></div></div>
+  <div class="card-body">
+    <div class="card-name">Tool quản lý fanpage</div>
+    <div class="card-desc">Quản lý bài đăng, bình luận và inbox dễ dàng.</div>
+    <div class="card-pricing"><span class="price-new">159k</span><button class="buy-btn">Mua ngay</button></div>
+  </div>
+</div><div class="product-card">
+  <div class="card-img"><div class="card-icon ic-gm-blue"><i class="fas fa-chart-line"></i></div></div>
+  <div class="card-body">
+    <div class="card-name">Tool phân tích</div>
+    <div class="card-desc">Phân tích hiệu suất chiến dịch, tối ưu chiến lược.</div>
+    <div class="card-pricing"><span class="price-new">179k</span><button class="buy-btn">Mua ngay</button></div>
+  </div>
+</div><div class="product-card">
+  <div class="card-img"><div class="card-icon ic-gm-purple"><i class="fas fa-user-plus"></i></div></div>
+  <div class="card-body">
+    <div class="card-name">Tool tăng like/sub</div>
+    <div class="card-desc">Tự động tăng like và sub cho bài viết, kênh.</div>
+    <div class="card-pricing"><span class="price-new">129k</span><button class="buy-btn">Mua ngay</button></div>
+  </div>
+</div><div class="product-card">
+  <div class="card-img"><div class="card-icon ic-gm-teal"><i class="fas fa-bolt"></i></div></div>
+  <div class="card-body">
+    <div class="card-name">Tool chạy Ads</div>
+    <div class="card-desc">Tăng hiệu quả quảng cáo với tác vụ tự động ổn định.</div>
+    <div class="card-pricing"><span class="price-new">219k</span><button class="buy-btn">Mua ngay</button></div>
+  </div>
+</div><div class="product-card">
+  <div class="card-img"><div class="card-icon ic-gm-red"><i class="fas fa-shield-alt"></i></div></div>
+  <div class="card-body">
+    <div class="card-name">Tool bảo mật</div>
+    <div class="card-desc">Bảo vệ tài khoản, giúp vận hành an toàn khi dùng tool.</div>
+    <div class="card-pricing"><span class="price-new">169k</span><button class="buy-btn">Mua ngay</button></div>
+  </div>
+</div>
+    </div>
+  </section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>

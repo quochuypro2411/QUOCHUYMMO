@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="QuocHuy MMO - Chuyên cung cấp tài khoản Facebook, Gmail, Proxy, VPS và các dịch vụ MMO uy tín, giá tốt nhất Việt Nam. Giao hàng tự động, bảo hành 1 đổi 1.">
+  <title>QuocHuy.MMO – Mua Bán Tài Khoản MMO Uy Tín #1 Việt Nam</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="container top-bar-inner">
+      <div class="top-links">
+        <a href="index.html"><i class="fas fa-home"></i>Trang chủ</a>
+        <a href="news.html"><i class="fas fa-newspaper"></i>Tin tức</a>
+        <a href="guide.html"><i class="fas fa-question-circle"></i>Hướng dẫn</a>
+        <a href="history.html"><i class="fas fa-history"></i>Lịch sử giao dịch</a>
+        <a href="deposit.html"><i class="fas fa-wallet"></i>Nạp tiền</a>
+      </div>
+      <div class="marquee-wrap">
+        <span class="marquee-text">
+          <i class="fas fa-bullhorn"></i>&nbsp;
+          🔥 Khuyến mãi lớn tháng 4 – Giảm đến 30% tất cả tài khoản Facebook &amp; Gmail! Liên hệ ngay 🔥
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          ✅ Giao hàng tự động 24/7 – Mua liền nhận liền – Cam kết uy tín #1 Việt Nam
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="container header-inner">
+      <!-- Logo -->
+      <a href="index.html" class="logo" id="logo">
+        <img src="logo.png" alt="QuocHuy MMO">
+      </a>
+
+      <!-- Search -->
+      <div class="search-bar" id="search-bar">
+        <div class="search-cat">
+          <select id="search-cat">
+            <option>Tất cả</option>
+            <option>Facebook</option>
+            <option>Gmail</option>
+            <option>Proxy/VPS</option>
+            <option>Tool</option>
+          </select>
+        </div>
+        <input type="text" id="search-input" placeholder="Tìm kiếm tài khoản, phần mềm, proxy...">
+        <button class="search-submit" id="search-btn"><i class="fas fa-search"></i>Tìm kiếm</button>
+      </div>
+
+      <!-- Actions -->
+      <div class="hdr-actions">
+        <a href="deposit.html" class="action-box" id="wallet-btn" style="display:none;">
+          <div class="action-icon" style="background:#e0f2fe; color:#0ea5e9;"><i class="fas fa-wallet"></i></div>
+          <div class="action-info">
+            <span class="action-label">Số dư</span>
+            <span class="action-value" id="wallet-amount">0 đ</span>
+          </div>
+        </a>
+        <a href="checkout.html" class="action-box" id="cart-btn">
+          <div class="action-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge" id="cart-badge">0</span>
+          </div>
+          <div class="action-info">
+            <span class="action-label">Giỏ hàng</span>
+            <span class="action-value" id="cart-amount">0 đ</span>
+          </div>
+        </a>
+        <div class="action-box notif-box" id="notif-btn" style="position:relative; display:none; cursor:pointer;">
+          <div class="action-icon"><i class="fas fa-bell"></i><span class="notif-badge" id="notif-badge"
+              style="display:none;">0</span></div>
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <span style="font-weight:700; font-size:14px;">Thông báo</span>
+              <button onclick="markAllNotifRead(event)"><i class="fas fa-check-double"></i> Đánh dấu đã đọc</button>
+            </div>
+            <div class="notif-list" id="notif-list"></div>
+          </div>
+        </div>
+        <div class="action-box" id="auth-btn">
+          <div class="action-icon auth"><i class="fas fa-user"></i></div>
+          <div class="auth-texts">
+            <a href="auth.html?tab=login" id="link-login">ĐĂNG NHẬP</a>
+            <a href="auth.html?tab=register" id="link-register">ĐĂNG KÝ</a>
+          </div>
+        </div>
+        <a href="tel:0336556137" class="contact-cta" id="contact-cta">
+          <div class="ring"><i class="fab fa-whatsapp"></i></div>
+          <div class="cta-info">
+            <span class="cta-label">LIÊN HỆ NGAY</span>
+            <span class="cta-phone">033.655.6137</span>
+          </div>
+        </a>
+        <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION -->
+  <nav class="main-nav" id="main-nav">
+    <div class="container nav-inner">
+      <ul class="nav-list" id="nav-list">
+        <li class="nav-item active"><a href="best-seller.html"><span class="nav-icon"><i
+                class="fas fa-fire fire-icon"></i></span><span class="nav-text">BÁN CHẠY</span></a></li>
+        <li class="nav-item"><a href="facebook.html"><span class="nav-icon"><i class="fab fa-facebook"></i></span><span
+              class="nav-text">FACEBOOK</span></a></li>
+        <li class="nav-item"><a href="gmail.html"><span class="nav-icon"><i class="fas fa-envelope"></i></span><span
+              class="nav-text">GMAIL / EMAIL</span></a></li>
+        <li class="nav-item"><a href="tool.html"><span class="nav-icon"><i class="fas fa-tools"></i></span><span
+              class="nav-text">TOOL MMO</span></a></li>
+        <li class="nav-item"><a href="proxy.html"><span class="nav-icon"><i class="fas fa-server"></i></span><span
+              class="nav-text">PROXY / VPS</span></a></li>
+        <li class="nav-item"><a href="seeding.html"><span class="nav-icon"><i class="fas fa-seedling"></i></span><span
+              class="nav-text">SEEDING</span></a></li>
+        <li class="nav-item"><a href="unlock.html"><span class="nav-icon"><i class="fas fa-unlock-alt"></i></span><span
+              class="nav-text">UNLOCK</span></a></li>
+        <li class="nav-item"><a href="buff.html"><span class="nav-icon"><i class="fas fa-thumbs-up"></i></span><span
+              class="nav-text">BUFF LIKE/SUB</span></a></li>
+        <li class="nav-item"><a href="clone.html"><span class="nav-icon"><i class="fas fa-clone"></i></span><span
+              class="nav-text">CLONE / VIA</span></a></li>
+        <li class="nav-item"><a href="tiktok.html"><span class="nav-icon"><i class="fab fa-tiktok"></i></span><span
+              class="nav-text">TIKTOK / IG</span></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO SLIDER -->
+  <section class="hero-slider" id="hero-slider">
+    <div id="slider-track">
+
+      <!-- Slide 1: Facebook -->
+      <div class="slide active" data-index="0">
+        <div class="slide-bg"
+          style="background:linear-gradient(135deg,#0c1445 0%,#1a237e 35%,#1565c0 70%,#0d47a1 100%)"></div>
+        <div class="slide-inner">
+          <div class="slide-text">
+            <span class="slide-tag"><i class="fas fa-bolt"></i>HOT DEAL</span>
+            <h2 class="slide-title">Via Facebook Việt Cổ<br><span class="grad-blue">Giảm 30% Toàn Bộ</span></h2>
+            <p class="slide-desc">Tài khoản Facebook Việt cổ, ngâm IP sạch, 2FA đầy đủ. Thích hợp chạy Ads, Seeding,
+              kinh doanh online. Bảo hành 1 đổi 1.</p>
+            <div class="slide-btns">
+              <button class="slide-btn btn-primary"><i class="fas fa-shopping-cart"></i>Mua ngay</button>
+              <button class="slide-btn btn-outline"><i class="fas fa-info-circle"></i>Xem chi tiết</button>
+            </div>
+            <div class="slide-stats">
+              <div class="stat-item">
+                <span class="stat-num" data-count="15000">0</span>
+                <span class="stat-label">Tài khoản đã bán</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num" data-count="4800">0</span>
+                <span class="stat-label">Khách hàng</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num" data-count="99">0</span>
+                <span class="stat-label">% Hài lòng</span>
+              </div>
+            </div>
+          </div>
+          <div class="slide-visual">
+            <img src="prod_fb.png" alt="Facebook"
+              style="max-width: 400px; height: auto; animation: float 6s ease-in-out infinite;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: Gmail -->
+      <div class="slide" data-index="1">
+        <div class="slide-bg"
+          style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 35%,#388e3c 70%,#1b5e20 100%)"></div>
+        <div class="slide-inner">
+          <div class="slide-text">
+            <span class="slide-tag tag-green"><i class="fas fa-star"></i>BEST SELLER</span>
+            <h2 class="slide-title">Gmail Việt Cổ VIP<br><span class="grad-green">Ngâm IP – Full Info</span></h2>
+            <p class="slide-desc">Gmail Việt cổ đã qua quy trình ngâm IP chuyên nghiệp. Phù hợp chạy Ads Google, đăng ký
+              dịch vụ, tạo tài khoản liên kết.</p>
+            <div class="slide-btns">
+              <button class="slide-btn btn-green"><i class="fas fa-shopping-cart"></i>Mua ngay</button>
+              <button class="slide-btn btn-outline"><i class="fas fa-info-circle"></i>Xem chi tiết</button>
+            </div>
+            <div class="slide-stats">
+              <div class="stat-item">
+                <span class="stat-num" data-count="28000">0</span>
+                <span class="stat-label">Gmail đã bán</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num" data-count="6200">0</span>
+                <span class="stat-label">Khách hàng</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num" data-count="98">0</span>
+                <span class="stat-label">% Hài lòng</span>
+              </div>
+            </div>
+          </div>
+          <div class="slide-visual">
+            <img src="prod_gm.png" alt="Gmail VIP"
+              style="max-width: 400px; height: auto; animation: float 6s ease-in-out infinite;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Flash Sale -->
+      <div class="slide" data-index="2">
+        <div class="slide-bg"
+          style="background:linear-gradient(135deg,#b71c1c 0%,#c62828 35%,#e53935 70%,#b71c1c 100%)"></div>
+        <div class="slide-inner">
+          <div class="slide-text">
+            <span class="slide-tag tag-red"><i class="fas fa-fire-alt"></i>FLASH SALE</span>
+            <h2 class="slide-title">Flash Sale Cuối Tuần<br><span class="grad-gold">Giảm Đến 50%</span></h2>
+            <p class="slide-desc">Chỉ trong 48h! Giảm giá sốc tất cả sản phẩm. Via Facebook, Gmail, Proxy, VPS – Nhanh
+              tay kẻo hết!</p>
+            <div class="slide-btns">
+              <button class="slide-btn btn-gold"><i class="fas fa-bolt"></i>Mua ngay</button>
+              <button class="slide-btn btn-outline"><i class="fas fa-clock"></i>Còn 23:59:59</button>
+            </div>
+            <div class="slide-stats">
+              <div class="stat-item">
+                <span class="stat-num" data-count="50">0</span>
+                <span class="stat-label">% Giảm tối đa</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num" data-count="1200">0</span>
+                <span class="stat-label">Đơn hàng hôm nay</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num" data-count="48">0</span>
+                <span class="stat-label">Giờ còn lại</span>
+              </div>
+            </div>
+          </div>
+          <div class="slide-visual">
+            <img src="hero_bg.png" alt="Flash Sale"
+              style="max-width: 450px; height: auto; animation: float 6s ease-in-out infinite;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <button class="slider-arrow" id="slider-prev"><i class="fas fa-chevron-left"></i></button>
+    <button class="slider-arrow" id="slider-next"><i class="fas fa-chevron-right"></i></button>
+    <div class="slider-dots" id="slider-dots">
+      <button class="dot active" data-index="0"></button>
+      <button class="dot" data-index="1"></button>
+      <button class="dot" data-index="2"></button>
+    </div>
+    <div class="slider-progress">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <section class="trust-bar" id="trust-bar">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="trust-ico"><i class="fas fa-shipping-fast"></i></div>
+          <div class="trust-copy">
+            <strong>Giao hàng tự động</strong>
+            <span>Nhận tài khoản ngay sau thanh toán</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-ico"><i class="fas fa-shield-alt"></i></div>
+          <div class="trust-copy">
+            <strong>Bảo hành 1 đổi 1</strong>
+            <span>Cam kết đổi trả trong 24h</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-ico"><i class="fas fa-headset"></i></div>
+          <div class="trust-copy">
+            <strong>Hỗ trợ 24/7</strong>
+            <span>Đội ngũ tư vấn chuyên nghiệp</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-ico"><i class="fas fa-medal"></i></div>
+          <div class="trust-copy">
+            <strong>Uy tín #1</strong>
+            <span>Hơn 50.000 khách hàng tin tưởng</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main-content">
+    <div class="container">
+
+      <!-- FEATURE CATEGORIES -->
+      <section class="home-categories anim-up" id="home-categories">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-th-large"></i></span>
+            <div>
+              <h2 class="section-title">Danh mục nổi bật</h2>
+              <p class="section-subtitle">Tìm nhanh sản phẩm phù hợp với nhu cầu MMO của bạn.</p>
+            </div>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-thumb feature-facebook"><i class="fab fa-facebook-f"></i></div>
+            <h3>Facebook VIP</h3>
+            <p>Tài khoản Facebook Việt cổ, admin page, check point và clone chất lượng.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-thumb feature-gmail"><i class="fas fa-envelope"></i></div>
+            <h3>Gmail Full Info</h3>
+            <p>Gmail Việt cổ chuẩn, ngâm IP, full thông tin để đăng ký dịch vụ, chạy Ads.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-thumb feature-proxy"><i class="fas fa-server"></i></div>
+            <h3>Proxy / VPS</h3>
+            <p>Proxy quốc tế và VPS Windows ổn định, xử lý đa nền tảng, phù hợp nuôi acc.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-thumb feature-tool"><i class="fas fa-tools"></i></div>
+            <h3>Tool MMO</h3>
+            <p>Phần mềm chạy tự động, hỗ trợ tăng tương tác, nuôi nick và chăm sóc khách hàng.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-thumb feature-seed"><i class="fas fa-seedling"></i></div>
+            <h3>Seeding</h3>
+            <p>Dịch vụ tăng like, comment, follow tự nhiên và uy tín cho Facebook/TikTok.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-thumb feature-unlock"><i class="fas fa-unlock-alt"></i></div>
+            <h3>Unlock</h3>
+            <p>Giải quyết tài khoản bị khóa, checkpoint hay mất quyền truy cập một cách nhanh chóng.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- EASY STEPS -->
+      <section class="home-steps anim-up" id="home-steps">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-rocket"></i></span>
+            <div>
+              <h2 class="section-title">Mua hàng chỉ với 3 bước</h2>
+              <p class="section-subtitle">Nhanh gọn, dễ hiểu, khách hàng mới cũng đặt được ngay.</p>
+            </div>
+          </div>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-number">1</span>
+            <h3>Chọn sản phẩm</h3>
+            <p>Duyệt nhanh qua danh mục Facebook, Gmail, Proxy, Tool rồi chọn ngay sản phẩm phù hợp.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">2</span>
+            <h3>Thanh toán an toàn</h3>
+            <p>Thanh toán nhanh qua ví, chuyển khoản hoặc ngân hàng. Có mã giảm giá và ưu đãi kèm theo.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">3</span>
+            <h3>Nhận tự động</h3>
+            <p>Giao tài khoản tự động, nhận ngay sau khi thanh toán. Hỗ trợ livestream và bảo hành ngay.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FACEBOOK SECTION -->
+      <section class="product-section anim-up" id="section-facebook">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fab fa-facebook"></i></span>
+            <h2 class="section-title">TÀI KHOẢN FACEBOOK</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-facebook" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-facebook" id="prev-facebook"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-facebook" id="next-facebook"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-facebook">
+            <div class="product-card" id="pcard-fb-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Hot</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fab fa-facebook-f"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Việt Cổ</span>
+                  <span class="ctag ctag-hot">2FA</span>
+                </div>
+                <h3 class="card-name">Facebook Việt Cổ VIP</h3>
+                <p class="card-desc">Tài khoản Facebook chuẩn, 2FA, ngâm IP lâu dài, phù hợp chạy Ads và nuôi bán hàng.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Login ổn định</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ 24/7</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">129.000đ</span>
+                    <span class="price-old">189.000đ</span>
+                  </div>
+                  <span class="price-disc">-32%</span>
+                </div>
+                <button class="buy-btn" id="buy-fb-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-fb-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-user-check"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Checkpoint</span>
+                  <span class="ctag ctag-default">Login</span>
+                </div>
+                <h3 class="card-name">Facebook Checkpoint</h3>
+                <p class="card-desc">Tài khoản checkpoint đã qua xử lý, đảm bảo đăng nhập ổn định và an toàn.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Check pass</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Cam kết</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">99.000đ</span>
+                    <span class="price-old">149.000đ</span>
+                  </div>
+                  <span class="price-disc">-33%</span>
+                </div>
+                <button class="buy-btn" id="buy-fb-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-fb-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-user-shield"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Admin</span>
+                  <span class="ctag ctag-default">Tài khoản</span>
+                </div>
+                <h3 class="card-name">Facebook Admin</h3>
+                <p class="card-desc">Tài khoản admin trang, phù hợp nuôi fanpage hoặc chạy quảng cáo.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Đầy đủ thông tin</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>An toàn</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">159.000đ</span>
+                    <span class="price-old">219.000đ</span>
+                  </div>
+                  <span class="price-disc">-27%</span>
+                </div>
+                <button class="buy-btn" id="buy-fb-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-fb-4">
+              <div class="card-badge badge-hot"><i class="fas fa-bolt"></i>Siêu Sale</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-user-friends"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Random</span>
+                  <span class="ctag ctag-hot">Số lượng</span>
+                </div>
+                <h3 class="card-name">Facebook Random</h3>
+                <p class="card-desc">Tài khoản Facebook đa dạng, phù hợp test, nuôi acc, chạy seeding.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Giá tốt</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Sale</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">79.000đ</span>
+                    <span class="price-old">119.000đ</span>
+                  </div>
+                  <span class="price-disc">-34%</span>
+                </div>
+                <button class="buy-btn" id="buy-fb-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-fb-5">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb-alt"><i class="fas fa-user-secret"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Reset</span>
+                  <span class="ctag ctag-hot">2FA</span>
+                </div>
+                <h3 class="card-name">Facebook Reset Trắng</h3>
+                <p class="card-desc">Tài khoản Facebook reset sạch, chưa tương tác, phù hợp làm VIA và chạy quảng cáo.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Sạch</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Đổi mới</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">109.000đ</span>
+                    <span class="price-old">149.000đ</span>
+                  </div>
+                  <span class="price-disc">-27%</span>
+                </div>
+                <button class="buy-btn" id="buy-fb-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-fb-6">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb-prem"><i class="fas fa-shield-alt"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Bảo mật</span>
+                  <span class="ctag ctag-default">Hỗ trợ</span>
+                </div>
+                <h3 class="card-name">Facebook Premium Security</h3>
+                <p class="card-desc">Tài khoản bảo mật cao, có lịch sử tài khoản tốt và hỗ trợ thay đổi thông tin.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Tính năng</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Uy tín</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">189.000đ</span>
+                    <span class="price-old">239.000đ</span>
+                  </div>
+                  <span class="price-disc">-21%</span>
+                </div>
+                <button class="buy-btn" id="buy-fb-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-fb-7">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Siêu VIP</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-crown"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">VIP</span>
+                  <span class="ctag ctag-hot">Full Info</span>
+                </div>
+                <h3 class="card-name">Facebook Siêu VIP</h3>
+                <p class="card-desc">Tài khoản VIP, cam kết đăng nhập ổn định, không checkpoint và full hỗ trợ kỹ thuật.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Đặc biệt</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Premium</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">229.000đ</span>
+                    <span class="price-old">279.000đ</span>
+                  </div>
+                  <span class="price-disc">-18%</span>
+                </div>
+                <button class="buy-btn" id="buy-fb-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GMAIL SECTION -->
+      <section class="product-section anim-up" id="section-gmail">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon gmail-ico"><i class="fas fa-envelope"></i></span>
+            <div>
+              <h2 class="section-title">GMAIL / EMAIL</h2>
+              <p class="section-subtitle">Chọn Gmail ưu đãi với thông tin đầy đủ, email hỗ trợ đăng ký dịch vụ, chạy
+                quảng cáo và bảo mật cao.</p>
+            </div>
+          </div>
+          <div class="section-right">
+            <a href="#section-gmail" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-gmail" id="prev-gmail"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-gmail" id="next-gmail"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-gmail">
+            <div class="product-card" id="pcard-gm-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Hot</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-envelope"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Việt Cổ</span>
+                  <span class="ctag ctag-hot">Full Info</span>
+                </div>
+                <h3 class="card-name">Gmail Việt Cổ VIP</h3>
+                <p class="card-desc">Gmail Việt cổ ngâm IP chuẩn, phù hợp đăng ký dịch vụ, chạy Ads, tạo tài khoản liên
+                  kết.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Full info</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>24/7</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">99.000đ</span>
+                    <span class="price-old">149.000đ</span>
+                  </div>
+                  <span class="price-disc">-34%</span>
+                </div>
+                <button class="buy-btn" id="buy-gm-1"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-gm-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-user-circle"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Số lượng</span>
+                  <span class="ctag ctag-default">Nhanh</span>
+                </div>
+                <h3 class="card-name">Gmail Số Lượng</h3>
+                <p class="card-desc">Gmail số lượng lớn, phù hợp test, report, lập chiến dịch, giá rẻ.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Giá tốt</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Đa dạng</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">25.000đ</span>
+                    <span class="price-old">39.000đ</span>
+                  </div>
+                  <span class="price-disc">-36%</span>
+                </div>
+                <button class="buy-btn" id="buy-gm-2"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-gm-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Ngâm IP</span>
+                  <span class="ctag ctag-default">Chuyên nghiệp</span>
+                </div>
+                <h3 class="card-name">Gmail Ngâm IP</h3>
+                <p class="card-desc">Gmail được ngâm IP chuẩn, phù hợp chạy Ads, nhận OTP, liên kết tài khoản
+                  Tiktok/Facebook.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Đã dùng</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>An toàn</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">129.000đ</span>
+                    <span class="price-old">179.000đ</span>
+                  </div>
+                  <span class="price-disc">-28%</span>
+                </div>
+                <button class="buy-btn" id="buy-gm-3"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-gm-4">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Bán Chạy</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-envelope"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Random</span>
+                  <span class="ctag ctag-default">Số lượng</span>
+                </div>
+                <h3 class="card-name">Gmail Random – Giá tốt nhất</h3>
+                <p class="card-desc">Tài khoản random số lượng lớn, login ổn định, phù hợp test, spam. Không khuyến nghị
+                  dùng Ads</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Còn: 15,980</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Đã bán: 45,200</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">5.000đ</span>
+                    <span class="price-old">8.000đ</span>
+                  </div>
+                  <span class="price-disc">-38%</span>
+                </div>
+                <button class="buy-btn" id="buy-gm-4"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-gm-5">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-purple"><i class="fas fa-user-shield"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Bảo mật</span>
+                  <span class="ctag ctag-hot">Manager</span>
+                </div>
+                <h3 class="card-name">Gmail Bảo Mật Cao</h3>
+                <p class="card-desc">Gmail chuẩn bảo mật, hỗ trợ dùng cho đăng ký dịch vụ, liên kết app và nhận OTP.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Full Info</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>24/7</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">119.000đ</span>
+                    <span class="price-old">169.000đ</span>
+                  </div>
+                  <span class="price-disc">-29%</span>
+                </div>
+                <button class="buy-btn" id="buy-gm-5"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-gm-6">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-teal"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Custom</span>
+                  <span class="ctag ctag-default">Verified</span>
+                </div>
+                <h3 class="card-name">Gmail Full Verify</h3>
+                <p class="card-desc">Gmail đã được xác minh với số điện thoại, thích hợp tạo tài khoản dịch vụ và SEO.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>OTP</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Ổn định</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">139.000đ</span>
+                    <span class="price-old">189.000đ</span>
+                  </div>
+                  <span class="price-disc">-26%</span>
+                </div>
+                <button class="buy-btn" id="buy-gm-6"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-gm-7">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Bán chạy</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-globe"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Random</span>
+                  <span class="ctag ctag-default">Số lượng</span>
+                </div>
+                <h3 class="card-name">Gmail Random Giá Tốt</h3>
+                <p class="card-desc">Gmail random giá rẻ, nhiều tài khoản, phù hợp test, lập chiến dịch đa nền tảng.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Còn nhiều</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Nhanh</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">35.000đ</span>
+                    <span class="price-old">49.000đ</span>
+                  </div>
+                  <span class="price-disc">-29%</span>
+                </div>
+                <button class="buy-btn" id="buy-gm-7"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOL SECTION -->
+      <section class="product-section anim-up" id="section-tool">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-tools"></i></span>
+            <h2 class="section-title">PHẦN MỀM TOOL MMO</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-tool" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-tool" id="prev-tool"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-tool" id="next-tool"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-tool">
+            <div class="product-card" id="pcard-tool-1">
+              <div class="card-badge badge-hot"><i class="fas fa-bolt"></i>Tiết kiệm</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-code"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Auto</span>
+                  <span class="ctag ctag-default">Chạy nền</span>
+                </div>
+                <h3 class="card-name">Tool Auto Seeding</h3>
+                <p class="card-desc">Phần mềm tự động tương tác fanpage, bình luận, like, giúp tăng tương tác nhanh
+                  chóng và an toàn.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Bản quyền</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ 24/7</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">129.000đ</span>
+                    <span class="price-old">199.000đ</span>
+                  </div>
+                  <span class="price-disc">-35%</span>
+                </div>
+                <button class="buy-btn" id="buy-tool-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tool-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-cogs"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Công cụ</span>
+                  <span class="ctag ctag-default">Tiết kiệm</span>
+                </div>
+                <h3 class="card-name">Tool Quản lý Page</h3>
+                <p class="card-desc">Phần mềm quản lý trạng thái bài đăng, inbox, tự động trả lời khách hàng.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Bản quyền</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Support</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">159.000đ</span>
+                    <span class="price-old">229.000đ</span>
+                  </div>
+                  <span class="price-disc">-31%</span>
+                </div>
+                <button class="buy-btn" id="buy-tool-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tool-3">
+              <div class="card-badge badge-hot"><i class="fas fa-bolt"></i>Ưu đãi</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img"
+                style="background-image:url('news1.png');background-size:cover;background-position:center;">
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Auto</span>
+                  <span class="ctag ctag-hot">Hiệu quả</span>
+                </div>
+                <h3 class="card-name">Tool Auto Marketing</h3>
+                <p class="card-desc">Công cụ tự động chăm sóc khách hàng, tăng tương tác và đẩy đơn hiệu quả.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Bản quyền</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>24/7</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">139.000đ</span>
+                    <span class="price-old">199.000đ</span>
+                  </div>
+                  <span class="price-disc">-30%</span>
+                </div>
+                <button class="buy-btn" id="buy-tool-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tool-4">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-cloud"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Cloud</span>
+                  <span class="ctag ctag-default">Sync</span>
+                </div>
+                <h3 class="card-name">Tool Đồng Bộ</h3>
+                <p class="card-desc">Phần mềm đồng bộ dữ liệu khách hàng, inbox và quản lý chiến dịch multi page.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Đa tính năng</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Tiết kiệm</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">179.000đ</span>
+                    <span class="price-old">249.000đ</span>
+                  </div>
+                  <span class="price-disc">-28%</span>
+                </div>
+                <button class="buy-btn" id="buy-tool-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tool-5">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-sync-alt"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Pro</span>
+                  <span class="ctag ctag-default">Tự động</span>
+                </div>
+                <h3 class="card-name">Tool Pro VIP</h3>
+                <p class="card-desc">Tool chuyên nghiệp cho quản lý đa page, tương tác tự động và báo cáo chi tiết.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Bản quyền</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Support</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">199.000đ</span>
+                    <span class="price-old">269.000đ</span>
+                  </div>
+                  <span class="price-disc">-26%</span>
+                </div>
+                <button class="buy-btn" id="buy-tool-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tool-6">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Bán chạy</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-teal"><i class="fas fa-user-plus"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Auto</span>
+                  <span class="ctag ctag-default">Analytics</span>
+                </div>
+                <h3 class="card-name">Tool Tăng trưởng</h3>
+                <p class="card-desc">Công cụ phân tích chiến dịch, điều chỉnh nội dung và tự động tăng tương tác.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Insight</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Tiện lợi</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">179.000đ</span>
+                    <span class="price-old">239.000đ</span>
+                  </div>
+                  <span class="price-disc">-25%</span>
+                </div>
+                <button class="buy-btn" id="buy-tool-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tool-7">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-chart-line"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Tracking</span>
+                  <span class="ctag ctag-default">Report</span>
+                </div>
+                <h3 class="card-name">Tool Quản lý KPI</h3>
+                <p class="card-desc">Phần mềm giám sát hiệu suất chiến dịch và báo cáo KPI tự động theo ngày.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chi tiết</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Tư vấn</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">209.000đ</span>
+                    <span class="price-old">279.000đ</span>
+                  </div>
+                  <span class="price-disc">-25%</span>
+                </div>
+                <button class="buy-btn" id="buy-tool-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROXY / VPS SECTION -->
+      <section class="product-section anim-up" id="section-proxy">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-server"></i></span>
+            <h2 class="section-title">PROXY & VPS</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-proxy" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-proxy" id="prev-proxy"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-proxy" id="next-proxy"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-proxy">
+            <div class="product-card" id="pcard-proxy-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Best seller</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-globe"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">USA</span>
+                  <span class="ctag ctag-hot">IPv4</span>
+                </div>
+                <h3 class="card-name">Proxy Mỹ IPv4</h3>
+                <p class="card-desc">Proxy cá nhân cho Facebook, Gmail, TikTok. Hỗ trợ ổn định, xịn sò, ít bị block.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Socket</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>1 tháng</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">299.000đ</span>
+                    <span class="price-old">420.000đ</span>
+                  </div>
+                  <span class="price-disc">-29%</span>
+                </div>
+                <button class="buy-btn" id="buy-proxy-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-proxy-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-server"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">VPS</span>
+                  <span class="ctag ctag-default">Windows</span>
+                </div>
+                <h3 class="card-name">VPS Windows 4GB</h3>
+                <p class="card-desc">VPS ổn định cho nuôi VIA, chạy tool, quảng cáo, backup tài khoản. Bảo hành 24/7.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>4GB RAM</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>25GB SSD</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">349.000đ</span>
+                    <span class="price-old">499.000đ</span>
+                  </div>
+                  <span class="price-disc">-30%</span>
+                </div>
+                <button class="buy-btn" id="buy-proxy-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-proxy-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-cloud"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Asia</span>
+                  <span class="ctag ctag-hot">Sticky</span>
+                </div>
+                <h3 class="card-name">Proxy Nhật / Hàn</h3>
+                <p class="card-desc">Proxy dành cho tài khoản quốc tế, quảng cáo Nhật, TikTok, Zalo. Tốc độ cao, ít truy
+                  vết.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Sticky</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Sim</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">399.000đ</span>
+                    <span class="price-old">550.000đ</span>
+                  </div>
+                  <span class="price-disc">-28%</span>
+                </div>
+                <button class="buy-btn" id="buy-proxy-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-proxy-4">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-network-wired"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Proxy</span>
+                  <span class="ctag ctag-hot">USA</span>
+                </div>
+                <h3 class="card-name">Proxy Mỹ Premium</h3>
+                <p class="card-desc">Proxy Mỹ chất lượng cao, hỗ trợ Facebook, Gmail và các vận hành quảng cáo tốt hơn.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Ổn định</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>1 tháng</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">349.000đ</span>
+                    <span class="price-old">429.000đ</span>
+                  </div>
+                  <span class="price-disc">-19%</span>
+                </div>
+                <button class="buy-btn" id="buy-proxy-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-proxy-5">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Best seller</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-server"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">VPS</span>
+                  <span class="ctag ctag-default">Linux</span>
+                </div>
+                <h3 class="card-name">VPS Linux 8GB</h3>
+                <p class="card-desc">VPS Linux tốc độ cao, tối ưu cho ứng dụng nuôi nick, tool và chạy task liên tục.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>8GB RAM</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>50GB SSD</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">399.000đ</span>
+                    <span class="price-old">549.000đ</span>
+                  </div>
+                  <span class="price-disc">-27%</span>
+                </div>
+                <button class="buy-btn" id="buy-proxy-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-proxy-6">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-globe"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Sticky</span>
+                  <span class="ctag ctag-default">Japan</span>
+                </div>
+                <h3 class="card-name">Proxy Nhật VIP</h3>
+                <p class="card-desc">Proxy Nhật VIP dành cho chạy quảng cáo quốc tế và hoạt động TikTok, Zalo mượt mà.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Sticky</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Ổn định</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">429.000đ</span>
+                    <span class="price-old">549.000đ</span>
+                  </div>
+                  <span class="price-disc">-22%</span>
+                </div>
+                <button class="buy-btn" id="buy-proxy-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-proxy-7">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Sale</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-cloud-upload-alt"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Proxy</span>
+                  <span class="ctag ctag-hot">EU</span>
+                </div>
+                <h3 class="card-name">Proxy EU Stability</h3>
+                <p class="card-desc">Proxy EU ổn định, thích hợp cho market châu Âu và quản lý nhiều tài khoản.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Ổn định</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Giá tốt</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">299.000đ</span>
+                    <span class="price-old">389.000đ</span>
+                  </div>
+                  <span class="price-disc">-23%</span>
+                </div>
+                <button class="buy-btn" id="buy-proxy-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEEDING SECTION -->
+      <section class="product-section anim-up" id="section-seeding">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-seedling"></i></span>
+            <h2 class="section-title">DỊCH VỤ SEEDING</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-seeding" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-seeding" id="prev-seeding"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-seeding" id="next-seeding"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-seeding">
+            <div class="product-card" id="pcard-seed-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Hot</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-thumbs-up"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Facebook</span>
+                  <span class="ctag ctag-hot">Tương tác</span>
+                </div>
+                <h3 class="card-name">Seeding Facebook</h3>
+                <p class="card-desc">Tăng like, comment, share cho bài viết với người thật, hỗ trợ gia tăng độ uy tín
+                  nhanh chóng.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Yêu cầu</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Nhận kết quả</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">199.000đ</span>
+                    <span class="price-old">249.000đ</span>
+                  </div>
+                  <span class="price-disc">-20%</span>
+                </div>
+                <button class="buy-btn" id="buy-seed-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-seed-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-video"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">TikTok</span>
+                  <span class="ctag ctag-default">Thuật toán</span>
+                </div>
+                <h3 class="card-name">Seeding TikTok</h3>
+                <p class="card-desc">Dịch vụ tăng view, like, follow tự nhiên cho video TikTok với tài khoản thật.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>1 tuần</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Đã dùng</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">299.000đ</span>
+                    <span class="price-old">349.000đ</span>
+                  </div>
+                  <span class="price-disc">-14%</span>
+                </div>
+                <button class="buy-btn" id="buy-seed-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-seed-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-chart-line"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Engagement</span>
+                  <span class="ctag ctag-default">Chuyên nghiệp</span>
+                </div>
+                <h3 class="card-name">Seeding Instagram</h3>
+                <p class="card-desc">Tăng like, bình luận, follow cho Instagram với người thật, phù hợp profile mới.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chiến dịch</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Bảo hành</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">259.000đ</span>
+                    <span class="price-old">319.000đ</span>
+                  </div>
+                  <span class="price-disc">-19%</span>
+                </div>
+                <button class="buy-btn" id="buy-seed-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-seed-4">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-share"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Group</span>
+                  <span class="ctag ctag-hot">Viral</span>
+                </div>
+                <h3 class="card-name">Seeding Group Facebook</h3>
+                <p class="card-desc">Tăng tương tác cho bài viết trong group với tài khoản thật và nội dung tự nhiên.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chuyên nghiệp</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hiệu quả</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">189.000đ</span>
+                    <span class="price-old">239.000đ</span>
+                  </div>
+                  <span class="price-disc">-21%</span>
+                </div>
+                <button class="buy-btn" id="buy-seed-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-seed-5">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Hot</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-comment"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Comment</span>
+                  <span class="ctag ctag-default">Tự nhiên</span>
+                </div>
+                <h3 class="card-name">Seeding Comment</h3>
+                <p class="card-desc">Dịch vụ tăng comment thật giúp nội dung thu hút và tạo hiệu ứng xã hội đáng tin.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Thực tế</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Nhanh</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">129.000đ</span>
+                    <span class="price-old">169.000đ</span>
+                  </div>
+                  <span class="price-disc">-24%</span>
+                </div>
+                <button class="buy-btn" id="buy-seed-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-seed-6">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-thumbs-up"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Kênh</span>
+                  <span class="ctag ctag-default">Tốc độ</span>
+                </div>
+                <h3 class="card-name">Seeding Kênh TikTok</h3>
+                <p class="card-desc">Tăng like, follow và comment cho channel TikTok, phù hợp creator cần tăng tương tác
+                  nhanh.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chất lượng</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Ổn định</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">239.000đ</span>
+                    <span class="price-old">289.000đ</span>
+                  </div>
+                  <span class="price-disc">-17%</span>
+                </div>
+                <button class="buy-btn" id="buy-seed-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-seed-7">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-play-circle"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Video</span>
+                  <span class="ctag ctag-default">Tương tác</span>
+                </div>
+                <h3 class="card-name">Seeding Video Viral</h3>
+                <p class="card-desc">Dịch vụ tăng tương tác cho video giúp nội dung lan tỏa, tăng view và comment thật.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Toàn diện</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Đa nền tảng</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">259.000đ</span>
+                    <span class="price-old">319.000đ</span>
+                  </div>
+                  <span class="price-disc">-19%</span>
+                </div>
+                <button class="buy-btn" id="buy-seed-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- UNLOCK SECTION -->
+      <section class="product-section anim-up" id="section-unlock">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-unlock-alt"></i></span>
+            <h2 class="section-title">DỊCH VỤ UNLOCK TÀI KHOẢN</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-unlock" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-unlock" id="prev-unlock"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-unlock" id="next-unlock"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-unlock">
+            <div class="product-card" id="pcard-unlock-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Giao 24h</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-shield-alt"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Checkpoint</span>
+                  <span class="ctag ctag-hot">Điện thoại</span>
+                </div>
+                <h3 class="card-name">Unlock Facebook Checkpoint</h3>
+                <p class="card-desc">Dịch vụ hỗ trợ mở khóa tài khoản bị checkpoint nhưng vẫn còn quyền truy cập và
+                  email xác thực.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Hỗ trợ</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Chuyên gia</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">499.000đ</span>
+                    <span class="price-old">650.000đ</span>
+                  </div>
+                  <span class="price-disc">-23%</span>
+                </div>
+                <button class="buy-btn" id="buy-unlock-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-unlock-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Gmail</span>
+                  <span class="ctag ctag-default">Khôi phục</span>
+                </div>
+                <h3 class="card-name">Unlock Gmail / Email</h3>
+                <p class="card-desc">Mở lại Email bị khóa, mất quyền truy cập, hỗ trợ lấy lại nhanh và an toàn.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chuyên gia</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">349.000đ</span>
+                    <span class="price-old">459.000đ</span>
+                  </div>
+                  <span class="price-disc">-24%</span>
+                </div>
+                <button class="buy-btn" id="buy-unlock-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-unlock-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-key"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Khóa nặng</span>
+                  <span class="ctag ctag-default">Tự động</span>
+                </div>
+                <h3 class="card-name">Mở khóa tài khoản bị khóa nặng</h3>
+                <p class="card-desc">Dịch vụ hỗ trợ tài khoản bị khóa 2 lớp hoặc bị report, xử lý chuyên sâu.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Uy tín</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hợp tác</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">599.000đ</span>
+                    <span class="price-old">799.000đ</span>
+                  </div>
+                  <span class="price-disc">-25%</span>
+                </div>
+                <button class="buy-btn" id="buy-unlock-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-unlock-4">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-purple"><i class="fas fa-unlock"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">OTP</span>
+                  <span class="ctag ctag-hot">Nhanh</span>
+                </div>
+                <h3 class="card-name">Unlock OTP</h3>
+                <p class="card-desc">Mở khóa tài khoản yêu cầu OTP, hỗ trợ kiểm tra và xử lý nhanh qua email/số điện
+                  thoại.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chuyên gia</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">399.000đ</span>
+                    <span class="price-old">499.000đ</span>
+                  </div>
+                  <span class="price-disc">-20%</span>
+                </div>
+                <button class="buy-btn" id="buy-unlock-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-unlock-5">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Sale</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-phone-alt"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Call</span>
+                  <span class="ctag ctag-default">Xác minh</span>
+                </div>
+                <h3 class="card-name">Unlock bằng điện thoại</h3>
+                <p class="card-desc">Dịch vụ mở khóa tài khoản cần xác thực điện thoại, xử lý nhanh với chuyên gia nhiều
+                  năm kinh nghiệm.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>An toàn</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Đảm bảo</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">459.000đ</span>
+                    <span class="price-old">589.000đ</span>
+                  </div>
+                  <span class="price-disc">-22%</span>
+                </div>
+                <button class="buy-btn" id="buy-unlock-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-unlock-6">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-user-lock"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Report</span>
+                  <span class="ctag ctag-default">Nặng</span>
+                </div>
+                <h3 class="card-name">Unlock Account Report</h3>
+                <p class="card-desc">Xử lý mở khóa tài khoản bị report nặng, đảm bảo khôi phục an toàn và nhanh chóng.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Uy tín</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Kinh nghiệm</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">679.000đ</span>
+                    <span class="price-old">849.000đ</span>
+                  </div>
+                  <span class="price-disc">-20%</span>
+                </div>
+                <button class="buy-btn" id="buy-unlock-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-unlock-7">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-user-check"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">VIP</span>
+                  <span class="ctag ctag-default">Full Info</span>
+                </div>
+                <h3 class="card-name">Unlock VIP Full</h3>
+                <p class="card-desc">Dịch vụ unlock cao cấp, hỗ trợ mở khóa nhiều loại tài khoản với quyền admin và full
+                  thông tin.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Toàn diện</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">859.000đ</span>
+                    <span class="price-old">999.000đ</span>
+                  </div>
+                  <span class="price-disc">-14%</span>
+                </div>
+                <button class="buy-btn" id="buy-unlock-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUFF SECTION -->
+      <section class="product-section anim-up" id="section-buff">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-thumbs-up"></i></span>
+            <h2 class="section-title">BUFF LIKE / SUB</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-buff" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-buff" id="prev-buff"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-buff" id="next-buff"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-buff">
+            <div class="product-card" id="pcard-buff-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Top</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-heart"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Like</span>
+                  <span class="ctag ctag-hot">Tự nhiên</span>
+                </div>
+                <h3 class="card-name">Buff Like Facebook</h3>
+                <p class="card-desc">Dịch vụ tăng like bài viết, ảnh, video Facebook với tài khoản thật và tốc độ đều.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>an toàn</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>giá rẻ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">129.000đ</span>
+                    <span class="price-old">169.000đ</span>
+                  </div>
+                  <span class="price-disc">-24%</span>
+                </div>
+                <button class="buy-btn" id="buy-buff-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-buff-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-user-plus"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Sub</span>
+                  <span class="ctag ctag-default">Tiktok</span>
+                </div>
+                <h3 class="card-name">Buff Sub TikTok</h3>
+                <p class="card-desc">Gia tăng người theo dõi thật, giúp hồ sơ TikTok lên xu hướng nhanh hơn.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Hiệu quả</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">179.000đ</span>
+                    <span class="price-old">229.000đ</span>
+                  </div>
+                  <span class="price-disc">-22%</span>
+                </div>
+                <button class="buy-btn" id="buy-buff-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-buff-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-play"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">View</span>
+                  <span class="ctag ctag-default">Chuyên nghiệp</span>
+                </div>
+                <h3 class="card-name">Buff View Video</h3>
+                <p class="card-desc">Tăng view và tương tác cho video Facebook/Instagram/TikTok một cách tự nhiên.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chắc chắn</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Nhanh</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">149.000đ</span>
+                    <span class="price-old">209.000đ</span>
+                  </div>
+                  <span class="price-disc">-29%</span>
+                </div>
+                <button class="buy-btn" id="buy-buff-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-buff-4">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-user-friends"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Friend</span>
+                  <span class="ctag ctag-hot">Mạng xã hội</span>
+                </div>
+                <h3 class="card-name">Buff Friend Facebook</h3>
+                <p class="card-desc">Tăng lượng bạn bè thật cho tài khoản Facebook, phù hợp nuôi nick và tạo uy tín.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Thực tế</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Ổn định</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">179.000đ</span>
+                    <span class="price-old">229.000đ</span>
+                  </div>
+                  <span class="price-disc">-22%</span>
+                </div>
+                <button class="buy-btn" id="buy-buff-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-buff-5">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Top</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-comment-dots"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Review</span>
+                  <span class="ctag ctag-default">Chất lượng</span>
+                </div>
+                <h3 class="card-name">Buff Review</h3>
+                <p class="card-desc">Gia tăng review và đánh giá chất lượng cho bài viết, sản phẩm hoặc fanpage.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Uy tín</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">159.000đ</span>
+                    <span class="price-old">209.000đ</span>
+                  </div>
+                  <span class="price-disc">-24%</span>
+                </div>
+                <button class="buy-btn" id="buy-buff-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-buff-6">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-chart-line"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Growth</span>
+                  <span class="ctag ctag-default">Lâu dài</span>
+                </div>
+                <h3 class="card-name">Buff Engagement</h3>
+                <p class="card-desc">Tăng tương tác dài hạn cho trang, giúp nội dung duy trì độ phủ sóng và tiếp cận.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chuyên sâu</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Ổn định</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">179.000đ</span>
+                    <span class="price-old">229.000đ</span>
+                  </div>
+                  <span class="price-disc">-22%</span>
+                </div>
+                <button class="buy-btn" id="buy-buff-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-buff-7">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-video"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">VIP</span>
+                  <span class="ctag ctag-default">Chuyên nghiệp</span>
+                </div>
+                <h3 class="card-name">Buff Celebrity</h3>
+                <p class="card-desc">Tăng tương tác VIP cho tài khoản có định hướng influencer, thương hiệu cá nhân.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>High-end</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Support</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">219.000đ</span>
+                    <span class="price-old">279.000đ</span>
+                  </div>
+                  <span class="price-disc">-21%</span>
+                </div>
+                <button class="buy-btn" id="buy-buff-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLONE SECTION -->
+      <section class="product-section anim-up" id="section-clone">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fas fa-clone"></i></span>
+            <h2 class="section-title">CLONE / VIA NGOẠI</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-clone" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-clone" id="prev-clone"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-clone" id="next-clone"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-clone">
+            <div class="product-card" id="pcard-clone-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Tin cậy</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-user-secret"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Clone</span>
+                  <span class="ctag ctag-hot">Nguyên bản</span>
+                </div>
+                <h3 class="card-name">Clone Tài Khoản Ngoại</h3>
+                <p class="card-desc">Tài khoản clone nước ngoài chất lượng, IP sạch, phù hợp SEO, quảng cáo, nuôi mini
+                  site.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chất lượng</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hạ giá</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">65.000đ</span>
+                    <span class="price-old">95.000đ</span>
+                  </div>
+                  <span class="price-disc">-32%</span>
+                </div>
+                <button class="buy-btn" id="buy-clone-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-clone-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-globe"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Via</span>
+                  <span class="ctag ctag-default">EU</span>
+                </div>
+                <h3 class="card-name">Via Châu Âu</h3>
+                <p class="card-desc">Via Facebook/Instagram châu Âu, login ổn định, phù hợp chạy Ads và tăng trust.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Độ tin cậy</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Giá hợp lý</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">75.000đ</span>
+                    <span class="price-old">110.000đ</span>
+                  </div>
+                  <span class="price-disc">-32%</span>
+                </div>
+                <button class="buy-btn" id="buy-clone-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-clone-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-crown"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">VIP</span>
+                  <span class="ctag ctag-default">Nguyên bản</span>
+                </div>
+                <h3 class="card-name">Clone VIP cao cấp</h3>
+                <p class="card-desc">Tài khoản clone VIP, full thông tin, sử dụng để chạy quảng cáo hoặc nuôi brand.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Toàn diện</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">149.000đ</span>
+                    <span class="price-old">219.000đ</span>
+                  </div>
+                  <span class="price-disc">-31%</span>
+                </div>
+                <button class="buy-btn" id="buy-clone-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-clone-4">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-teal"><i class="fas fa-user-circle"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Via</span>
+                  <span class="ctag ctag-hot">US</span>
+                </div>
+                <h3 class="card-name">Via Mỹ</h3>
+                <p class="card-desc">Via Mỹ chất lượng, phù hợp quản lý và chạy quảng cáo với IP ổn định.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Đáng tin</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Giá tốt</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">89.000đ</span>
+                    <span class="price-old">119.000đ</span>
+                  </div>
+                  <span class="price-disc">-25%</span>
+                </div>
+                <button class="buy-btn" id="buy-clone-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-clone-5">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Hot</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-globe"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Clone</span>
+                  <span class="ctag ctag-default">Asia</span>
+                </div>
+                <h3 class="card-name">Clone Châu Á</h3>
+                <p class="card-desc">Via và clone châu Á phù hợp đăng ký tài khoản quốc tế, quảng cáo và SEO.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Ổn định</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">95.000đ</span>
+                    <span class="price-old">129.000đ</span>
+                  </div>
+                  <span class="price-disc">-26%</span>
+                </div>
+                <button class="buy-btn" id="buy-clone-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-clone-6">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-crown"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">VIP</span>
+                  <span class="ctag ctag-default">Chính chủ</span>
+                </div>
+                <h3 class="card-name">Clone VIP Chính Chủ</h3>
+                <p class="card-desc">Clone VIP chất lượng, chính chủ, phù hợp chạy quảng cáo và tạo tài khoản thương
+                  hiệu.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Premium</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">159.000đ</span>
+                    <span class="price-old">219.000đ</span>
+                  </div>
+                  <span class="price-disc">-27%</span>
+                </div>
+                <button class="buy-btn" id="buy-clone-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-clone-7">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-fb"><i class="fas fa-lock"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Secure</span>
+                  <span class="ctag ctag-default">Trắng</span>
+                </div>
+                <h3 class="card-name">Clone Secure</h3>
+                <p class="card-desc">Clone tài khoản an toàn, có thông tin rõ ràng và phù hợp sử dụng lâu dài.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>An toàn</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Quyền lợi</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">169.000đ</span>
+                    <span class="price-old">229.000đ</span>
+                  </div>
+                  <span class="price-disc">-26%</span>
+                </div>
+                <button class="buy-btn" id="buy-clone-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TIKTOK SECTION -->
+      <section class="product-section anim-up" id="section-tiktok">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-icon"><i class="fab fa-tiktok"></i></span>
+            <h2 class="section-title">TIKTOK / INSTAGRAM</h2>
+          </div>
+          <div class="section-right">
+            <a href="#section-tiktok" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            <div class="nav-btns">
+              <button class="nav-btn prev-btn" data-target="grid-tiktok" id="prev-tiktok"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="nav-btn next-btn" data-target="grid-tiktok" id="next-tiktok"><i
+                  class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="product-slider-wrap">
+          <div class="product-grid" id="grid-tiktok">
+            <div class="product-card" id="pcard-tiktok-1">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Hot</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-teal"><i class="fas fa-heart"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">TikTok</span>
+                  <span class="ctag ctag-hot">Follow</span>
+                </div>
+                <h3 class="card-name">Boost Follow TikTok</h3>
+                <p class="card-desc">Tăng follow thật an toàn, tăng uy tín profile và giúp nội dung dễ lên xu hướng hơn.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chất lượng</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">149.000đ</span>
+                    <span class="price-old">189.000đ</span>
+                  </div>
+                  <span class="price-disc">-26%</span>
+                </div>
+                <button class="buy-btn" id="buy-tiktok-1"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tiktok-2">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fab fa-instagram"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Instagram</span>
+                  <span class="ctag ctag-default">Like</span>
+                </div>
+                <h3 class="card-name">Buff Like Instagram</h3>
+                <p class="card-desc">Dịch vụ tăng like thật cho bài viết Instagram giúp tăng tương tác tự nhiên.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Nhanh</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>An toàn</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">139.000đ</span>
+                    <span class="price-old">189.000đ</span>
+                  </div>
+                  <span class="price-disc">-26%</span>
+                </div>
+                <button class="buy-btn" id="buy-tiktok-2"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tiktok-3">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-video"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Story</span>
+                  <span class="ctag ctag-default">Engagement</span>
+                </div>
+                <h3 class="card-name">Seeding Story Instagram</h3>
+                <p class="card-desc">Tăng view và tương tác cho story Instagram, giúp nâng tỷ lệ tiếp cận tự nhiên.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chuyên nghiệp</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Support</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">169.000đ</span>
+                    <span class="price-old">219.000đ</span>
+                  </div>
+                  <span class="price-disc">-23%</span>
+                </div>
+                <button class="buy-btn" id="buy-tiktok-3"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tiktok-4">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-orange"><i class="fas fa-camera"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Reels</span>
+                  <span class="ctag ctag-hot">Story</span>
+                </div>
+                <h3 class="card-name">Buff Reels TikTok</h3>
+                <p class="card-desc">Tăng view và tương tác cho nội dung Reels/TikTok với người xem thật.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Chuyên sâu</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hiệu quả</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">159.000đ</span>
+                    <span class="price-old">199.000đ</span>
+                  </div>
+                  <span class="price-disc">-20%</span>
+                </div>
+                <button class="buy-btn" id="buy-tiktok-4"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tiktok-5">
+              <div class="card-badge badge-hot"><i class="fas fa-fire"></i>Top</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-teal"><i class="fas fa-compass"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-default">Follow</span>
+                  <span class="ctag ctag-default">Top</span>
+                </div>
+                <h3 class="card-name">Buff Follow Tiktok</h3>
+                <p class="card-desc">Tăng follow thật cho tài khoản TikTok, giúp lên xu hướng và tăng tương tác.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Tốc độ</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Ổn định</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">179.000đ</span>
+                    <span class="price-old">229.000đ</span>
+                  </div>
+                  <span class="price-disc">-22%</span>
+                </div>
+                <button class="buy-btn" id="buy-tiktok-5"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tiktok-6">
+              <div class="card-badge badge-new"><i class="fas fa-star"></i>New</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-green"><i class="fas fa-bell"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Notify</span>
+                  <span class="ctag ctag-default">Story</span>
+                </div>
+                <h3 class="card-name">Buff Thông Báo</h3>
+                <p class="card-desc">Tăng tương tác thông báo cho video mới, giúp người theo dõi nhận biết nhanh hơn.
+                </p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Hiệu quả</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Đáng tin</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">149.000đ</span>
+                    <span class="price-old">189.000đ</span>
+                  </div>
+                  <span class="price-disc">-21%</span>
+                </div>
+                <button class="buy-btn" id="buy-tiktok-6"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+            <div class="product-card" id="pcard-tiktok-7">
+              <div class="card-badge badge-prem"><i class="fas fa-gem"></i>Premium</div>
+              <button class="card-wish"><i class="far fa-heart"></i></button>
+              <div class="card-img">
+                <div class="card-icon ic-gm-blue"><i class="fas fa-flame"></i></div>
+                <div class="card-overlay"><button class="qview-btn"><i class="fas fa-eye"></i>Xem nhanh</button></div>
+              </div>
+              <div class="card-body">
+                <div class="card-tags">
+                  <span class="ctag ctag-vip">Viral</span>
+                  <span class="ctag ctag-default">Premium</span>
+                </div>
+                <h3 class="card-name">Buff Viral TikTok</h3>
+                <p class="card-desc">Dịch vụ tăng viral cho video, hỗ trợ lan truyền tự nhiên và tăng lượt tiếp cận.</p>
+                <div class="card-meta">
+                  <span class="meta-item"><i class="fas fa-box"></i>Xu hướng</span>
+                  <span class="meta-item"><i class="fas fa-shopping-bag"></i>Hỗ trợ</span>
+                </div>
+                <div class="card-pricing">
+                  <div class="price-group">
+                    <span class="price-new">209.000đ</span>
+                    <span class="price-old">279.000đ</span>
+                  </div>
+                  <span class="price-disc">-25%</span>
+                </div>
+                <button class="buy-btn" id="buy-tiktok-7"><i class="fas fa-cart-plus"></i>Mua ngay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STATS SECTION -->
+      <section class="stats-section anim-up" id="stats-section">
+        <div class="stats-bg"></div>
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <i class="fas fa-users stat-card-icon"></i>
+              <span class="stat-card-num" data-count="52000">0</span>
+              <span class="stat-card-label">Khách hàng tin tưởng</span>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-box-open stat-card-icon"></i>
+              <span class="stat-card-num" data-count="180000">0</span>
+              <span class="stat-card-label">Tài khoản đã bán</span>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-star stat-card-icon"></i>
+              <span class="stat-card-num" data-count="99">0</span>
+              <span class="stat-card-label">% Đánh giá tốt</span>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-headset stat-card-icon"></i>
+              <span class="stat-card-num" data-count="247">0</span>
+              <span class="stat-card-label">Hỗ trợ 24/7</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="footer">
+    <div class="footer-wave">
+      <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,60 C240,100 480,20 720,60 C960,100 1200,20 1440,60 L1440,100 L0,100 Z" fill="currentColor" />
+      </svg>
+    </div>
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col footer-about">
+            <div class="footer-logo-row">
+              <img src="logo.png" alt="QuocHuy MMO"
+                style="height: 50px; width: auto; margin-bottom: 15px; display: block;">
+            </div>
+            <p>Chuyên cung cấp tài khoản Facebook, Gmail, Proxy, VPS và các dịch vụ MMO uy tín, giá tốt nhất thị trường.
+            </p>
+            <div class="footer-socials">
+              <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+              <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+              <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Sản phẩm</h4>
+            <ul>
+              <li><a href="#">Tài khoản Facebook</a></li>
+              <li><a href="#">Gmail / Email</a></li>
+              <li><a href="#">Proxy / VPS</a></li>
+              <li><a href="#">Phần mềm Tool</a></li>
+              <li><a href="#">Dịch vụ Seeding</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Hỗ trợ</h4>
+            <ul>
+              <li><a href="#">Hướng dẫn mua hàng</a></li>
+              <li><a href="#">Chính sách bảo hành</a></li>
+              <li><a href="#">Điều khoản dịch vụ</a></li>
+              <li><a href="#">Câu hỏi thường gặp</a></li>
+              <li><a href="#">Liên hệ</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Liên hệ</h4>
+            <ul class="contact-list">
+              <li><i class="fas fa-phone"></i>033.655.6137</li>
+              <li><i class="fab fa-telegram-plane"></i>@nqh2411</li>
+              <li><i class="fas fa-envelope"></i>contactforwork.quochuy@gmail.com</li>
+              <li><i class="fas fa-map-marker-alt"></i>Việt Nam</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>© 2026 QuocHuyMMO – All rights reserved. Made with <span>♥</span> in Vietnam</p>
+        <p>Thiết kế bởi QuocHuy Team</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FLOATING ELEMENTS -->
+  <div class="float-chat" id="float-chat">
+    <button class="float-chat-btn" id="chat-btn" title="Chat với chúng tôi">
+      <i class="fab fa-facebook-messenger"></i>
+    </button>
+    <div class="float-tip">Chat với chúng tôi!</div>
+  </div>
+  <button class="back-top" id="back-top" title="Lên đầu trang"><i class="fas fa-arrow-up"></i></button>
+
+  <!-- QUICK VIEW MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+      <div class="modal-body">
+        <div class="card-icon ic-fb" id="modal-icon" style="width:80px;height:80px;flex-shrink:0"><i
+            class="fab fa-facebook-f" id="modal-ico-i"></i></div>
+        <div class="modal-info">
+          <h3 id="modal-title">Tên sản phẩm</h3>
+          <p id="modal-desc">Mô tả sản phẩm</p>
+          <div class="modal-price">
+            <span class="price-new" id="modal-price">0đ</span>
+            <span class="price-old" id="modal-old-price"></span>
+          </div>
+          <button class="buy-btn modal-buy" id="modal-buy"><i class="fas fa-cart-plus"></i>Thêm vào giỏ hàng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

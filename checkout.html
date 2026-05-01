@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giỏ hàng – QuocHuy.MMO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="topbar">
+  <a href="index.html" class="topbar-logo">
+    <img src="logo.png" alt="QuocHuy MMO" style="height: 42px; width: auto; display: block;">
+  </a>
+  <a href="index.html" class="topbar-back"><i class="fas fa-arrow-left"></i> Tiếp tục mua hàng</a>
+</div>
+
+<div class="checkout-wrap">
+  <h1 class="page-title"><i class="fas fa-shopping-cart"></i> Giỏ hàng của bạn</h1>
+
+  <!-- LEFT: CART ITEMS -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <!-- Empty state -->
+    <div class="ck-card" id="empty-cart" style="display:none;text-align:center;padding:48px 24px">
+      <div style="font-size:56px;margin-bottom:16px;opacity:.4"><i class="fas fa-shopping-cart"></i></div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;color:#e6edf3">Giỏ hàng trống</h3>
+      <p style="font-size:13px;color:#8b949e;margin-bottom:20px">Bạn chưa thêm sản phẩm nào. Hãy quay lại và chọn sản phẩm!</p>
+      <a href="index.html" class="buy-main" style="display:inline-flex;width:auto;padding:12px 28px;text-decoration:none">
+        <i class="fas fa-arrow-left"></i> Quay lại mua hàng
+      </a>
+    </div>
+
+    <!-- Cart items container -->
+    <div id="cart-items"></div>
+
+    <!-- Suggestions -->
+    <div class="ck-card">
+      <h3><i class="fas fa-fire"></i> Có thể bạn quan tâm</h3>
+      <div class="suggest-item">
+        <div class="suggest-ico" style="background:linear-gradient(135deg,#EA4335,#d33426)"><i class="fas fa-envelope"></i></div>
+        <div class="suggest-info"><h4>Tài Khoản HotpotBook AI</h4><div class="s-price">245.000 đ</div></div>
+      </div>
+      <div class="suggest-item">
+        <div class="suggest-ico" style="background:linear-gradient(135deg,#4285F4,#2b6de8)"><i class="fab fa-facebook-f"></i></div>
+        <div class="suggest-info"><h4>Tài Khoản Élastinet Plus (TOP)</h4><div class="s-price">Liên hệ</div></div>
+      </div>
+      <div class="suggest-item">
+        <div class="suggest-ico" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><i class="fas fa-gem"></i></div>
+        <div class="suggest-info"><h4>Tài Khoản Grammarly Premium</h4><div class="s-price">199.000 đ</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: SUMMARY + PAYMENT -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div class="ck-card" id="summary-card">
+      <h3><i class="fas fa-receipt"></i> Tóm tắt đơn hàng</h3>
+      <div id="summary-lines"></div>
+    </div>
+
+    <div class="ck-card" id="payment-card">
+      <h3><i class="fas fa-credit-card"></i> Phương thức thanh toán</h3>
+      <div class="pay-options">
+        <label class="pay-opt active" data-method="wallet" onclick="selectPay(this)">
+          <input type="radio" name="pay" checked>
+          <i class="fas fa-wallet"></i><span class="pay-label">Ví điện tử</span>
+        </label>
+        <label class="pay-opt" data-method="bank" onclick="selectPay(this)">
+          <input type="radio" name="pay">
+          <i class="fas fa-university"></i><span class="pay-label">Chuyển khoản ngân hàng</span>
+        </label>
+        <label class="pay-opt" data-method="balance" onclick="selectPay(this)">
+          <input type="radio" name="pay">
+          <i class="fas fa-coins"></i><span class="pay-label">Số dư tài khoản</span>
+        </label>
+      </div>
+      <button class="buy-main" id="buy-main-btn" onclick="handleBuy()">
+        <i class="fas fa-bolt"></i> MUA NGAY TOÀN BỘ
+      </button>
+    </div>
+
+    <div class="ad-banner">
+      <h4>🔥 Flash Sale tháng 4</h4>
+      <p>Giảm thêm 10% cho đơn từ 500K!</p>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
+
+<!-- PAYMENT MODAL -->
+<div class="pay-overlay" id="pay-overlay">
+  <div class="pay-modal-box">
+    <div class="pm-header">
+      <h3><i class="fas fa-qrcode"></i> QUÉT MÃ ĐỂ THANH TOÁN</h3>
+      <button class="pm-close" onclick="closePayModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="pm-body">
+      <!-- LEFT: QR -->
+      <div class="pm-qr" id="pm-qr-panel">
+        <div class="pm-qr-img"><img id="qr-img" src="payment-qr.svg" alt="QR Thanh toán" style="width:100%;height:auto;border-radius:18px;object-fit:contain;background:#fff;border:1px solid #dbeafe"></div>
+        <div class="pm-bank">
+          <div class="pm-bank-logo">TCB</div>
+          <div>
+            <div class="pm-bank-name">TECHCOMBANK</div>
+            <div class="pm-bank-sub">STK: 1903 xxxx xxxx</div>
+          </div>
+        </div>
+        <div class="pm-partners">
+          <span><i class="fas fa-check-circle" style="color:#10b981"></i> VietQR</span>
+          <span><i class="fas fa-check-circle" style="color:#10b981"></i> Napas 247</span>
+        </div>
+        <div class="pm-note" id="pm-qr-note">Nhấn nút "Đã thanh toán" để gửi yêu cầu duyệt. Thanh toán chỉ được xác nhận sau khi admin duyệt.</div>
+      </div>
+      <div class="pm-info hidden" id="pm-info-panel"></div>
+      <!-- RIGHT: FORM -->
+      <div class="pm-form">
+        <div class="pm-row">
+          <span class="pm-label">Số lượng sản phẩm</span>
+          <span class="pm-val" id="pm-qty">1</span>
+        </div>
+        <div class="pm-row">
+          <span class="pm-label">Số tiền sản phẩm</span>
+          <span class="pm-val" id="pm-subtotal">99,000</span>
+        </div>
+        <div class="pm-row">
+          <span class="pm-label">Mã giảm giá</span>
+          <div class="pm-discount-row">
+            <input type="text" id="pm-coupon" placeholder="Nhập mã...">
+            <button onclick="applyCoupon()">ÁP DỤNG</button>
+          </div>
+        </div>
+        <div class="pm-row">
+          <span class="pm-label">TỔNG TIỀN</span>
+          <span class="pm-val highlight" id="pm-total">99,000 đ</span>
+        </div>
+        <button class="pm-confirm" onclick="confirmPay()">
+          <i class="fas fa-check-circle"></i> Đã thanh toán
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Particles
+const c=document.getElementById('bg'),x=c.getContext('2d');let W,H,ps=[];
+function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();addEventListener('resize',rs);
+for(let i=0;i<60;i++)ps.push({x:Math.random()*2e3,y:Math.random()*1200,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.8+.4,a:Math.random()*.5+.1});
+(function d(){x.clearRect(0,0,W,H);for(const p of ps){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(14,165,233,${p.a})`;x.fill()}requestAnimationFrame(d)})();
+
+// Cart
+function getCart(){try{return JSON.parse(localStorage.getItem('mmo_cart'))||[]}catch(e){return[]}}
+function saveCart(c){localStorage.setItem('mmo_cart',JSON.stringify(c))}
+function getCurrentUser(){try{return JSON.parse(localStorage.getItem('mmo_currentUser'))||null}catch(e){return null}}
+const currentUser = getCurrentUser();
+if (currentUser && (currentUser.role === 'admin' || currentUser.isAdmin)) {
+  window.location.href = 'admin.html';
+}
+function saveCurrentUser(user){localStorage.setItem('mmo_currentUser',JSON.stringify(user))}
+function saveUserOrder(order){
+  const currentUser = getCurrentUser();
+  if(!currentUser) return;
+  let users = [];
+  try { users = JSON.parse(localStorage.getItem('mmo_users')) || []; } catch(e) {}
+  const idx = users.findIndex(u => u.user === currentUser.user || u.email === currentUser.email);
+  if(idx === -1) {
+    currentUser.orders = currentUser.orders || [];
+    currentUser.orders.push(order);
+    saveCurrentUser(currentUser);
+    return;
+  }
+  users[idx].orders = users[idx].orders || [];
+  users[idx].orders.push(order);
+  localStorage.setItem('mmo_users', JSON.stringify(users));
+  saveCurrentUser(users[idx]);
+}
+function fmt(n){return n.toLocaleString('vi-VN')+'đ'}
+
+function renderCart(){
+  const cart=getCart();
+  const itemsEl=document.getElementById('cart-items');
+  const emptyEl=document.getElementById('empty-cart');
+  const summaryEl=document.getElementById('summary-lines');
+  const payCard=document.getElementById('payment-card');
+
+  if(!cart.length){
+    emptyEl.style.display='block';
+    itemsEl.innerHTML='';
+    summaryEl.innerHTML='<p style="color:#8b949e;font-size:13px;text-align:center;padding:16px 0">Chưa có sản phẩm</p>';
+    if(payCard)payCard.style.display='none';
+    return;
+  }
+  if(payCard)payCard.style.display='block';
+  emptyEl.style.display='none';
+
+  let html='';
+  cart.forEach((item,idx)=>{
+    html+=`<div class="ck-card" style="margin-bottom:12px;animation:fadeUp .3s ease">
+      <div style="display:flex;gap:16px;align-items:center">
+        <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,${item.color});display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;flex-shrink:0">
+          <i class="${item.icon}"></i>
+        </div>
+        <div style="flex:1;min-width:0">
+          <h4 style="font-size:14px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.name}</h4>
+          <p style="font-size:11px;color:#8b949e;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.desc}</p>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:15px;font-weight:800;color:#0ea5e9">${fmt(item.price)}</span>
+            <span style="font-size:11px;color:#8b949e;text-decoration:line-through">${fmt(item.oldPrice)}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="qty-ctrl">
+            <button onclick="changeQty(${idx},-1)">−</button>
+            <input type="number" value="${item.qty}" min="1" max="99" onchange="setQty(${idx},this.value)" style="width:40px">
+            <button onclick="changeQty(${idx},1)">+</button>
+          </div>
+          <button onclick="removeItem(${idx})" style="background:none;border:none;color:#ef4444;font-size:16px;cursor:pointer;padding:8px" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+        </div>
+      </div>
+    </div>`;
+  });
+  itemsEl.innerHTML=html;
+
+  const subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const discount=cart.reduce((s,i)=>s+(i.oldPrice-i.price)*i.qty,0);
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  summaryEl.innerHTML=`
+    <div class="summary-line"><span>Sản phẩm (${count})</span><span>${fmt(subtotal)}</span></div>
+    <div class="summary-line"><span>Tiết kiệm</span><span style="color:#10b981">-${fmt(discount)}</span></div>
+    <div class="summary-line"><span>Phí dịch vụ</span><span>0 đ</span></div>
+    <div class="summary-line total"><span>Tổng cộng</span><span class="val">${fmt(subtotal)}</span></div>`;
+}
+
+function changeQty(idx,d){const cart=getCart();if(!cart[idx])return;cart[idx].qty=Math.max(1,Math.min(99,cart[idx].qty+d));saveCart(cart);renderCart()}
+function setQty(idx,v){const cart=getCart();if(!cart[idx])return;cart[idx].qty=Math.max(1,Math.min(99,parseInt(v)||1));saveCart(cart);renderCart()}
+function removeItem(idx){const cart=getCart();cart.splice(idx,1);saveCart(cart);renderCart();showToast('Đã xóa sản phẩm khỏi giỏ hàng')}
+let selectedPayMethod = 'wallet';
+function selectPay(el){
+  document.querySelectorAll('.pay-opt').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  selectedPayMethod = el.dataset.method || 'wallet';
+}
+
+function setPayMethod(method) {
+  document.querySelectorAll('.pay-opt').forEach(e => {
+    const isActive = e.dataset.method === method;
+    e.classList.toggle('active', isActive);
+  });
+  selectedPayMethod = method;
+}
+
+let tt;
+function showToast(m){const e=document.getElementById('toast');document.getElementById('toast-msg').textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),3000)}
+
+// ---- PAYMENT MODAL ----
+let couponDiscount=0;
+
+function handleBuy(){
+  const cart=getCart();
+  if(!cart.length){showToast('Giỏ hàng trống!', true);return}
+  const currentUser = localStorage.getItem('mmo_currentUser');
+  if(!currentUser){
+    showToast('Vui lòng đăng nhập để thanh toán.', true);
+    setTimeout(() => { window.location.href = 'auth.html?tab=login'; }, 1200);
+    return;
+  }
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  const subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const finalAmount = Math.max(0, subtotal - couponDiscount);
+  document.getElementById('pm-qty').textContent=count;
+  document.getElementById('pm-subtotal').textContent=subtotal.toLocaleString('vi-VN');
+  document.getElementById('pm-total').textContent=fmt(finalAmount);
+  document.getElementById('pm-coupon').value='';
+
+  const qrPanel = document.getElementById('pm-qr-panel');
+  const infoPanel = document.getElementById('pm-info-panel');
+  const pmBody = document.querySelector('.pm-body');
+  const method = selectedPayMethod || 'wallet';
+  if (method === 'bank') {
+    qrPanel.style.display = 'flex';
+    infoPanel.classList.add('hidden');
+    pmBody.classList.remove('single-col');
+    document.querySelector('.pm-header h3').innerHTML = '<i class="fas fa-qrcode"></i> QUÉT MÃ ĐỂ THANH TOÁN';
+    document.getElementById('pm-qr-note').textContent = 'Nhấn nút "Đã thanh toán" để gửi yêu cầu duyệt. Thanh toán chỉ được xác nhận sau khi admin duyệt.';
+  } else {
+    qrPanel.style.display = 'none';
+    pmBody.classList.add('single-col');
+    infoPanel.classList.remove('hidden');
+    infoPanel.innerHTML = method === 'wallet'
+      ? 'Thanh toán bằng ví điện tử sẽ được xử lý nhanh, không cần quét mã. Hệ thống sẽ tự động kiểm tra số dư và duyệt ngay khi đủ.'
+      : 'Thanh toán bằng số dư tài khoản sẽ được duyệt ngay khi số dư đủ. Nếu không đủ, bạn có thể chọn phương thức khác hoặc từ chối đơn.';
+    document.querySelector('.pm-header h3').innerHTML = '<i class="fas fa-wallet"></i> XÁC NHẬN THANH TOÁN';
+  }
+
+  document.getElementById('pay-overlay').classList.add('show');
+}
+
+function closePayModal(){document.getElementById('pay-overlay').classList.remove('show')}
+document.getElementById('pay-overlay').addEventListener('click',function(e){if(e.target===this)closePayModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePayModal()});
+
+function applyCoupon(){
+  const code=document.getElementById('pm-coupon').value.trim().toUpperCase();
+  const cart=getCart();
+  const subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  if(code==='SALE10'){couponDiscount=Math.round(subtotal*0.1);showToast('🎉 Áp dụng mã giảm 10% thành công!')}
+  else if(code==='SALE20'){couponDiscount=Math.round(subtotal*0.2);showToast('🎉 Áp dụng mã giảm 20% thành công!')}
+  else if(code==='VIP50'){couponDiscount=50000;showToast('🎉 Áp dụng mã giảm 50K thành công!')}
+  else{couponDiscount=0;showToast('Mã giảm giá không hợp lệ!');return}
+  const final=Math.max(0,subtotal-couponDiscount);
+  document.getElementById('pm-total').textContent=fmt(final);
+}
+
+function confirmPay(){
+  const cart = getCart();
+  if(!cart.length){
+    closePayModal();
+    showToast('Giỏ hàng trống!', true);
+    return;
+  }
+  const currentUser = getCurrentUser();
+  if(!currentUser){
+    closePayModal();
+    showToast('Vui lòng đăng nhập để thanh toán.', true);
+    return;
+  }
+  const subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const finalAmount = Math.max(0, subtotal - couponDiscount);
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  const method = selectedPayMethod || 'wallet';
+  const paymentMethod = method === 'bank' ? 'Chuyển khoản ngân hàng' : method === 'balance' ? 'Số dư tài khoản' : 'Ví điện tử';
+  const useWallet = method === 'wallet' || method === 'balance';
+
+  if (useWallet && (currentUser.balance || 0) < finalAmount) {
+    const tryOther = confirm('Số dư không đủ để thanh toán bằng ví. Bạn có muốn chọn phương thức khác không? Nhấn OK để chọn phương thức khác, Hủy để từ chối đơn.');
+    if (tryOther) {
+      setPayMethod('bank');
+      const qrPanel = document.getElementById('pm-qr-panel');
+      const infoPanel = document.getElementById('pm-info-panel');
+      const pmBody = document.querySelector('.pm-body');
+      qrPanel.style.display = 'flex';
+      infoPanel.classList.add('hidden');
+      pmBody.classList.remove('single-col');
+      document.querySelector('.pm-header h3').innerHTML = '<i class="fas fa-qrcode"></i> QUÉT MÃ ĐỂ THANH TOÁN';
+      document.getElementById('pm-qr-note').textContent = 'Nhấn nút "Đã thanh toán" để gửi yêu cầu duyệt. Thanh toán chỉ được xác nhận sau khi admin duyệt.';
+      showToast('Đã chuyển sang phương thức chuyển khoản. Vui lòng nhấn lại thanh toán.');
+      return;
+    }
+    const failedOrder = {
+      id: 'GD-' + Date.now(),
+      ts: new Date().toISOString(),
+      customer: currentUser.user || currentUser.email || currentUser.name || 'Khách hàng',
+      items: cart,
+      count,
+      subtotal,
+      discount: couponDiscount,
+      total: finalAmount,
+      status: 'Thất bại',
+      method: paymentMethod,
+      note: 'Từ chối thanh toán do không đủ số dư.'
+    };
+    saveUserOrder(failedOrder);
+    saveCart([]);
+    couponDiscount = 0;
+    renderCart();
+    closePayModal();
+    showToast('Đơn hàng đã bị từ chối vì không chọn phương thức khác.', true);
+    return;
+  }
+
+  const order = {
+    id: 'GD-' + Date.now(),
+    ts: new Date().toISOString(),
+    customer: currentUser.user || currentUser.email || currentUser.name || 'Khách hàng',
+    items: cart,
+    count,
+    subtotal,
+    discount: couponDiscount,
+    total: finalAmount,
+    status: useWallet ? 'Thành công' : 'Đang xử lý',
+    method: paymentMethod
+  };
+  
+  let users = [];
+  try { users = JSON.parse(localStorage.getItem('mmo_users')) || []; } catch(e) {}
+  const idx = users.findIndex(u => u.user === currentUser.user || u.email === currentUser.email);
+  
+  if (idx !== -1) {
+    users[idx].orders = users[idx].orders || [];
+    users[idx].orders.push(order);
+    if (useWallet) {
+      users[idx].balance = (users[idx].balance || 0) - finalAmount;
+    }
+    localStorage.setItem('mmo_users', JSON.stringify(users));
+    localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+  } else {
+    currentUser.orders = currentUser.orders || [];
+    currentUser.orders.push(order);
+    if (useWallet) {
+      currentUser.balance = (currentUser.balance || 0) - finalAmount;
+    }
+    localStorage.setItem('mmo_currentUser', JSON.stringify(currentUser));
+  }
+
+  saveCart([]);
+  couponDiscount = 0;
+  renderCart();
+  closePayModal();
+  const message = useWallet
+    ? 'Thanh toán ví đã được duyệt tự động. Đơn hàng thành công.'
+    : 'Yêu cầu thanh toán đã được gửi. Giỏ hàng đã được xóa và đơn hàng đã được lưu.';
+  showToast(message, false);
+}
+
+// Pay method toggle
+document.querySelectorAll('.pay-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('active'));
+    opt.classList.add('active');
+    selectedPayMethod = opt.dataset.method || 'wallet';
+  });
+});
+
+renderCart();
+</script>
+</body>
+</html>
+
