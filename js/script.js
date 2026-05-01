@@ -33,9 +33,7 @@
     })();
   }
 
-  function getCurrentUser() {
-    try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch(e) { return null; }
-  }
+  function getCurrentUser() { return window.MMO.getUser(); }
   function isAdminUser() {
     const user = getCurrentUser();
     return user && (user.role === 'admin' || user.isAdmin);
@@ -157,7 +155,7 @@
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const count = cart.reduce((s, i) => s + i.qty, 0);
     if (badge) badge.textContent = count;
-    if (amount) amount.textContent = total ? total.toLocaleString('vi-VN') + 'đ' : '0 đ';
+    if (amount) amount.textContent = total ? window.MMO.fmt(total) : '0 đ';
   }
   refreshCartUI();
 
@@ -194,7 +192,7 @@
 
       const badge = document.getElementById('cart-badge');
       badge?.animate([{transform:'scale(1.6)'},{transform:'scale(1)'}], {duration:250,easing:'ease'});
-      notify(`Đã thêm "${name.substring(0,30)}..." vào giỏ!`, 'success');
+      window.MMO.notify(`Đã thêm "${name.substring(0,30)}..." vào giỏ!`, false);
     });
   });
 

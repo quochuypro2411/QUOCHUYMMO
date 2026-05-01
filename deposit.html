@@ -228,30 +228,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js?v=2.1"></script>
-<script src="js/sync.js?v=2.1"></script>
+<script src="js/firebase-config.js?v=2.2"></script>
+<script src="js/common.js?v=2.2"></script>
+<script src="js/sync.js?v=2.2"></script>
 <script>
-  function getCurrentUser() {
-    try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch (e) { return null; }
-  }
-  function getUsers() {
-    try { return JSON.parse(localStorage.getItem('mmo_users')) || []; } catch (e) { return []; }
-  }
-  function setUsers(users) {
-    localStorage.setItem('mmo_users', JSON.stringify(users));
-  }
-  function formatMoney(value) {
-    return Number(value || 0).toLocaleString('vi-VN') + ' đ';
-  }
-  function showToast(message, isError = false) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.style.background = isError ? 'rgba(220,38,38,.95)' : 'rgba(15,23,42,.96)';
-    toast.classList.add('show');
-    clearTimeout(window.depositToastTimer);
-    window.depositToastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
-  }
-  
   function renderDepositHistory(user) {
     const rows = document.getElementById('deposit-rows');
     const history = (user.transactions || []).filter(tx => tx.type === 'deposit-request');
@@ -263,7 +243,7 @@
       const statusClass = tx.status === 'Thành công' ? 'status-approve' : tx.status === 'Thất bại' ? 'status-failed' : 'status-pending';
       return `<tr>
         <td>${tx.id}</td>
-        <td>${formatMoney(tx.amount)}</td>
+        <td>${window.MMO.fmt(tx.amount)}</td>
         <td>${new Date(tx.date).toLocaleString('vi-VN')}</td>
         <td><span class="status-pill ${statusClass}">${tx.status}</span></td>
       </tr>`;
@@ -271,15 +251,15 @@
   }
 
   function refreshDepositPage() {
-    const user = getCurrentUser();
+    const user = window.MMO.getUser();
     if (!user) return;
-    document.getElementById('user-balance').textContent = formatMoney(user.balance);
+    document.getElementById('user-balance').textContent = window.MMO.fmt(user.balance);
     const usrIdEl = document.querySelector('.usr-id');
     if (usrIdEl) usrIdEl.textContent = (user.user || user.email || 'Khach').split('@')[0].toUpperCase();
     renderDepositHistory(user);
   }
 
-  function switchMethod(method) {
+  window.switchMethod = function(method) {
     document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.deposit-form').forEach(el => el.classList.remove('active'));
     if (method === 'bank') {
@@ -300,19 +280,15 @@
     const amount = parseInt(amountInput.value, 10);
 
     if (!amount || amount < 10000) {
-      showToast('Vui lòng nhập số tiền từ 10.000 đ', true);
+      window.MMO.notify('Vui lòng nhập số tiền từ 10.000 đ', true);
       return;
     }
-    const user = getCurrentUser();
-    if (!user) { showToast('Bạn cần đăng nhập.', true); return; }
+    const user = window.MMO.getUser();
+    if (!user) { window.MMO.notify('Bạn cần đăng nhập.', true); return; }
     
     try {
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
-
-      const users = getUsers();
-      const idx = users.findIndex(u => u.email === user.email || (u.user && u.user === user.user));
-      if (idx === -1) throw new Error("User not found");
 
       const request = {
         id: 'DEP-' + Date.now(),
@@ -323,28 +299,25 @@
         desc: noteInput.value.trim() || 'Chuyển khoản ngân hàng',
       };
 
-      users[idx].transactions = users[idx].transactions || [];
-      users[idx].transactions.unshift(request);
+      user.transactions = user.transactions || [];
+      user.transactions.unshift(request);
       
-      setUsers(users);
-      localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+      window.MMO.saveUser(user);
 
       if (window.mmoSendTelegram) {
-        const msg = `💰 <b>YÊU CẦU NẠP TIỀN</b>\n- ID: ${request.id}\n- Khách: ${user.email}\n- Số tiền: ${formatMoney(amount)}\n- Nội dung: ${request.desc}`;
+        const msg = `💰 <b>YÊU CẦU NẠP TIỀN</b>\n- ID: ${request.id}\n- Khách: ${user.email}\n- Số tiền: ${window.MMO.fmt(amount)}\n- Nội dung: ${request.desc}`;
         window.mmoSendTelegram(msg);
       }
 
-      if (window.mmoUpsertUser) {
-        await window.mmoUpsertUser(users[idx]).catch(e => console.warn("Cloud sync deferred."));
-      }
+      if (window.mmoUpsertUser) await window.mmoUpsertUser(user).catch(e => console.warn("Cloud sync deferred."));
 
       amountInput.value = '';
       noteInput.value = '';
       refreshDepositPage();
-      showToast('Đã gửi yêu cầu nạp tiền thành công!');
+      window.MMO.notify('Đã gửi yêu cầu nạp tiền thành công!');
     } catch (e) {
       console.error(e);
-      showToast('Lỗi gửi yêu cầu!', true);
+      window.MMO.notify('Lỗi gửi yêu cầu!', true);
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalText;
@@ -360,17 +333,13 @@
     const serial = document.getElementById('card-serial').value.trim();
     const pin = document.getElementById('card-pin').value.trim();
     
-    if (!serial || !pin) { showToast('Vui lòng nhập Seri và Mã thẻ.', true); return; }
-    const user = getCurrentUser();
+    if (!serial || !pin) { window.MMO.notify('Vui lòng nhập Seri và Mã thẻ.', true); return; }
+    const user = window.MMO.getUser();
     if (!user) return;
     
     try {
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang kiểm tra...';
-
-      const users = getUsers();
-      const idx = users.findIndex(u => u.email === user.email || (u.user && u.user === user.user));
-      if (idx === -1) throw new Error("User not found");
 
       const newReq = {
         id: 'CARD-' + Date.now(),
@@ -381,27 +350,24 @@
         desc: `Nạp thẻ ${network} - Seri: ${serial} - PIN: ${pin}`,
       };
 
-      users[idx].transactions = users[idx].transactions || [];
-      users[idx].transactions.unshift(newReq);
+      user.transactions = user.transactions || [];
+      user.transactions.unshift(newReq);
 
-      setUsers(users);
-      localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+      window.MMO.saveUser(user);
 
       if (window.mmoSendTelegram) {
-        const msg = `💳 <b>YÊU CẦU NẠP THẺ</b>\n- ID: ${newReq.id}\n- Khách: ${user.email}\n- Mệnh giá: ${formatMoney(value)}\n- Loại: ${network}\n- Seri: ${serial}`;
+        const msg = `💳 <b>YÊU CẦU NẠP THẺ</b>\n- ID: ${newReq.id}\n- Khách: ${user.email}\n- Mệnh giá: ${window.MMO.fmt(value)}\n- Loại: ${network}\n- Seri: ${serial}`;
         window.mmoSendTelegram(msg);
       }
 
-      if (window.mmoUpsertUser) {
-        await window.mmoUpsertUser(users[idx]).catch(e => console.warn("Cloud sync deferred."));
-      }
+      if (window.mmoUpsertUser) await window.mmoUpsertUser(user).catch(e => console.warn("Cloud sync deferred."));
 
       document.getElementById('card-serial').value = '';
       document.getElementById('card-pin').value = '';
       refreshDepositPage();
-      showToast('Đã gửi yêu cầu nạp thẻ thành công!');
+      window.MMO.notify('Đã gửi yêu cầu nạp thẻ thành công!');
     } catch (e) {
-      showToast('Lỗi gửi yêu cầu thẻ cào!', true);
+      window.MMO.notify('Lỗi gửi yêu cầu thẻ cào!', true);
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalText;
@@ -410,12 +376,12 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     refreshDepositPage();
-    let currentUser = getCurrentUser();
+    let currentUser = window.MMO.getUser();
     if (currentUser) {
       const walletBtn = document.getElementById('wallet-btn');
       const walletAmount = document.getElementById('wallet-amount');
       if (walletBtn) walletBtn.style.display = 'flex';
-      if (walletAmount) walletAmount.textContent = formatMoney(currentUser.balance);
+      if (walletAmount) walletAmount.textContent = window.MMO.fmt(currentUser.balance);
       
       const authTexts = document.querySelector('.auth-texts');
       if (authTexts) {

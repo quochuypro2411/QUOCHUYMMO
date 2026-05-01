@@ -101,8 +101,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/sync.js"></script>
+<script src="js/firebase-config.js?v=2.2"></script>
+<script src="js/common.js?v=2.2"></script>
+<script src="js/sync.js?v=2.2"></script>
 <script>
   // Particles
   const c=document.getElementById('bg'),x=c.getContext('2d');let W,H,ps=[];
@@ -113,16 +114,7 @@
   // Core Logic
   const getCart=()=>JSON.parse(localStorage.getItem('mmo_cart')||'[]');
   const saveCart=(c)=>localStorage.setItem('mmo_cart',JSON.stringify(c));
-  const getUser=()=>JSON.parse(localStorage.getItem('mmo_currentUser')||'null');
-  const fmt=(n)=>Number(n).toLocaleString('vi-VN')+'đ';
-
-  function showToast(msg, isError=false){
-    const t=document.getElementById('toast');
-    document.getElementById('toast-msg').textContent=msg;
-    t.className=isError?'error show':'show';
-    setTimeout(()=>t.classList.remove('show'),3000);
-  }
-
+  
   function renderCart(){
     const cart=getCart();
     const itemsEl=document.getElementById('cart-items');
@@ -142,25 +134,25 @@
           <div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,${item.color});display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px"><i class="${item.icon}"></i></div>
           <div style="flex:1">
             <h4 style="font-size:14px;font-weight:700">${item.name}</h4>
-            <div style="color:#0ea5e9;font-weight:800">${fmt(item.price)}</div>
+            <div style="color:#0ea5e9;font-weight:800">${window.MMO.fmt(item.price)}</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
             <div style="display:flex;align-items:center;gap:8px;background:#161b22;padding:4px 10px;border-radius:8px">
-              <button onclick="changeQty(${idx},-1)" style="background:none;border:none;color:#fff;cursor:pointer">−</button>
+              <button onclick="window.changeQty(${idx},-1)" style="background:none;border:none;color:#fff;cursor:pointer">−</button>
               <span>${item.qty}</span>
-              <button onclick="changeQty(${idx},1)" style="background:none;border:none;color:#fff;cursor:pointer">+</button>
+              <button onclick="window.changeQty(${idx},1)" style="background:none;border:none;color:#fff;cursor:pointer">+</button>
             </div>
-            <button onclick="removeItem(${idx})" style="color:#ef4444;background:none;border:none;cursor:pointer"><i class="fas fa-trash"></i></button>
+            <button onclick="window.removeItem(${idx})" style="color:#ef4444;background:none;border:none;cursor:pointer"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       </div>`).join('');
 
     const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-    summaryEl.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px"><span>Tổng tiền</span><strong style="color:#fff;font-size:18px">${fmt(total)}</strong></div>`;
+    summaryEl.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px"><span>Tổng tiền</span><strong style="color:#fff;font-size:18px">${window.MMO.fmt(total)}</strong></div>`;
   }
 
-  function changeQty(idx,d){const c=getCart();c[idx].qty=Math.max(1,c[idx].qty+d);saveCart(c);renderCart()}
-  function removeItem(idx){const c=getCart();c.splice(idx,1);saveCart(c);renderCart();showToast('Đã xóa sản phẩm')}
+  window.changeQty = function(idx,d){const c=getCart();c[idx].qty=Math.max(1,c[idx].qty+d);saveCart(c);renderCart()}
+  window.removeItem = function(idx){const c=getCart();c.splice(idx,1);saveCart(c);renderCart();window.MMO.notify('Đã xóa sản phẩm')}
 
   let selectedPayMethod = 'balance';
   window.selectPay = function(el){
@@ -180,13 +172,12 @@
 
   window.handleBuy = function(){
     const cart=getCart();
-    if(!cart.length) { showToast('Giỏ hàng trống!', true); return; }
-    const user=getUser();
-    if(!user){showToast('Vui lòng đăng nhập!',true);setTimeout(()=>window.location.href='auth.html',1500);return}
+    if(!cart.length) { window.MMO.notify('Giỏ hàng trống!', true); return; }
+    const user=window.MMO.getUser();
+    if(!user){window.MMO.notify('Vui lòng đăng nhập!',true);setTimeout(()=>window.location.href='auth.html',1500);return}
     
     document.getElementById('pm-qty').textContent=cart.reduce((s,i)=>s+i.qty,0);
-    document.getElementById('pm-total').textContent=fmt(cart.reduce((s,i)=>s+i.price*i.qty,0));
-    
+    document.getElementById('pm-total').textContent=window.MMO.fmt(cart.reduce((s,i)=>s+i.price*i.qty,0));
     document.getElementById('pay-overlay').classList.add('active');
   }
 
@@ -197,11 +188,11 @@
     if(!btn || btn.disabled) return;
     const original=btn.innerHTML;
     const cart=getCart();
-    const user=getUser();
+    const user=window.MMO.getUser();
     const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
 
     if(selectedPayMethod==='balance' && (user.balance || 0) < total){
-      showToast('Số dư không đủ!',true);
+      window.MMO.notify('Số dư không đủ!',true);
       return;
     }
 
@@ -218,24 +209,27 @@
         status:selectedPayMethod==='balance'?'Thành công':'Đang xử lý'
       };
 
-      const users=JSON.parse(localStorage.getItem('mmo_users')||'[]');
-      const idx = users.findIndex(u => u.email === user.email || u.uid === user.uid);
-      if(idx!==-1){
-        users[idx].orders=users[idx].orders||[];
-        users[idx].orders.unshift(order);
-        if(selectedPayMethod==='balance') users[idx].balance-=total;
-        
-        localStorage.setItem('mmo_users',JSON.stringify(users));
-        localStorage.setItem('mmo_currentUser',JSON.stringify(users[idx]));
-        const msg = `📦 <b>ĐƠN HÀNG MỚI</b>\n- ID: ${order.id}\n- Khách: ${user.email}\n- Tổng: ${fmt(total)}\n- Hình thức: ${order.method}\n- Trạng thái: ${order.status}`;
+      user.orders = user.orders || [];
+      user.orders.unshift(order);
+      if(selectedPayMethod === 'balance') user.balance -= total;
+      
+      // Update globally via MMO utility
+      window.MMO.saveUser(user);
+
+      // --- BÁO TELEGRAM ---
+      if (window.mmoSendTelegram) {
+        const msg = `📦 <b>ĐƠN HÀNG MỚI</b>\n- ID: ${order.id}\n- Khách: ${user.email}\n- Tổng: ${window.MMO.fmt(total)}\n- Hình thức: ${order.method}\n- Trạng thái: ${order.status}`;
         window.mmoSendTelegram(msg);
       }
 
+      if(window.mmoUpsertUser) await window.mmoUpsertUser(user).catch(e => console.warn("Sync deferred."));
+
       saveCart([]);
-      showToast('Đặt hàng thành công!');
+      window.MMO.notify('Đặt hàng thành công!');
       setTimeout(()=>window.location.href='history.html',1500);
     }catch(e){
-      showToast('Lỗi kết nối Cloud!',true);
+      console.error(e);
+      window.MMO.notify('Lỗi kết nối!',true);
       btn.disabled=false;
       btn.innerHTML=original;
     }
