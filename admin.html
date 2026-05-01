@@ -76,6 +76,10 @@
     .form-actions button.primary { background: linear-gradient(135deg, var(--blue), var(--blue2)); color: white; }
     .form-actions button.danger { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
     .form-actions button.success { background: linear-gradient(135deg, var(--success), #22c55e); color: white; }
+    .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .status-pill.pending { background: rgba(251,191,36,.2); color: var(--warning); }
+    .status-pill.approved { background: rgba(52,211,153,.2); color: var(--success); }
+    .status-pill.rejected { background: rgba(248,113,113,.2); color: var(--danger); }
   </style>
 </head>
 <body>
@@ -147,6 +151,48 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <div class="section-title">Quản lý đơn hàng</div>
+      <div class="users-table-wrap">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Mã đơn</th>
+              <th>Khách hàng</th>
+              <th>Sản phẩm</th>
+              <th>Tổng tiền</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="orders-body">
+            <tr><td colspan="6" class="empty-state">Đang tải đơn hàng...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <div class="section-title">Yêu cầu nạp tiền</div>
+      <div class="users-table-wrap">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Mã yêu cầu</th>
+              <th>Khách hàng</th>
+              <th>Số tiền</th>
+              <th>Ngày</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="deposits-body">
+            <tr><td colspan="6" class="empty-state">Đang tải yêu cầu nạp tiền...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -597,6 +643,183 @@
       await loadAccounts();
     }
     
+    // Order Management
+    async function loadOrders() {
+      if (!db) {
+        document.getElementById('orders-body').innerHTML = '<tr><td colspan="6" class="empty-state">Firebase chưa cấu hình</td></tr>';
+        return;
+      }
+      
+      try {
+        const snap = await db.collection('orders').get();
+        if (snap.empty) {
+          document.getElementById('orders-body').innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có đơn hàng nào</td></tr>';
+          return;
+        }
+        
+        const orders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const body = document.getElementById('orders-body');
+        
+        body.innerHTML = orders.map(order => {
+          const statusClass = order.status === 'Đã duyệt' ? 'approved' : 
+                              order.status === 'Đã từ chối' ? 'rejected' : 'pending';
+          const itemCount = order.items ? order.items.length : 0;
+          const customer = order.customerEmail || order.customer || 'Không rõ';
+          
+          return `
+          <tr>
+            <td>${order.id || '-'}</td>
+            <td>${customer}</td>
+            <td>${itemCount} sản phẩm</td>
+            <td>${formatMoney(order.total || 0)}</td>
+            <td><span class="status-pill ${statusClass}">${order.status || 'Chờ duyệt'}</span></td>
+            <td>
+              <div class="role-actions">
+                ${order.status !== 'Đã duyệt' && order.status !== 'Đã từ chối' ? `
+                  <button class="button-small approve" onclick="approveOrder('${order.id}')">
+                    <i class="fas fa-check"></i> Duyệt
+                  </button>
+                  <button class="button-small reject" onclick="rejectOrder('${order.id}')">
+                    <i class="fas fa-times"></i> Từ chối
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        document.getElementById('orders-body').innerHTML = '<tr><td colspan="6" class="empty-state">Lỗi tải đơn hàng</td></tr>';
+      }
+    }
+    
+    async function approveOrder(orderId) {
+      if (!confirm('Xác nhận duyệt đơn hàng này?')) return;
+      
+      try {
+        await db.collection('orders').doc(orderId).update({
+          status: 'Đã duyệt',
+          updatedAt: new Date().toISOString()
+        });
+        
+        showToast('✅ Đã duyệt đơn hàng.');
+        await loadOrders();
+      } catch (error) {
+        console.error('Error approving order:', error);
+        showToast('❌ Lỗi duyệt đơn hàng.', true);
+      }
+    }
+    
+    async function rejectOrder(orderId) {
+      if (!confirm('Xác nhận từ chối đơn hàng này?')) return;
+      
+      try {
+        await db.collection('orders').doc(orderId).update({
+          status: 'Đã từ chối',
+          updatedAt: new Date().toISOString()
+        });
+        
+        showToast('✅ Đã từ chối đơn hàng.');
+        await loadOrders();
+      } catch (error) {
+        console.error('Error rejecting order:', error);
+        showToast('❌ Lỗi từ chối đơn hàng.', true);
+      }
+    }
+    
+    // Deposit Requests Management
+    async function loadDepositRequests() {
+      if (!db) {
+        document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Firebase chưa cấu hình</td></tr>';
+        return;
+      }
+      
+      try {
+        const snap = await db.collection('deposit_requests').get();
+        if (snap.empty) {
+          document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có yêu cầu nạp tiền nào</td></tr>';
+          return;
+        }
+        
+        const deposits = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const body = document.getElementById('deposits-body');
+        
+        body.innerHTML = deposits.map(deposit => {
+          const statusClass = deposit.status === 'Đã duyệt' ? 'approved' : 
+                              deposit.status === 'Đã từ chối' ? 'rejected' : 'pending';
+          const customer = deposit.customerEmail || deposit.customer || 'Không rõ';
+          const date = deposit.createdAt ? new Date(deposit.createdAt).toLocaleDateString('vi-VN') : '-';
+          
+          return `
+          <tr>
+            <td>${deposit.id || '-'}</td>
+            <td>${customer}</td>
+            <td>${formatMoney(deposit.amount || 0)}</td>
+            <td>${date}</td>
+            <td><span class="status-pill ${statusClass}">${deposit.status || 'Chờ duyệt'}</span></td>
+            <td>
+              <div class="role-actions">
+                ${deposit.status !== 'Đã duyệt' && deposit.status !== 'Đã từ chối' ? `
+                  <button class="button-small approve" onclick="approveDeposit('${deposit.id}', '${deposit.customerEmail || deposit.customer}', ${deposit.amount || 0})">
+                    <i class="fas fa-check"></i> Duyệt
+                  </button>
+                  <button class="button-small reject" onclick="rejectDeposit('${deposit.id}')">
+                    <i class="fas fa-times"></i> Từ chối
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading deposits:', error);
+        document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Lỗi tải yêu cầu nạp tiền</td></tr>';
+      }
+    }
+    
+    async function approveDeposit(depositId, customerEmail, amount) {
+      if (!confirm(`Xác nhận duyệt yêu cầu nạp ${formatMoney(amount)}?`)) return;
+      
+      try {
+        await db.collection('deposit_requests').doc(depositId).update({
+          status: 'Đã duyệt',
+          updatedAt: new Date().toISOString()
+        });
+        
+        const users = getUsers();
+        const userIndex = users.findIndex(u => u.email === customerEmail);
+        
+        if (userIndex !== -1) {
+          users[userIndex].balance = (users[userIndex].balance || 0) + amount;
+          setUsers(users);
+          await upsertCloudUser(users[userIndex]);
+        }
+        
+        showToast('✅ Đã duyệt yêu cầu nạp tiền.');
+        await loadDepositRequests();
+      } catch (error) {
+        console.error('Error approving deposit:', error);
+        showToast('❌ Lỗi duyệt yêu cầu nạp tiền.', true);
+      }
+    }
+    
+    async function rejectDeposit(depositId) {
+      if (!confirm('Xác nhận từ chối yêu cầu nạp tiền này?')) return;
+      
+      try {
+        await db.collection('deposit_requests').doc(depositId).update({
+          status: 'Đã từ chối',
+          updatedAt: new Date().toISOString()
+        });
+        
+        showToast('✅ Đã từ chối yêu cầu nạp tiền.');
+        await loadDepositRequests();
+      } catch (error) {
+        console.error('Error rejecting deposit:', error);
+        showToast('❌ Lỗi từ chối yêu cầu nạp tiền.', true);
+      }
+    }
+    
     async function initializeUsers() {
       const localUsers = loadLocalUsers();
       usersCache = localUsers;
@@ -665,6 +888,8 @@
       
       await initializeUsers();
       await loadAccounts();
+      await loadOrders();
+      await loadDepositRequests();
     };
     
     startAdmin().catch(() => {
