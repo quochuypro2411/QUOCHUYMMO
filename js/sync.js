@@ -17,42 +17,19 @@
     try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch(e) { return null; }
   }
 
-  async function syncUser() {
+  async function startRealtimeSync() {
     if (!db) return;
     const currentUser = getLocalUser();
     if (!currentUser) return;
 
-    try {
-      const email = (currentUser.email || '').toLowerCase().trim();
-      const uid = currentUser.uid;
-      
-      console.log("[Sync] Attempting sync for:", email || currentUser.user, "UID:", uid);
+    const email = (currentUser.email || '').toLowerCase().trim();
+    const uid = currentUser.uid;
+    
+    console.log("[Sync] Starting real-time sync for:", email || currentUser.user);
 
-      let doc = null;
-      let docRef = null;
-
-      // 1. Try UID first (most accurate)
-      if (uid) {
-        docRef = db.collection('users').doc(uid);
-        doc = await docRef.get();
-      }
-
-      // 2. Try Email as fallback
-      if ((!doc || !doc.exists) && email) {
-        docRef = db.collection('users').doc(email);
-        doc = await docRef.get();
-      }
-
-      // 3. Try Username as last resort
-      if ((!doc || !doc.exists) && currentUser.user) {
-        docRef = db.collection('users').doc(currentUser.user.toLowerCase().trim());
-        doc = await docRef.get();
-      }
-
-      if (doc && doc.exists) {
+    const handleData = (doc) => {
+      if (doc.exists) {
         const cloudData = doc.data();
-        console.log("[Sync] Cloud data found:", cloudData);
-        
         const merged = { ...currentUser, ...cloudData };
         localStorage.setItem('mmo_currentUser', JSON.stringify(merged));
         
@@ -64,25 +41,29 @@
           localStorage.setItem('mmo_users', JSON.stringify(users));
         }
 
-        // Dispatch custom event
-        window.dispatchEvent(new CustomEvent('mmo_user_synced', { detail: merged }));
-        
         // Auto-update common UI elements
         updateCommonUI(merged);
-        console.log("[Sync] Sync successful. New balance:", merged.balance);
-      } else {
-        console.warn("[Sync] No cloud document found for this user.");
+        console.log("[Sync] Real-time update received. Balance:", merged.balance);
+        
+        // Dispatch custom event
+        window.dispatchEvent(new CustomEvent('mmo_user_synced', { detail: merged }));
       }
-    } catch (e) {
-      console.error("[Sync] Cloud sync failed:", e);
+    };
+
+    // Listen by UID first
+    if (uid) {
+      db.collection('users').doc(uid).onSnapshot(handleData, err => console.warn("[Sync] UID listener error:", err));
+    } else if (email) {
+      // Fallback to Email if UID is missing
+      db.collection('users').doc(email).onSnapshot(handleData, err => console.warn("[Sync] Email listener error:", err));
     }
   }
 
   function updateCommonUI(user) {
-    const format = (n) => (n || 0).toLocaleString('vi-VN') + ' đ';
+    const format = (n) => Number(n || 0).toLocaleString('vi-VN') + ' đ';
     
     // Balance elements
-    document.querySelectorAll('#user-balance, #wallet-amount').forEach(el => {
+    document.querySelectorAll('#user-balance, #wallet-amount, #wallet-value').forEach(el => {
       el.textContent = format(user.balance);
     });
 
@@ -96,9 +77,9 @@
     }
   }
 
-  // Initial sync
-  syncUser();
+  // Start syncing
+  startRealtimeSync();
 
   // Expose for manual trigger
-  window.mmoSyncUser = syncUser;
+  window.mmoSyncUser = startRealtimeSync;
 })();
