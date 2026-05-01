@@ -1120,8 +1120,14 @@ function sendGlobalNotification() {
   // Push to Cloud
   if (db) {
     db.collection('global_notifications').doc(notif.id).set(notif)
-      .then(() => console.log("✅ Đã gửi thông báo chung lên Cloud"))
-      .catch(e => console.error("❌ Lỗi gửi thông báo Cloud:", e));
+      .then(() => {
+        console.log("✅ Đã gửi thông báo chung lên Cloud thành công");
+        showToast('Đã gửi thông báo đến toàn bộ người dùng!');
+      })
+      .catch(e => {
+        console.error("❌ Lỗi gửi thông báo Cloud:", e);
+        showToast('Gửi thông báo lên Cloud thất bại!', true);
+      });
   }
   
   // Local fallback
@@ -1130,7 +1136,6 @@ function sendGlobalNotification() {
   
   document.getElementById('notif-title').value = '';
   document.getElementById('notif-content').value = '';
-  showToast('Đã gửi thông báo đến toàn bộ người dùng!');
 }
 const startAdmin = async () => {
   if (auth) {

@@ -106,6 +106,13 @@
           
         localStorage.setItem('mmo_global_notifications', JSON.stringify(notifs));
         console.log("[Sync] Global notifications updated:", notifs.length);
+        
+        // Update marquee directly if possible
+        const marquee = document.querySelector('.marquee-text');
+        if (marquee && notifs.length > 0) {
+          marquee.innerHTML = notifs.map(n => `<span><i class="fas fa-bullhorn"></i>&nbsp;${n.title}: ${n.message} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`).join('');
+        }
+        
         window.dispatchEvent(new CustomEvent('mmo_global_notifs_synced', { detail: notifs }));
       }, err => console.warn("[Sync] Global notifs error:", err));
   }
