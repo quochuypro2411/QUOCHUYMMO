@@ -517,7 +517,6 @@
     // Initialize
     async function initializeUsers() {
       const localUsers = loadLocalUsers();
-      usersCache = localUsers;
       
       if (!db) {
         console.log('Firebase not configured, using local storage only');
@@ -530,18 +529,32 @@
         updateCloudStatus(true, 'Đang đồng bộ với Firebase...');
         
         const cloudUsers = await fetchCloudUsers();
-        console.log(`Fetched ${cloudUsers.length} users from Firebase`);
+        console.log(`Fetched ${cloudUsers.length} users from Firebase:`, cloudUsers);
         
-        const mergedUsers = [...localUsers, ...cloudUsers];
+        // Merge local and cloud users, cloud users take priority
+        const mergedUsers = [...cloudUsers];
+        
+        // Add local users that don't exist in cloud
+        localUsers.forEach(localUser => {
+          const existsInCloud = cloudUsers.some(cloudUser => 
+            cloudUser.email === localUser.email || cloudUser.id === localUser.id
+          );
+          if (!existsInCloud) {
+            mergedUsers.push(localUser);
+          }
+        });
+        
         usersCache = mergedUsers;
         
         localStorage.setItem('mmo_users', JSON.stringify(mergedUsers));
         console.log(`Merged users: ${mergedUsers.length} total`);
+        console.log('Final users cache:', usersCache);
         
         updateCloudStatus(true, `Đồng bộ thành công (${mergedUsers.length} users)`);
       } catch (e) {
         console.error("Lỗi khi tải dữ liệu từ Cloud:", e);
         usersCache = localUsers;
+        updateCloudStatus(false, 'Lỗi đồng bộ: ' + e.message);
       }
     }
     
