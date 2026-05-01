@@ -710,46 +710,85 @@
       }
       
       try {
+        console.log('💰 Loading deposit requests from Firebase...');
+        console.log('📊 Accessing collection: deposit_requests');
+        
         const snap = await db.collection('deposit_requests').get();
+        console.log('📊 Deposit requests snapshot:', snap);
+        console.log('📊 Number of documents:', snap.size);
+        console.log('📊 Snapshot empty:', snap.empty);
+        
         if (snap.empty) {
+          console.log('⚠️ No deposit requests found, trying alternative collection names...');
+          
+          // Try alternative collection names
+          const altCollections = ['depositRequests', 'deposits', 'deposit_request'];
+          for (const altName of altCollections) {
+            try {
+              console.log(`🔄 Trying alternative collection: ${altName}`);
+              const altSnap = await db.collection(altName).get();
+              console.log(`📊 Alternative ${altName} found:`, altSnap.size, 'docs');
+              
+              if (!altSnap.empty) {
+                const deposits = altSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log('✅ Found deposits in alternative collection:', deposits);
+                renderDepositRequests(deposits);
+                return;
+              }
+            } catch (altError) {
+              console.log(`❌ Alternative collection ${altName} failed:`, altError.message);
+            }
+          }
+          
           document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có yêu cầu nạp tiền nào</td></tr>';
           return;
         }
         
-        const deposits = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const body = document.getElementById('deposits-body');
+        const deposits = snap.docs.map(doc => {
+          console.log('📄 Deposit request document:', doc.id, doc.data());
+          return { id: doc.id, ...doc.data() };
+        });
         
-        body.innerHTML = deposits.map(deposit => {
-          const statusClass = deposit.status === 'Đã duyệt' ? 'approved' : 
-                              deposit.status === 'Đã từ chối' ? 'rejected' : 'pending';
-          const customer = deposit.customerEmail || deposit.customer || 'Không rõ';
-          const date = deposit.createdAt ? new Date(deposit.createdAt).toLocaleDateString('vi-VN') : '-';
-          
-          return `
-          <tr>
-            <td>${deposit.id || '-'}</td>
-            <td>${customer}</td>
-            <td>${formatMoney(deposit.amount || 0)}</td>
-            <td>${date}</td>
-            <td><span class="status-pill ${statusClass}">${deposit.status || 'Chờ duyệt'}</span></td>
-            <td>
-              <div class="role-actions">
-                ${deposit.status !== 'Đã duyệt' && deposit.status !== 'Đã từ chối' ? `
-                  <button class="button-small approve" onclick="approveDeposit('${deposit.id}', '${deposit.customerEmail || deposit.customer}', ${deposit.amount || 0})">
-                    <i class="fas fa-check"></i> Duyệt
-                  </button>
-                  <button class="button-small reject" onclick="rejectDeposit('${deposit.id}')">
-                    <i class="fas fa-times"></i> Từ chối
-                  </button>
-                ` : ''}
-              </div>
-            </td>
-          </tr>`;
-        }).join('');
+        console.log('✅ Loaded deposit requests:', deposits);
+        renderDepositRequests(deposits);
       } catch (error) {
-        console.error('Error loading deposits:', error);
+        console.error('❌ Error loading deposits:', error);
+        console.error('❌ Error code:', error.code);
+        console.error('❌ Error message:', error.message);
         document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Lỗi tải yêu cầu nạp tiền</td></tr>';
       }
+    }
+    
+    function renderDepositRequests(deposits) {
+      const body = document.getElementById('deposits-body');
+      
+      body.innerHTML = deposits.map(deposit => {
+        const statusClass = deposit.status === 'Đã duyệt' ? 'approved' : 
+                            deposit.status === 'Đã từ chối' ? 'rejected' : 'pending';
+        const customer = deposit.customerEmail || deposit.customer || deposit.email || 'Không rõ';
+        const date = deposit.createdAt ? new Date(deposit.createdAt).toLocaleDateString('vi-VN') : '-';
+        
+        return `
+        <tr>
+          <td>${deposit.id || '-'}</td>
+          <td>${customer}</td>
+          <td>${formatMoney(deposit.amount || 0)}</td>
+          <td>${date}</td>
+          <td><span class="status-pill ${statusClass}">${deposit.status || 'Chờ duyệt'}</span></td>
+          <td>
+            <div class="role-actions">
+              ${deposit.status !== 'Đã duyệt' && deposit.status !== 'Đã từ chối' ? `
+                <button class="button-small approve" onclick="approveDeposit('${deposit.id}', '${customer}', ${deposit.amount || 0})">
+                  <i class="fas fa-check"></i> Duyệt
+                </button>
+                <button class="button-small reject" onclick="rejectDeposit('${deposit.id}')">
+                  <i class="fas fa-times"></i> Từ chối
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
     }
     
     async function approveDeposit(depositId, customerEmail, amount) {
@@ -968,6 +1007,15 @@
           db.collection('deposit_requests').onSnapshot((snapshot) => {
             console.log('💰 Deposit requests updated, refreshing...');
             loadDepositRequests();
+          });
+          
+          // Also listen for alternative collection names
+          const altCollections = ['depositRequests', 'deposits', 'deposit_request'];
+          altCollections.forEach(altName => {
+            db.collection(altName).onSnapshot((snapshot) => {
+              console.log(`💰 Alternative ${altName} updated, refreshing...`);
+              loadDepositRequests();
+            });
           });
           
           console.log('✅ Real-time listeners set up successfully');
