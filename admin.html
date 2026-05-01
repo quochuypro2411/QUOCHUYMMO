@@ -1437,46 +1437,4 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(autoSyncWithCloud, 30000);
 });
 
-// ===== ENHANCED USER LOADING WITH SEARCH =====
-async function loadAccountsWithSearch() {
-  await loadAccounts();
-  // Trigger search to apply any existing filter
-  const searchInput = document.getElementById('user-search');
-  if (searchInput && searchInput.value) {
-    searchInput.dispatchEvent(new Event('input'));
-  }
-}
-
-// Auto-sync with cloud periodically
-async function autoSyncWithCloud() {
-  if (!db) return;
-  
-  try {
-    // Get local users
-    const localUsers = getUsers();
-    
-    // Sync each user to cloud
-    for (const user of localUsers) {
-      await upsertCloudUser(user);
-    }
-    
-    updateCloudStatus(true, `Đồng bộ thành công (${localUsers.length} users)`);
-  } catch (error) {
-    console.error('Auto-sync error:', error);
-    updateCloudStatus(false, 'Lỗi đồng bộ tự động');
-  }
-}
-
-// Real-time connection monitoring
-function startConnectionMonitoring() {
-  if (!db) return;
-  
-  // Listen for connection status changes
-  db.collection('_connection_status').onSnapshot((snapshot) => {
-    if (!snapshot.metadata.fromCache) {
-      updateCloudStatus(true, 'Kết nối real-time đang hoạt động');
-    }
-  }, (error) => {
-    updateCloudStatus(false, 'Mất kết nối real-time');
-  });
 }
