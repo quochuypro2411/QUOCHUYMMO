@@ -279,19 +279,6 @@
     renderDepositHistory(user);
   }
 
-  function upsertCloudUser(user) {
-    if (!user || !user.email) return;
-    if (typeof window.firebase !== 'undefined' && window.MMO_FIREBASE_CONFIG) {
-      if (!firebase.apps.length) firebase.initializeApp(window.MMO_FIREBASE_CONFIG);
-      const db = firebase.firestore();
-      const email = user.email.toLowerCase().trim();
-      const docId = user.uid || email;
-      db.collection('users').doc(docId).set(user, { merge: true })
-        .then(() => console.log("✅ Đã đồng bộ yêu cầu nạp tiền lên Cloud"))
-        .catch(e => console.error("❌ Lỗi gửi yêu cầu Cloud:", e));
-    }
-  }
-
   function switchMethod(method) {
     document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.deposit-form').forEach(el => el.classList.remove('active'));
@@ -332,7 +319,9 @@
     users[idx].transactions.unshift(request);
     setUsers(users);
     localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
-    upsertCloudUser(users[idx]);
+    
+    // Global sync
+    if (window.mmoUpsertUser) window.mmoUpsertUser(users[idx]);
     
     amountInput.value = '';
     noteInput.value = '';

@@ -397,19 +397,25 @@ function confirmPay(){
   
   if (idx !== -1) {
     users[idx].orders = users[idx].orders || [];
-    users[idx].orders.push(order);
+    users[idx].orders.unshift(order);
     if (useWallet) {
       users[idx].balance = (users[idx].balance || 0) - finalAmount;
     }
     localStorage.setItem('mmo_users', JSON.stringify(users));
     localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+    
+    // Sync to Cloud
+    if (window.mmoUpsertUser) window.mmoUpsertUser(users[idx]);
   } else {
     currentUser.orders = currentUser.orders || [];
-    currentUser.orders.push(order);
+    currentUser.orders.unshift(order);
     if (useWallet) {
       currentUser.balance = (currentUser.balance || 0) - finalAmount;
     }
     localStorage.setItem('mmo_currentUser', JSON.stringify(currentUser));
+    
+    // Sync to Cloud
+    if (window.mmoUpsertUser) window.mmoUpsertUser(currentUser);
   }
 
   saveCart([]);

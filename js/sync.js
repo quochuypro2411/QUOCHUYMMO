@@ -80,6 +80,19 @@
     }
   }
 
+  // Global function to push data to cloud
+  window.mmoUpsertUser = async function(user) {
+    if (!db || !user || !user.email) return;
+    try {
+      const email = user.email.toLowerCase().trim();
+      const docId = user.uid || email;
+      await db.collection('users').doc(docId).set(user, { merge: true });
+      console.log("[Sync] Data pushed to cloud for:", email);
+    } catch (e) {
+      console.error("[Sync] Push failed:", e);
+    }
+  };
+
   // Start syncing
   startRealtimeSync();
 
