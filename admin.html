@@ -183,6 +183,28 @@
         </div>
       </div>
     </div>
+
+    <div style="margin-top: 32px;">
+      <div class="section-title">Firebase Debug Tools</div>
+      <div class="users-table-wrap">
+        <div style="padding: 20px;">
+          <div class="form-actions">
+            <button class="success" onclick="createTestDeposit()">
+              <i class="fas fa-plus"></i> Tạo Test Deposit
+            </button>
+            <button class="primary" onclick="refreshDepositRequests()">
+              <i class="fas fa-sync"></i> Refresh Deposits
+            </button>
+            <button class="details" onclick="showAllCollections()">
+              <i class="fas fa-database"></i> Show All Collections
+            </button>
+          </div>
+          <div id="debug-output" style="margin-top: 16px; padding: 12px; background: var(--bg-soft); border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; display: none;">
+            <!-- Debug output will appear here -->
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- User Detail Modal -->
@@ -890,6 +912,132 @@
       } catch (error) {
         console.error('Error sending notification:', error);
         showToast('❌ Lỗi gửi thông báo.', true);
+      }
+    }
+    
+    // Firebase Debug Functions
+    function logDebug(message) {
+      const debugOutput = document.getElementById('debug-output');
+      if (debugOutput) {
+        debugOutput.style.display = 'block';
+        debugOutput.innerHTML += `[${new Date().toLocaleTimeString()}] ${message}\n`;
+        debugOutput.scrollTop = debugOutput.scrollHeight;
+      }
+      console.log(message);
+    }
+    
+    async function createTestDeposit() {
+      if (!db) {
+        showToast('Firebase chưa cấu hình.', true);
+        return;
+      }
+      
+      try {
+        const testDeposit = {
+          id: 'test_deposit_' + Date.now(),
+          customerEmail: 'test@example.com',
+          customer: 'Test User',
+          email: 'test@example.com',
+          amount: 100000,
+          status: 'Chờ duyệt',
+          createdAt: new Date().toISOString(),
+          type: 'deposit',
+          method: 'test'
+        };
+        
+        logDebug('Creating test deposit request...');
+        logDebug('Data: ' + JSON.stringify(testDeposit, null, 2));
+        
+        // Try to save to different collections
+        const collections = ['deposit_requests', 'depositRequests', 'deposits', 'deposit_request'];
+        
+        for (const collectionName of collections) {
+          try {
+            logDebug(`Trying to save to collection: ${collectionName}`);
+            await db.collection(collectionName).doc(testDeposit.id).set(testDeposit);
+            logDebug(`✅ Successfully saved to ${collectionName}`);
+            
+            // Verify it was saved
+            const verifySnap = await db.collection(collectionName).doc(testDeposit.id).get();
+            if (verifySnap.exists) {
+              logDebug(`✅ Verified data exists in ${collectionName}`);
+            } else {
+              logDebug(`❌ Data not found in ${collectionName} after save`);
+            }
+            
+            break;
+          } catch (error) {
+            logDebug(`❌ Failed to save to ${collectionName}: ${error.message}`);
+          }
+        }
+        
+        showToast('✅ Đã tạo test deposit request.');
+        await loadDepositRequests();
+      } catch (error) {
+        logDebug(`❌ Error creating test deposit: ${error.message}`);
+        showToast('❌ Lỗi tạo test deposit.', true);
+      }
+    }
+    
+    async function refreshDepositRequests() {
+      logDebug('Manually refreshing deposit requests...');
+      await loadDepositRequests();
+    }
+    
+    async function showAllCollections() {
+      if (!db) {
+        showToast('Firebase chưa cấu hình.', true);
+        return;
+      }
+      
+      try {
+        logDebug('Fetching all collections...');
+        
+        // Get all collections
+        const collections = await db.listCollections();
+        logDebug(`Found ${collections.length} collections:`);
+        
+        for (const collection of collections) {
+          logDebug(`- ${collection.id}`);
+          
+          // Get document count
+          const snap = await collection.get();
+          logDebug(`  Documents: ${snap.size}`);
+          
+          if (!snap.empty && snap.size <= 5) {
+            // Show first few documents
+            snap.docs.forEach((doc, index) => {
+              if (index < 3) {
+                logDebug(`  Doc ${index + 1}: ${JSON.stringify(doc.data(), null, 2)}`);
+              }
+            });
+          }
+        }
+        
+        // Also check for specific deposit-related collections
+        const depositCollections = ['deposit_requests', 'depositRequests', 'deposits', 'deposit_request'];
+        logDebug('Checking specific deposit collections:');
+        
+        for (const collectionName of depositCollections) {
+          try {
+            const snap = await db.collection(collectionName).get();
+            logDebug(`${collectionName}: ${snap.size} documents`);
+            
+            if (!snap.empty) {
+              snap.docs.forEach((doc, index) => {
+                if (index < 2) {
+                  logDebug(`  ${collectionName} Doc ${index + 1}: ${JSON.stringify(doc.data(), null, 2)}`);
+                }
+              });
+            }
+          } catch (error) {
+            logDebug(`${collectionName}: Error - ${error.message}`);
+          }
+        }
+        
+      } catch (error) {
+        logDebug(`❌ Error fetching collections: ${error.message}`);
+        showToast('❌ Lỗi fetch collections.', true);
       }
     }
     
