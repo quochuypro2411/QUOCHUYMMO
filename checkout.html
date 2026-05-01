@@ -65,17 +65,13 @@
     <div class="ck-card" id="payment-card">
       <h3><i class="fas fa-credit-card"></i> Phương thức thanh toán</h3>
       <div class="pay-options">
-        <label class="pay-opt active" data-method="wallet" onclick="selectPay(this)">
+        <label class="pay-opt active" data-method="balance" onclick="selectPay(this)">
           <input type="radio" name="pay" checked>
-          <i class="fas fa-wallet"></i><span class="pay-label">Ví điện tử</span>
+          <i class="fas fa-coins"></i><span class="pay-label">Số dư tài khoản</span>
         </label>
         <label class="pay-opt" data-method="bank" onclick="selectPay(this)">
           <input type="radio" name="pay">
           <i class="fas fa-university"></i><span class="pay-label">Chuyển khoản ngân hàng</span>
-        </label>
-        <label class="pay-opt" data-method="balance" onclick="selectPay(this)">
-          <input type="radio" name="pay">
-          <i class="fas fa-coins"></i><span class="pay-label">Số dư tài khoản</span>
         </label>
       </div>
       <button class="buy-main" id="buy-main-btn" onclick="handleBuy()">
@@ -244,7 +240,7 @@ function renderCart(){
 function changeQty(idx,d){const cart=getCart();if(!cart[idx])return;cart[idx].qty=Math.max(1,Math.min(99,cart[idx].qty+d));saveCart(cart);renderCart()}
 function setQty(idx,v){const cart=getCart();if(!cart[idx])return;cart[idx].qty=Math.max(1,Math.min(99,parseInt(v)||1));saveCart(cart);renderCart()}
 function removeItem(idx){const cart=getCart();cart.splice(idx,1);saveCart(cart);renderCart();showToast('Đã xóa sản phẩm khỏi giỏ hàng')}
-let selectedPayMethod = 'wallet';
+let selectedPayMethod = 'balance';
 function selectPay(el){
   document.querySelectorAll('.pay-opt').forEach(e=>e.classList.remove('active'));
   el.classList.add('active');
