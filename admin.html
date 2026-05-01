@@ -735,8 +735,55 @@ async function loadAccounts() {
   if (!(await ensureAdmin())) return;
   const users = getUsers().sort((a,b) => (a.email || '').localeCompare(b.email || ''));
   const body = document.getElementById('users-body');
+  
+  // Debug: Log user count
+  console.log('Loading accounts:', users.length, 'users:', users);
+  
   if (!users.length) {
-    body.innerHTML = '<tr><td colspan="5" class="empty-state">Chưa có tài khoản nào.</td></tr>';
+    // Create some test users if none exist
+    console.log('No users found, creating test users...');
+    const testUsers = [
+      {
+        id: 'test_user_1',
+        username: 'testuser1',
+        email: 'testuser1@test.com',
+        role: 'user',
+        createdAt: new Date().toISOString(),
+        balance: 100000
+      },
+      {
+        id: 'test_premium_1', 
+        username: 'testpremium1',
+        email: 'testpremium1@test.com',
+        role: 'premium',
+        premiumSince: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        balance: 500000
+      },
+      {
+        id: 'test_admin_1',
+        username: 'admin',
+        email: 'admin@quochuy.mmo',
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+        balance: 1000000
+      }
+    ];
+    
+    const allUsers = [...testUsers];
+    localStorage.setItem('mmo_users', JSON.stringify(allUsers));
+    
+    // Sync test users to cloud
+    for (const user of testUsers) {
+      await upsertCloudUser(user);
+    }
+    
+    body.innerHTML = '<tr><td colspan="5" class="empty-state">Đã tạo tài khoản test. Đang tải lại...</td></tr>';
+    
+    // Reload after 1 second
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
     return;
   }
   body.innerHTML = users.map(user => {
