@@ -357,11 +357,12 @@ const ADMIN_EMAIL = 'admin@quochuy.mmo';
 let usersCache = [];
 
 function normalizeUser(user) {
+  const email = (user && user.email) ? String(user.email).toLowerCase().trim() : '';
   return {
     uid: user.uid || null,
     name: user.name || '',
     user: user.user || '',
-    email: (user.email || '').toLowerCase(),
+    email: email,
     pass: user.pass || '',
     role: user.role || (user.isAdmin ? 'admin' : 'user'),
     isAdmin: Boolean(user.isAdmin || user.role === 'admin'),
@@ -375,7 +376,8 @@ function normalizeUser(user) {
 }
 
 function userDocId(email) {
-  return (email || '').trim().toLowerCase();
+  if (!email) return 'unknown_user_' + Date.now();
+  return String(email).trim().toLowerCase();
 }
 
 async function fetchCloudUsers() {
@@ -385,10 +387,18 @@ async function fetchCloudUsers() {
 }
 
 async function upsertCloudUser(user) {
-  if (!db || !user?.email) return;
-  const normalized = normalizeUser(user);
-  const docId = normalized.uid || userDocId(normalized.email);
-  await db.collection('users').doc(docId).set(normalized, { merge: true });
+  if (!db || !user?.email) {
+    console.warn("⚠️ Không thể đồng bộ: Thiếu email hoặc DB chưa sẵn sàng", user);
+    return;
+  }
+  try {
+    const normalized = normalizeUser(user);
+    const docId = normalized.uid || userDocId(normalized.email);
+    await db.collection('users').doc(docId).set(normalized, { merge: true });
+    console.log("✅ Đã đồng bộ lên Cloud cho:", normalized.email);
+  } catch (err) {
+    console.error("❌ Lỗi đồng bộ Cloud:", err);
+  }
 }
 
 async function deleteCloudUser(user) {

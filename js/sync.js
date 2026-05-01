@@ -22,8 +22,8 @@
     const currentUser = getLocalUser();
     if (!currentUser) return;
 
-    const email = (currentUser.email || '').toLowerCase().trim();
-    const uid = currentUser.uid;
+    const email = (currentUser && currentUser.email) ? String(currentUser.email).toLowerCase().trim() : '';
+    const uid = currentUser ? currentUser.uid : null;
     
     console.log("[Sync] Starting real-time sync for:", email || currentUser.user);
 
