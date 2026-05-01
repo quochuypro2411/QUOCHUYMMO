@@ -550,8 +550,25 @@ async function getUsersMerged() {
   try {
     const cloudUsers = await fetchCloudUsers();
     const byEmail = new Map();
+    const mergeArrays = (arr1, arr2) => {
+      const map = new Map();
+      [...(arr1 || []), ...(arr2 || [])].forEach(item => {
+        if (item && item.id) map.set(item.id, item);
+      });
+      return Array.from(map.values());
+    };
+
     [...localUsers, ...cloudUsers].forEach((u) => {
-      if (u.email) byEmail.set(userDocId(u.email), normalizeUser(u));
+      if (u.email) {
+        const emailKey = userDocId(u.email);
+        if (byEmail.has(emailKey)) {
+          const existing = byEmail.get(emailKey);
+          u.transactions = mergeArrays(existing.transactions, u.transactions);
+          u.orders = mergeArrays(existing.orders, u.orders);
+          u.notifications = mergeArrays(existing.notifications, u.notifications);
+        }
+        byEmail.set(emailKey, normalizeUser(u));
+      }
     });
     const merged = Array.from(byEmail.values());
     saveLocalUsers(merged);
