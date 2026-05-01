@@ -251,6 +251,7 @@
     clearTimeout(window.depositToastTimer);
     window.depositToastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
   }
+  
   function renderDepositHistory(user) {
     const rows = document.getElementById('deposit-rows');
     const history = (user.transactions || []).filter(tx => tx.type === 'deposit-request');
@@ -268,65 +269,32 @@
       </tr>`;
     }).join('');
   }
+
   function refreshDepositPage() {
     const user = getCurrentUser();
-    if (!user) {
-      document.body.innerHTML = `
-        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:60px 20px; background:#f8fafc;">
-          <div style="max-width:520px; text-align:center; background:#fff; border:1px solid #e2e8f0; border-radius:24px; padding:40px; box-shadow:0 28px 80px rgba(15,23,42,.08);">
-            <h2>Vui lòng đăng nhập trước khi nạp tiền</h2>
-            <p style="color:#64748b; margin:18px 0 28px; line-height:1.8;">Chỉ người dùng đã đăng nhập mới có thể gửi yêu cầu nạp tiền và quản lý số dư.</p>
-            <a href="auth.html?tab=login" style="display:inline-flex; padding:14px 24px; background:#10b981; color:#fff; border-radius:14px; text-decoration:none; font-weight:700;">Đăng nhập ngay</a>
-          </div>
-        </div>`;
-      return;
-    }
+    if (!user) return;
     document.getElementById('user-balance').textContent = formatMoney(user.balance);
     const usrIdEl = document.querySelector('.usr-id');
     if (usrIdEl) usrIdEl.textContent = (user.user || user.email || 'Khach').split('@')[0].toUpperCase();
     renderDepositHistory(user);
   }
-  function submitDeposit() {
-    const amountInput = document.getElementById('deposit-amount');
-    const noteInput = document.getElementById('deposit-note');
-    const amount = parseInt(amountInput.value, 10);
-    if (Number.isNaN(amount) || amount < 10000) {
-      showToast('Vui lòng nhập số tiền hợp lệ tối thiểu 10.000đ', true);
-      return;
+
+  function upsertCloudUser(user) {
+    if (!user || !user.email) return;
+    if (typeof window.firebase !== 'undefined' && window.MMO_FIREBASE_CONFIG) {
+      if (!firebase.apps.length) firebase.initializeApp(window.MMO_FIREBASE_CONFIG);
+      const db = firebase.firestore();
+      const email = user.email.toLowerCase().trim();
+      const docId = user.uid || email;
+      db.collection('users').doc(docId).set(user, { merge: true })
+        .then(() => console.log("✅ Đã đồng bộ yêu cầu nạp tiền lên Cloud"))
+        .catch(e => console.error("❌ Lỗi gửi yêu cầu Cloud:", e));
     }
-    const user = getCurrentUser();
-    if (!user) {
-      showToast('Bạn cần đăng nhập để gửi yêu cầu nạp tiền.', true);
-      return;
-    }
-    const users = getUsers();
-    const idx = users.findIndex(u => u.email === user.email);
-    if (idx === -1) {
-      showToast('Không tìm thấy tài khoản của bạn.', true);
-      return;
-    }
-    const request = {
-      id: 'DEP-' + Date.now(),
-      date: new Date().toISOString(),
-      amount,
-      type: 'deposit-request',
-      status: 'Đang xử lý',
-      desc: noteInput.value.trim() || 'Yêu cầu nạp tiền',
-    };
-    users[idx].transactions = users[idx].transactions || [];
-    users[idx].transactions.unshift(request);
-    setUsers(users);
-    localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
-    amountInput.value = '';
-    noteInput.value = '';
-    refreshDepositPage();
-    showToast('Yêu cầu nạp tiền của bạn đã được gửi. Vui lòng đợi admin duyệt.');
   }
 
   function switchMethod(method) {
     document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.deposit-form').forEach(el => el.classList.remove('active'));
-    
     if (method === 'bank') {
       document.querySelectorAll('.pay-method')[0].classList.add('active');
       document.getElementById('form-bank').classList.add('active');
@@ -336,30 +304,57 @@
     }
   }
 
+  function submitDeposit() {
+    const amountInput = document.getElementById('deposit-amount');
+    const noteInput = document.getElementById('deposit-note');
+    const amount = parseInt(amountInput.value, 10);
+    if (!amount || amount < 10000) {
+      showToast('Vui lòng nhập số tiền từ 10.000 đ', true);
+      return;
+    }
+    const user = getCurrentUser();
+    if (!user) { showToast('Bạn cần đăng nhập.', true); return; }
+    
+    const users = getUsers();
+    const idx = users.findIndex(u => u.email === user.email || (u.user && u.user === user.user));
+    if (idx === -1) return;
+
+    const request = {
+      id: 'DEP-' + Date.now(),
+      date: new Date().toISOString(),
+      amount,
+      type: 'deposit-request',
+      status: 'Đang xử lý',
+      desc: noteInput.value.trim() || 'Chuyển khoản ngân hàng',
+    };
+
+    users[idx].transactions = users[idx].transactions || [];
+    users[idx].transactions.unshift(request);
+    setUsers(users);
+    localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
+    upsertCloudUser(users[idx]);
+    
+    amountInput.value = '';
+    noteInput.value = '';
+    refreshDepositPage();
+    showToast('Đã gửi yêu cầu nạp tiền. Vui lòng đợi admin duyệt.');
+  }
+
   function submitCard() {
     const network = document.getElementById('card-network').value;
-    const value = parseInt(document.getElementById('card-value').value, 10);
+    const value = parseInt(document.getElementById('card-value').value);
     const serial = document.getElementById('card-serial').value.trim();
     const pin = document.getElementById('card-pin').value.trim();
-
-    if (!serial || !pin) {
-      showToast('Vui lòng nhập đầy đủ Số Seri và Mã Thẻ', true);
-      return;
-    }
-
-    const user = getCurrentUser();
-    if (!user) {
-      showToast('Bạn cần đăng nhập để gửi yêu cầu nạp tiền.', true);
-      return;
-    }
-    const users = getUsers();
-    const idx = users.findIndex(u => u.email === user.email);
-    if (idx === -1) {
-      showToast('Không tìm thấy tài khoản của bạn.', true);
-      return;
-    }
     
-    const request = {
+    if (!serial || !pin) { showToast('Vui lòng nhập Seri và Mã thẻ.', true); return; }
+    const user = getCurrentUser();
+    if (!user) return;
+    
+    const users = getUsers();
+    const idx = users.findIndex(u => u.email === user.email || (u.user && u.user === user.user));
+    if (idx === -1) return;
+
+    const newReq = {
       id: 'CARD-' + Date.now(),
       date: new Date().toISOString(),
       amount: value,
@@ -367,38 +362,34 @@
       status: 'Đang xử lý',
       desc: `Nạp thẻ ${network} - Seri: ${serial} - PIN: ${pin}`,
     };
+
     users[idx].transactions = users[idx].transactions || [];
-    users[idx].transactions.unshift(request);
+    users[idx].transactions.unshift(newReq);
     setUsers(users);
     localStorage.setItem('mmo_currentUser', JSON.stringify(users[idx]));
-    
+    upsertCloudUser(users[idx]);
+
     document.getElementById('card-serial').value = '';
     document.getElementById('card-pin').value = '';
     refreshDepositPage();
-    showToast('Yêu cầu nạp thẻ đã được gửi. Admin sẽ duyệt trong 1-3 phút.');
+    showToast('Đã gửi yêu cầu nạp thẻ cào thành công!');
   }
+
   window.addEventListener('DOMContentLoaded', () => {
     refreshDepositPage();
-    
     let currentUser = getCurrentUser();
-    const authTexts = document.querySelector('.auth-texts');
-    const walletBtn = document.getElementById('wallet-btn');
-    const walletAmount = document.getElementById('wallet-amount');
-    
     if (currentUser) {
-      const users = getUsers();
-      const latestUser = users.find(u => u.email === currentUser.email);
-      if (latestUser) {
-        currentUser = latestUser;
-        localStorage.setItem('mmo_currentUser', JSON.stringify(currentUser));
-      }
+      const walletBtn = document.getElementById('wallet-btn');
+      const walletAmount = document.getElementById('wallet-amount');
       if (walletBtn) walletBtn.style.display = 'flex';
       if (walletAmount) walletAmount.textContent = formatMoney(currentUser.balance);
+      
+      const authTexts = document.querySelector('.auth-texts');
       if (authTexts) {
         authTexts.innerHTML = `
-          <span style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Xin chào,</span>
-          <span style="font-size:13px;font-weight:800;color:var(--text-primary);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;display:block;">${currentUser.name}</span>
-          <a href="#" id="link-logout" style="color:var(--accent-red);font-size:10px;font-weight:700;margin-top:2px;">ĐĂNG XUẤT</a>
+          <span style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:1px;display:block;">Xin chào,</span>
+          <span style="font-size:13px;font-weight:800;color:var(--text-primary);display:block;">${currentUser.name}</span>
+          <a href="#" id="link-logout" style="color:var(--accent-red);font-size:10px;font-weight:700;">ĐĂNG XUẤT</a>
         `;
         document.getElementById('link-logout')?.addEventListener('click', (e) => {
           e.preventDefault();
@@ -406,16 +397,6 @@
           window.location.reload();
         });
       }
-    }
-
-    const cartBadge = document.getElementById('cart-badge');
-    const cartAmount = document.getElementById('cart-amount');
-    if (cartBadge && cartAmount) {
-      const cart = JSON.parse(localStorage.getItem('mmo_cart') || '[]');
-      const total = cart.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0);
-      const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
-      cartBadge.textContent = count;
-      cartAmount.textContent = total ? total.toLocaleString('vi-VN') + ' đ' : '0 đ';
     }
   });
 </script>
