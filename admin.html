@@ -503,42 +503,37 @@ function loadLocalUsers() {
 async function initializeUsers() {
   const localUsers = loadLocalUsers();
   usersCache = localUsers;
-  if (!db) return;
+  if (!db) {
+    console.log('Firebase not configured, using local storage only');
+    usersCache = localUsers;
+    return;
+  }
 
   try {
+    console.log('Initializing Firebase sync...');
+    updateCloudStatus(true, 'Đang đồng bộ với Firebase...');
+    
     const cloudUsers = await fetchCloudUsers();
-    const byEmail = new Map();
-    // Merge local and cloud users, keeping cloud users as priority but merging arrays
-    const mergeArrays = (arr1, arr2) => {
-      const map = new Map();
-      [...(arr1 || []), ...(arr2 || [])].forEach(item => {
-        if (item && item.id) map.set(item.id, item);
-      });
-      return Array.from(map.values());
-    };
-
-    [...localUsers, ...cloudUsers].forEach((u) => {
-      const emailKey = u.email ? userDocId(u.email) : null;
-      const userKey = u.user ? u.user.toLowerCase() : null;
-      const key = emailKey || userKey;
-      
-      if (key) {
-        if (byEmail.has(key)) {
-          const existing = byEmail.get(key);
-          u.transactions = mergeArrays(existing.transactions, u.transactions);
-          u.orders = mergeArrays(existing.orders, u.orders);
-          u.notifications = mergeArrays(existing.notifications, u.notifications);
-        }
-        byEmail.set(key, normalizeUser(u));
-      }
-    });
-    usersCache = Array.from(byEmail.values());
-    localStorage.setItem('mmo_users', JSON.stringify(usersCache));
+    console.log(`Fetched ${cloudUsers.length} users from Firebase`);
+    
+    // Merge local and cloud users, with conflict resolution
+    const mergedUsers = mergeUserArrays(cloudUsers, localUsers);
+    usersCache = mergedUsers;
+    
+    // Update local storage with merged data
+    localStorage.setItem('mmo_users', JSON.stringify(mergedUsers));
+    console.log(`Merged users: ${mergedUsers.length} total`);
+    
+    // Update cloud with any local-only users
+    await syncLocalToCloud(mergedUsers, cloudUsers);
+    
+    updateCloudStatus(true, `Đồng bộ thành công (${mergedUsers.length} users)`);
   } catch (e) {
     console.error("Lỗi khi tải dữ liệu từ Cloud:", e);
     // Keep local fallback when cloud is unreachable.
   }
 }
+
 function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem('mmo_currentUser')) || null; } catch(e) { return null; }
 }
