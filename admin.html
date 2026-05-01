@@ -122,39 +122,6 @@
     </div>
 
     <div style="margin-top: 32px;">
-      <div class="section-title">Tạo tài khoản mới</div>
-      <div class="users-table-wrap">
-        <div style="padding: 20px;">
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="new-email" placeholder="Nhập email">
-          </div>
-          <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="new-username" placeholder="Nhập username">
-          </div>
-          <div class="form-group">
-            <label>Role</label>
-            <select id="new-role">
-              <option value="user">User</option>
-              <option value="premium">Premium</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="new-password" placeholder="Nhập mật khẩu">
-          </div>
-          <div class="form-actions">
-            <button class="primary" onclick="createNewUser()">
-              <i class="fas fa-plus"></i> Tạo tài khoản
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top: 32px;">
       <div class="section-title">Quản lý đơn hàng</div>
       <div class="users-table-wrap">
         <table class="users-table">
@@ -460,45 +427,7 @@
       }).join('');
     }
     
-    async function createNewUser() {
-      const email = document.getElementById('new-email').value.trim();
-      const username = document.getElementById('new-username').value.trim();
-      const role = document.getElementById('new-role').value;
-      const password = document.getElementById('new-password').value;
-      
-      if (!email || !username || !password) {
-        showToast('Vui lòng nhập đầy đủ thông tin.', true);
-        return;
-      }
-      
-      const users = getUsers();
-      if (users.find(u => u.email === email || u.user === username)) {
-        showToast('Email hoặc username đã tồn tại.', true);
-        return;
-      }
-      
-      const newUser = {
-        id: 'user_' + Date.now(),
-        email: email,
-        user: username,
-        role: role,
-        password: password,
-        createdAt: new Date().toISOString(),
-        balance: 0
-      };
-      
-      users.push(newUser);
-      setUsers(users);
-      
-      document.getElementById('new-email').value = '';
-      document.getElementById('new-username').value = '';
-      document.getElementById('new-password').value = '';
-      document.getElementById('new-role').value = 'user';
-      
-      showToast('✅ Đã tạo tài khoản mới thành công.');
-      await loadAccounts();
-    }
-    
+        
     async function upgradeToPremium(userId) {
       if (!confirm('Xác nhận nâng cấp user này lên Premium?')) return;
       
