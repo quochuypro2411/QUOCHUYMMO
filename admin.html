@@ -212,7 +212,11 @@
       <div class="summary-card"><span>Thất bại</span><strong id="failed-orders">0</strong></div>
     </div>
 
-    <div class="admin-note"><i class="fas fa-info-circle"></i> Chỉ admin được phép duyệt hoặc hủy yêu cầu đơn. Mọi thay đổi sẽ được lưu vào dữ liệu người dùng.</div>
+    <div class="admin-note" id="cloud-status">
+  <i class="fas fa-cloud" id="cloud-icon"></i> 
+  <span id="cloud-message">Đang kiểm tra kết nối Cloud...</span>
+</div>
+<div class="admin-note"><i class="fas fa-info-circle"></i> Chỉ admin được phép duyệt hoặc hủy yêu cầu đơn. Mọi thay đổi sẽ được lưu vào dữ liệu người dùng.</div>
 
     <div class="account-section">
       <div class="section-title">Quản lý tài khoản hiện có</div>
@@ -1226,7 +1230,50 @@ function sendGlobalNotification() {
   document.getElementById('notif-title').value = '';
   document.getElementById('notif-content').value = '';
 }
+// Cloud connection status
+function updateCloudStatus(connected, message = '') {
+  const statusElement = document.getElementById('cloud-status');
+  const iconElement = document.getElementById('cloud-icon');
+  const messageElement = document.getElementById('cloud-message');
+  
+  if (statusElement) {
+    if (connected) {
+      statusElement.style.background = 'linear-gradient(180deg, rgba(16,185,129,.12), rgba(15,23,42,.95))';
+      statusElement.style.borderColor = 'rgba(16,185,129,.18)';
+      if (iconElement) iconElement.className = 'fas fa-cloud-check';
+      if (messageElement) messageElement.textContent = message || 'Đã kết nối Cloud ✓';
+    } else {
+      statusElement.style.background = 'linear-gradient(180deg, rgba(239,68,68,.12), rgba(15,23,42,.95))';
+      statusElement.style.borderColor = 'rgba(239,68,68,.18)';
+      if (iconElement) iconElement.className = 'fas fa-cloud-slash';
+      if (messageElement) messageElement.textContent = message || 'Mất kết nối Cloud';
+    }
+  }
+}
+
+// Test cloud connection
+async function testCloudConnection() {
+  if (!db) {
+    updateCloudStatus(false, 'Chưa cấu hình Firebase');
+    return false;
+  }
+  
+  try {
+    // Test connection by trying to read a small amount of data
+    const testDoc = await db.collection('connection_test').limit(1).get();
+    updateCloudStatus(true, 'Đã kết nối Cloud ✓');
+    return true;
+  } catch (error) {
+    console.error('Cloud connection error:', error);
+    updateCloudStatus(false, 'Lỗi kết nối Cloud: ' + error.message);
+    return false;
+  }
+}
+
 const startAdmin = async () => {
+  // Test cloud connection first
+  await testCloudConnection();
+  
   if (auth) {
     await new Promise((resolve) => {
       const unsub = auth.onAuthStateChanged((fbUser) => {
@@ -1266,9 +1313,18 @@ function upgradeToPremium(userId) {
   users[userIndex].role = 'premium';
   users[userIndex].premiumSince = new Date().toISOString();
   setUsers(users);
-  upsertCloudUser(users[userIndex]).catch(() => {});
   
-  showToast(`Đã nâng cấp ${users[userIndex].email} lên Premium.`);
+  // Sync to cloud with status feedback
+  upsertCloudUser(users[userIndex])
+    .then(() => {
+      showToast(`✅ Đã nâng cấp ${users[userIndex].email} lên Premium (Đồng bộ Cloud thành công)`);
+      updateCloudStatus(true, 'Đồng bộ Cloud thành công');
+    })
+    .catch((error) => {
+      showToast(`⚠️ Đã nâng cấp ${users[userIndex].email} lên Premium (Lỗi đồng bộ Cloud)`, true);
+      updateCloudStatus(false, 'Lỗi đồng bộ: ' + error.message);
+    });
+  
   loadAccounts();
 }
 
@@ -1286,9 +1342,18 @@ function removePremium(userId) {
   users[userIndex].role = 'user';
   delete users[userIndex].premiumSince;
   setUsers(users);
-  upsertCloudUser(users[userIndex]).catch(() => {});
   
-  showToast(`Đã gỡ quyền Premium của ${users[userIndex].email}.`);
+  // Sync to cloud with status feedback
+  upsertCloudUser(users[userIndex])
+    .then(() => {
+      showToast(`✅ Đã gỡ quyền Premium của ${users[userIndex].email} (Đồng bộ Cloud thành công)`);
+      updateCloudStatus(true, 'Đồng bộ Cloud thành công');
+    })
+    .catch((error) => {
+      showToast(`⚠️ Đã gỡ quyền Premium của ${users[userIndex].email} (Lỗi đồng bộ Cloud)`, true);
+      updateCloudStatus(false, 'Lỗi đồng bộ: ' + error.message);
+    });
+  
   loadAccounts();
 }
 
@@ -1313,6 +1378,16 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
+  
+  // Replace existing loadAccounts calls with loadAccountsWithSearch
+  const originalLoadAccounts = window.loadAccounts;
+  window.loadAccounts = loadAccountsWithSearch;
+  
+  // Start connection monitoring
+  startConnectionMonitoring();
+  
+  // Auto-sync every 30 seconds
+  setInterval(autoSyncWithCloud, 30000);
 });
 
 // ===== ENHANCED USER LOADING WITH SEARCH =====
@@ -1325,9 +1400,36 @@ async function loadAccountsWithSearch() {
   }
 }
 
-// Update the initialization to use the enhanced function
-document.addEventListener('DOMContentLoaded', function() {
-  // Replace existing loadAccounts calls with loadAccountsWithSearch
-  const originalLoadAccounts = window.loadAccounts;
-  window.loadAccounts = loadAccountsWithSearch;
-});
+// Auto-sync with cloud periodically
+async function autoSyncWithCloud() {
+  if (!db) return;
+  
+  try {
+    // Get local users
+    const localUsers = getUsers();
+    
+    // Sync each user to cloud
+    for (const user of localUsers) {
+      await upsertCloudUser(user);
+    }
+    
+    updateCloudStatus(true, `Đồng bộ thành công (${localUsers.length} users)`);
+  } catch (error) {
+    console.error('Auto-sync error:', error);
+    updateCloudStatus(false, 'Lỗi đồng bộ tự động');
+  }
+}
+
+// Real-time connection monitoring
+function startConnectionMonitoring() {
+  if (!db) return;
+  
+  // Listen for connection status changes
+  db.collection('_connection_status').onSnapshot((snapshot) => {
+    if (!snapshot.metadata.fromCache) {
+      updateCloudStatus(true, 'Kết nối real-time đang hoạt động');
+    }
+  }, (error) => {
+    updateCloudStatus(false, 'Mất kết nối real-time');
+  });
+}
