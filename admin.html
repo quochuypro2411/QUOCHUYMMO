@@ -381,7 +381,7 @@ function userDocId(email) {
 async function fetchCloudUsers() {
   if (!db) return [];
   const snap = await db.collection('users').get();
-  return snap.docs.map(doc => normalizeUser(doc.data()));
+  return snap.docs.map(doc => normalizeUser({ uid: doc.id, ...doc.data() }));
 }
 
 async function upsertCloudUser(user) {
@@ -441,6 +441,7 @@ async function initializeUsers() {
     usersCache = Array.from(byEmail.values());
     localStorage.setItem('mmo_users', JSON.stringify(usersCache));
   } catch (e) {
+    console.error("Lỗi khi tải dữ liệu từ Cloud:", e);
     // Keep local fallback when cloud is unreachable.
   }
 }
