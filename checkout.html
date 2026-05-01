@@ -3,97 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Giỏ hàng – QuocHuy.MMO</title>
+  <title>Thanh Toán – QuocHuy.MMO</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/checkout.css">
 </head>
 <body>
-<canvas id="bg"></canvas>
 
 <div class="topbar">
-  <a href="index.html" class="topbar-logo">
-    <img src="assets/logo.png" alt="QuocHuy MMO" style="height: 42px; width: auto; display: block;">
-  </a>
-  <a href="index.html" class="topbar-back"><i class="fas fa-arrow-left"></i> Tiếp tục mua hàng</a>
+  <div class="topbar-inner">
+    <a href="index.html" class="logo-link">
+      <img src="assets/logo.png" alt="QuocHuy MMO">
+    </a>
+    <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Tiếp tục mua hàng</a>
+  </div>
 </div>
 
-<div class="checkout-wrap">
-  <h1 class="page-title"><i class="fas fa-shopping-cart"></i> Giỏ hàng của bạn</h1>
-
-  <div style="display:flex;flex-direction:column;gap:20px">
-    <div class="ck-card" id="empty-cart" style="display:none;text-align:center;padding:48px 24px">
-      <div style="font-size:56px;margin-bottom:16px;opacity:.4"><i class="fas fa-shopping-cart"></i></div>
-      <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;color:#e6edf3">Giỏ hàng trống</h3>
-      <p style="font-size:13px;color:#8b949e;margin-bottom:20px">Bạn chưa thêm sản phẩm nào. Hãy quay lại và chọn sản phẩm!</p>
-      <a href="index.html" class="buy-main" style="display:inline-flex;width:auto;padding:12px 28px;text-decoration:none">
-        <i class="fas fa-arrow-left"></i> Quay lại mua hàng
-      </a>
+<div class="checkout-container">
+  <!-- Left Side: Items & Payment -->
+  <div class="checkout-main">
+    <div class="ck-section">
+      <h2 class="section-title"><i class="fas fa-shopping-cart"></i> Giỏ hàng của bạn</h2>
+      <div id="cart-list" class="cart-list">
+        <!-- Rendered by JS -->
+      </div>
+      <div id="empty-cart" style="display:none; text-align:center; padding:40px 0;">
+        <i class="fas fa-shopping-basket" style="font-size:48px; color:#cbd5e1; margin-bottom:16px;"></i>
+        <p style="color:#64748b;">Giỏ hàng của bạn đang trống.</p>
+        <a href="index.html" style="color:var(--primary); font-weight:700; text-decoration:none; margin-top:10px; display:inline-block;">Quay lại cửa hàng</a>
+      </div>
     </div>
 
-    <div id="cart-items"></div>
-
-    <div class="ck-card">
-      <h3><i class="fas fa-fire"></i> Có thể bạn quan tâm</h3>
-      <div class="suggest-item">
-        <div class="suggest-ico" style="background:linear-gradient(135deg,#EA4335,#d33426)"><i class="fas fa-envelope"></i></div>
-        <div class="suggest-info"><h4>Tài Khoản HotpotBook AI</h4><div class="s-price">245.000 đ</div></div>
-      </div>
-      <div class="suggest-item">
-        <div class="suggest-ico" style="background:linear-gradient(135deg,#4285F4,#2b6de8)"><i class="fab fa-facebook-f"></i></div>
-        <div class="suggest-info"><h4>Tài Khoản Élastinet Plus (TOP)</h4><div class="s-price">Liên hệ</div></div>
+    <div class="ck-section">
+      <h2 class="section-title"><i class="fas fa-credit-card"></i> Phương thức thanh toán</h2>
+      <div class="pay-methods">
+        <label class="pay-method active" data-method="balance" onclick="window.selectPay(this)">
+          <input type="radio" name="pay-opt" checked>
+          <i class="fas fa-coins"></i>
+          <div class="pay-method-info">
+            <span class="pay-method-name">Số dư tài khoản</span>
+            <span class="pay-method-desc">Thanh toán ngay lập tức từ ví QuocHuy.MMO</span>
+          </div>
+        </label>
+        <label class="pay-method" data-method="bank" onclick="window.selectPay(this)">
+          <input type="radio" name="pay-opt">
+          <i class="fas fa-university"></i>
+          <div class="pay-method-info">
+            <span class="pay-method-name">Chuyển khoản ngân hàng</span>
+            <span class="pay-method-desc">Quét mã QR và chờ admin duyệt (30s - 2p)</span>
+          </div>
+        </label>
       </div>
     </div>
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:20px">
-    <div class="ck-card" id="summary-card">
-      <h3><i class="fas fa-receipt"></i> Tóm tắt đơn hàng</h3>
-      <div id="summary-lines"></div>
-    </div>
-
-    <div class="ck-card" id="payment-card">
-      <h3><i class="fas fa-credit-card"></i> Phương thức thanh toán</h3>
-      <div class="pay-options">
-        <label class="pay-opt active" data-method="balance" onclick="window.selectPay(this)">
-          <input type="radio" name="pay" checked>
-          <i class="fas fa-coins"></i><span class="pay-label">Số dư tài khoản</span>
-        </label>
-        <label class="pay-opt" data-method="bank" onclick="window.selectPay(this)">
-          <input type="radio" name="pay">
-          <i class="fas fa-university"></i><span class="pay-label">Chuyển khoản ngân hàng</span>
-        </label>
+  <!-- Right Side: Summary -->
+  <div class="checkout-sidebar">
+    <div class="ck-section summary-card">
+      <h2 class="section-title"><i class="fas fa-receipt"></i> Tóm tắt đơn hàng</h2>
+      <div id="summary-details">
+        <div class="summary-row"><span>Tạm tính</span><span id="subtotal">0 đ</span></div>
+        <div class="summary-row"><span>Giảm giá</span><span>0 đ</span></div>
+        <div class="summary-row total"><span>TỔNG CỘNG</span><span class="total-price" id="grand-total">0 đ</span></div>
       </div>
-      <button class="buy-main" id="buy-main-btn" onclick="window.handleBuy()">
-        <i class="fas fa-bolt"></i> MUA NGAY TOÀN BỘ
+      <button class="buy-btn" onclick="window.handleBuy()">
+        <i class="fas fa-shield-check"></i> XÁC NHẬN THANH TOÁN
       </button>
+      <div style="margin-top:20px; font-size:11px; color:#94a3b8; text-align:center;">
+        <i class="fas fa-lock"></i> Thanh toán an toàn và bảo mật 100%
+      </div>
     </div>
   </div>
 </div>
 
-<div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg"></span></div>
-
+<!-- Modal QR -->
 <div class="pay-overlay" id="pay-overlay">
-  <div class="pay-modal-box">
+  <div class="pay-modal">
     <div class="pm-header">
-      <h3 id="pm-title"><i class="fas fa-qrcode"></i> QUÉT MÃ ĐỂ THANH TOÁN</h3>
-      <button class="pm-close" onclick="window.closePayModal()"><i class="fas fa-times"></i></button>
+      <h3 id="pm-title"><i class="fas fa-qrcode"></i> QUÉT MÃ THANH TOÁN</h3>
+      <button onclick="window.closePayModal()" style="background:none; border:none; color:#fff; cursor:pointer; font-size:20px;"><i class="fas fa-times"></i></button>
     </div>
     <div class="pm-body">
-      <div class="pm-qr" id="pm-qr-panel">
-        <div class="pm-qr-img"><img id="qr-img" src="assets/payment-qr.svg" alt="QR Thanh toán" style="width:100%;height:auto;border-radius:18px;object-fit:contain;background:#fff;border:1px solid #dbeafe"></div>
-        <div class="pm-bank">
-          <div class="pm-bank-logo">TCB</div>
-          <div><div class="pm-bank-name">TECHCOMBANK</div><div class="pm-bank-sub">STK: 1903 xxxx xxxx</div></div>
+      <div id="qr-panel" style="display:none;">
+        <div class="qr-container">
+          <img src="assets/payment-qr.svg" alt="QR Payment">
         </div>
-        <div class="pm-note" id="pm-qr-note">Nhấn nút "Xác nhận" để gửi yêu cầu duyệt.</div>
+        <div class="bank-info">
+          <div class="bank-name">TECHCOMBANK</div>
+          <div class="bank-stk">1903 xxxx xxxx</div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:8px;">Nội dung: <span id="pm-note" style="color:red; font-weight:700;">THANH TOAN ORD...</span></div>
+        </div>
       </div>
-      <div class="pm-form">
-        <div class="pm-row"><span class="pm-label">Số lượng sản phẩm</span><span class="pm-val" id="pm-qty">0</span></div>
-        <div class="pm-row"><span class="pm-label">TỔNG TIỀN</span><span class="pm-val highlight" id="pm-total">0 đ</span></div>
-        <button class="pm-confirm" onclick="window.confirmPay()"><i class="fas fa-check-circle"></i> XÁC NHẬN THANH TOÁN</button>
+      <div id="balance-panel">
+        <div style="text-align:center; padding:20px;">
+          <div style="font-size:48px; color:var(--primary); margin-bottom:15px;"><i class="fas fa-wallet"></i></div>
+          <p style="font-weight:700;">Hệ thống sẽ trừ tiền trực tiếp từ số dư của bạn.</p>
+          <p style="font-size:13px; color:var(--text-secondary); margin-top:5px;">Vui lòng kiểm tra kỹ đơn hàng trước khi xác nhận.</p>
+        </div>
       </div>
+      <button class="buy-btn" id="confirm-btn" onclick="window.confirmPay()">XÁC NHẬN ĐÃ THANH TOÁN</button>
     </div>
   </div>
 </div>
@@ -101,141 +110,161 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js?v=2.2"></script>
-<script src="js/common.js?v=2.2"></script>
-<script src="js/sync.js?v=2.2"></script>
+<script src="js/firebase-config.js?v=2.3"></script>
+<script src="js/common.js?v=2.3"></script>
+<script src="js/sync.js?v=2.3"></script>
+
 <script>
-  // Particles
-  const c=document.getElementById('bg'),x=c.getContext('2d');let W,H,ps=[];
-  function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();addEventListener('resize',rs);
-  for(let i=0;i<60;i++)ps.push({x:Math.random()*2e3,y:Math.random()*1200,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.8+.4,a:Math.random()*.5+.1});
-  (function d(){x.clearRect(0,0,W,H);for(const p of ps){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(14,165,233,${p.a})`;x.fill()}requestAnimationFrame(d)})();
+  // Core Data
+  const getCart = () => JSON.parse(localStorage.getItem('mmo_cart') || '[]');
+  const saveCart = (c) => localStorage.setItem('mmo_cart', JSON.stringify(c));
+  let payMethod = 'balance';
 
-  // Core Logic
-  const getCart=()=>JSON.parse(localStorage.getItem('mmo_cart')||'[]');
-  const saveCart=(c)=>localStorage.setItem('mmo_cart',JSON.stringify(c));
-  
-  function renderCart(){
-    const cart=getCart();
-    const itemsEl=document.getElementById('cart-items');
-    const emptyEl=document.getElementById('empty-cart');
-    const summaryEl=document.getElementById('summary-lines');
-    
-    if(!cart.length){
-      emptyEl.style.display='block';
-      itemsEl.innerHTML='';
-      summaryEl.innerHTML='<p style="text-align:center;padding:16px;color:#8b949e">Giỏ hàng trống</p>';
+  function renderCart() {
+    const cart = getCart();
+    const listEl = document.getElementById('cart-list');
+    const emptyEl = document.getElementById('empty-cart');
+    const totalEl = document.getElementById('grand-total');
+    const subtotalEl = document.getElementById('subtotal');
+
+    if (cart.length === 0) {
+      listEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+      totalEl.textContent = '0 đ';
+      subtotalEl.textContent = '0 đ';
       return;
     }
-    emptyEl.style.display='none';
-    itemsEl.innerHTML=cart.map((item,idx)=>`
-      <div class="ck-card" style="margin-bottom:12px">
-        <div style="display:flex;gap:16px;align-items:center">
-          <div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,${item.color});display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px"><i class="${item.icon}"></i></div>
-          <div style="flex:1">
-            <h4 style="font-size:14px;font-weight:700">${item.name}</h4>
-            <div style="color:#0ea5e9;font-weight:800">${window.MMO.fmt(item.price)}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div style="display:flex;align-items:center;gap:8px;background:#161b22;padding:4px 10px;border-radius:8px">
-              <button onclick="window.changeQty(${idx},-1)" style="background:none;border:none;color:#fff;cursor:pointer">−</button>
-              <span>${item.qty}</span>
-              <button onclick="window.changeQty(${idx},1)" style="background:none;border:none;color:#fff;cursor:pointer">+</button>
-            </div>
-            <button onclick="window.removeItem(${idx})" style="color:#ef4444;background:none;border:none;cursor:pointer"><i class="fas fa-trash"></i></button>
-          </div>
+
+    listEl.style.display = 'flex';
+    emptyEl.style.display = 'none';
+    
+    listEl.innerHTML = cart.map((item, idx) => `
+      <div class="cart-item">
+        <div class="item-icon" style="background:linear-gradient(135deg, ${item.color || 'var(--primary), var(--primary-dark)'})">
+          <i class="${item.icon || 'fas fa-box'}"></i>
         </div>
-      </div>`).join('');
+        <div class="item-details">
+          <h4>${item.name}</h4>
+          <div class="item-price">${window.MMO.fmt(item.price)}</div>
+        </div>
+        <div class="item-actions">
+          <div style="display:flex; align-items:center; gap:10px; background:#f1f5f9; padding:5px 12px; border-radius:10px;">
+            <button class="qty-btn" onclick="window.updateQty(${idx}, -1)">−</button>
+            <span class="qty-val">${item.qty}</span>
+            <button class="qty-btn" onclick="window.updateQty(${idx}, 1)">+</button>
+          </div>
+          <button class="remove-btn" onclick="window.removeItem(${idx})"><i class="fas fa-trash-alt"></i></button>
+        </div>
+      </div>
+    `).join('');
 
-    const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-    summaryEl.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px"><span>Tổng tiền</span><strong style="color:#fff;font-size:18px">${window.MMO.fmt(total)}</strong></div>`;
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    totalEl.textContent = window.MMO.fmt(total);
+    subtotalEl.textContent = window.MMO.fmt(total);
   }
 
-  window.changeQty = function(idx,d){const c=getCart();c[idx].qty=Math.max(1,c[idx].qty+d);saveCart(c);renderCart()}
-  window.removeItem = function(idx){const c=getCart();c.splice(idx,1);saveCart(c);renderCart();window.MMO.notify('Đã xóa sản phẩm')}
+  window.updateQty = (idx, delta) => {
+    const cart = getCart();
+    cart[idx].qty = Math.max(1, cart[idx].qty + delta);
+    saveCart(cart);
+    renderCart();
+  };
 
-  let selectedPayMethod = 'balance';
-  window.selectPay = function(el){
-    document.querySelectorAll('.pay-opt').forEach(e=>e.classList.remove('active'));
+  window.removeItem = (idx) => {
+    const cart = getCart();
+    cart.splice(idx, 1);
+    saveCart(cart);
+    renderCart();
+    window.MMO.notify('Đã xóa sản phẩm khỏi giỏ hàng.');
+  };
+
+  window.selectPay = (el) => {
+    document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('active'));
     el.classList.add('active');
-    selectedPayMethod = el.dataset.method;
-    const qr=document.getElementById('pm-qr-panel');
-    const title=document.getElementById('pm-title');
-    if(selectedPayMethod==='balance'){
-      if(qr) qr.style.display='none';
-      if(title) title.innerHTML='<i class="fas fa-wallet"></i> THANH TOÁN QUA SỐ DƯ';
-    }else{
-      if(qr) qr.style.display='block';
-      if(title) title.innerHTML='<i class="fas fa-qrcode"></i> QUÉT MÃ THANH TOÁN';
-    }
-  }
+    payMethod = el.dataset.method;
+    el.querySelector('input').checked = true;
+  };
 
-  window.handleBuy = function(){
-    const cart=getCart();
-    if(!cart.length) { window.MMO.notify('Giỏ hàng trống!', true); return; }
-    const user=window.MMO.getUser();
-    if(!user){window.MMO.notify('Vui lòng đăng nhập!',true);setTimeout(()=>window.location.href='auth.html',1500);return}
-    
-    document.getElementById('pm-qty').textContent=cart.reduce((s,i)=>s+i.qty,0);
-    document.getElementById('pm-total').textContent=window.MMO.fmt(cart.reduce((s,i)=>s+i.price*i.qty,0));
-    document.getElementById('pay-overlay').classList.add('active');
-  }
-
-  window.closePayModal = function(){document.getElementById('pay-overlay').classList.remove('active')}
-
-  window.confirmPay = async function(){
-    const btn=document.querySelector('.pm-confirm');
-    if(!btn || btn.disabled) return;
-    const original=btn.innerHTML;
-    const cart=getCart();
-    const user=window.MMO.getUser();
-    const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-
-    if(selectedPayMethod==='balance' && (user.balance || 0) < total){
-      window.MMO.notify('Số dư không đủ!',true);
+  window.handleBuy = () => {
+    const cart = getCart();
+    if (cart.length === 0) return window.MMO.notify('Giỏ hàng trống!', true);
+    const user = window.MMO.getUser();
+    if (!user) {
+      window.MMO.notify('Vui lòng đăng nhập để thanh toán!', true);
+      setTimeout(() => location.href = 'auth.html', 1500);
       return;
     }
 
-    try{
-      btn.disabled=true;
-      btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
-      
-      const order={
-        id:'ORD-'+Date.now(),
-        date:new Date().toISOString(),
-        items:cart,
-        total:total,
-        method:selectedPayMethod==='balance'?'Số dư':'Chuyển khoản',
-        status:selectedPayMethod==='balance'?'Thành công':'Đang xử lý'
+    const orderId = 'ORD-' + Date.now();
+    document.getElementById('pm-note').textContent = 'THANH TOAN ' + orderId;
+    
+    if (payMethod === 'balance') {
+      document.getElementById('qr-panel').style.display = 'none';
+      document.getElementById('balance-panel').style.display = 'block';
+      document.getElementById('pm-title').innerHTML = '<i class="fas fa-wallet"></i> THANH TOÁN SỐ DƯ';
+    } else {
+      document.getElementById('qr-panel').style.display = 'block';
+      document.getElementById('balance-panel').style.display = 'none';
+      document.getElementById('pm-title').innerHTML = '<i class="fas fa-qrcode"></i> QUÉT MÃ THANH TOÁN';
+    }
+
+    document.getElementById('pay-overlay').classList.add('active');
+    window.currentOrderId = orderId;
+  };
+
+  window.closePayModal = () => document.getElementById('pay-overlay').classList.remove('active');
+
+  window.confirmPay = async () => {
+    const btn = document.getElementById('confirm-btn');
+    if (btn.disabled) return;
+    
+    const user = window.MMO.getUser();
+    const cart = getCart();
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+
+    if (payMethod === 'balance' && user.balance < total) {
+      return window.MMO.notify('Số dư của bạn không đủ!', true);
+    }
+
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
+
+      const order = {
+        id: window.currentOrderId,
+        date: new Date().toISOString(),
+        items: cart,
+        total: total,
+        method: payMethod === 'balance' ? 'Số dư' : 'Chuyển khoản',
+        status: payMethod === 'balance' ? 'Thành công' : 'Đang xử lý'
       };
 
       user.orders = user.orders || [];
       user.orders.unshift(order);
-      if(selectedPayMethod === 'balance') user.balance -= total;
-      
-      // Update globally via MMO utility
+      if (payMethod === 'balance') user.balance -= total;
+
       window.MMO.saveUser(user);
 
-      // --- BÁO TELEGRAM ---
       if (window.mmoSendTelegram) {
         const msg = `📦 <b>ĐƠN HÀNG MỚI</b>\n- ID: ${order.id}\n- Khách: ${user.email}\n- Tổng: ${window.MMO.fmt(total)}\n- Hình thức: ${order.method}\n- Trạng thái: ${order.status}`;
         window.mmoSendTelegram(msg);
       }
 
-      if(window.mmoUpsertUser) await window.mmoUpsertUser(user).catch(e => console.warn("Sync deferred."));
+      if (window.mmoUpsertUser) await window.mmoUpsertUser(user);
 
       saveCart([]);
       window.MMO.notify('Đặt hàng thành công!');
-      setTimeout(()=>window.location.href='history.html',1500);
-    }catch(e){
+      setTimeout(() => location.href = 'history.html', 1500);
+    } catch (e) {
       console.error(e);
-      window.MMO.notify('Lỗi kết nối!',true);
-      btn.disabled=false;
-      btn.innerHTML=original;
+      window.MMO.notify('Lỗi hệ thống, vui lòng thử lại!', true);
+      btn.disabled = false;
+      btn.innerText = 'XÁC NHẬN ĐÃ THANH TOÁN';
     }
-  }
+  };
 
   renderCart();
 </script>
+
 </body>
 </html>
