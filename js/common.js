@@ -31,7 +31,8 @@ window.MMO = {
 
   // Show Toast/Notify
   notify: function(msg, isError = false) {
-    let t = document.getElementById('toast') || document.getElementById('mmo-toast');
+    console.log(`[MMO-Notify] ${isError ? 'Error' : 'Success'}: ${msg}`);
+    let t = document.getElementById('mmo-toast');
     if (!t) {
       t = document.createElement('div');
       t.id = 'mmo-toast';
@@ -39,11 +40,21 @@ window.MMO = {
       document.body.appendChild(t);
     }
     t.textContent = msg;
-    t.style.background = isError ? '#ef4444' : '#0f172a';
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    t.style.backgroundColor = isError ? '#ef4444' : '#0f172a';
+    t.style.display = 'block'; // Đảm bảo luôn hiển thị
+    setTimeout(() => {
+      t.classList.add('show');
+    }, 10);
+    
+    clearTimeout(window.mmoToastTimer);
+    window.mmoToastTimer = setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => { if(!t.classList.contains('show')) t.style.display = 'none'; }, 300);
+    }, 3000);
   }
 };
+
+console.log("✅ QuocHuy MMO Common Utilities Loaded");
 
 // Check Admin Redirect
 (function() {
