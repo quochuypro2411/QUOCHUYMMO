@@ -732,33 +732,33 @@
       }
       
       try {
-        console.log('💰 Loading deposit requests from Firebase...');
-        console.log('📊 Accessing collection: deposit_requests');
+        logDebug('💰 Loading deposit requests from Firebase...');
+        logDebug('📊 Accessing collection: deposit_requests');
         
         const snap = await db.collection('deposit_requests').get();
-        console.log('📊 Deposit requests snapshot:', snap);
-        console.log('📊 Number of documents:', snap.size);
-        console.log('📊 Snapshot empty:', snap.empty);
+        logDebug('📊 Deposit requests snapshot: ' + JSON.stringify(snap, null, 2));
+        logDebug('📊 Number of documents: ' + snap.size);
+        logDebug('📊 Snapshot empty: ' + snap.empty);
         
         if (snap.empty) {
-          console.log('⚠️ No deposit requests found, trying alternative collection names...');
+          logDebug('⚠️ No deposit requests found, trying alternative collection names...');
           
           // Try alternative collection names
           const altCollections = ['depositRequests', 'deposits', 'deposit_request'];
           for (const altName of altCollections) {
             try {
-              console.log(`🔄 Trying alternative collection: ${altName}`);
+              logDebug(`🔄 Trying alternative collection: ${altName}`);
               const altSnap = await db.collection(altName).get();
-              console.log(`📊 Alternative ${altName} found:`, altSnap.size, 'docs');
+              logDebug(`📊 Alternative ${altName} found: ${altSnap.size} docs`);
               
               if (!altSnap.empty) {
                 const deposits = altSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log('✅ Found deposits in alternative collection:', deposits);
+                logDebug('✅ Found deposits in alternative collection: ' + JSON.stringify(deposits, null, 2));
                 renderDepositRequests(deposits);
                 return;
               }
             } catch (altError) {
-              console.log(`❌ Alternative collection ${altName} failed:`, altError.message);
+              logDebug(`❌ Alternative collection ${altName} failed: ${altError.message}`);
             }
           }
           
@@ -767,24 +767,38 @@
         }
         
         const deposits = snap.docs.map(doc => {
-          console.log('📄 Deposit request document:', doc.id, doc.data());
+          logDebug('📄 Deposit request document: ' + doc.id + ' - ' + JSON.stringify(doc.data(), null, 2));
           return { id: doc.id, ...doc.data() };
         });
         
-        console.log('✅ Loaded deposit requests:', deposits);
+        logDebug('✅ Loaded deposit requests: ' + JSON.stringify(deposits, null, 2));
+        logDebug('🔍 Calling renderDepositRequests with ' + deposits.length + ' deposits');
         renderDepositRequests(deposits);
+        logDebug('✅ renderDepositRequests completed');
       } catch (error) {
-        console.error('❌ Error loading deposits:', error);
-        console.error('❌ Error code:', error.code);
-        console.error('❌ Error message:', error.message);
+        logDebug('❌ Error loading deposits: ' + error.message);
+        logDebug('❌ Error code: ' + error.code);
         document.getElementById('deposits-body').innerHTML = '<tr><td colspan="6" class="empty-state">Lỗi tải yêu cầu nạp tiền</td></tr>';
       }
     }
     
     function renderDepositRequests(deposits) {
+      logDebug('🎨 renderDepositRequests called with ' + deposits.length + ' deposits');
       const body = document.getElementById('deposits-body');
       
-      body.innerHTML = deposits.map(deposit => {
+      if (!body) {
+        logDebug('❌ deposits-body element not found');
+        return;
+      }
+      
+      if (deposits.length === 0) {
+        logDebug('⚠️ No deposits to render');
+        body.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có yêu cầu nạp tiền nào</td></tr>';
+        return;
+      }
+      
+      const html = deposits.map(deposit => {
+        logDebug('🎨 Rendering deposit: ' + JSON.stringify(deposit, null, 2));
         const statusClass = deposit.status === 'Đã duyệt' ? 'approved' : 
                             deposit.status === 'Đã từ chối' ? 'rejected' : 'pending';
         const customer = deposit.customerEmail || deposit.customer || deposit.email || 'Không rõ';
@@ -811,6 +825,10 @@
           </td>
         </tr>`;
       }).join('');
+      
+      logDebug('🎨 Setting HTML to deposits-body');
+      body.innerHTML = html;
+      logDebug('✅ renderDepositRequests completed successfully');
     }
     
     async function approveDeposit(depositId, customerEmail, amount) {
@@ -991,32 +1009,11 @@
       }
       
       try {
-        logDebug('Fetching all collections...');
+        logDebug('Checking specific collections...');
         
-        // Get all collections
-        const collections = await db.listCollections();
-        logDebug(`Found ${collections.length} collections:`);
-        
-        for (const collection of collections) {
-          logDebug(`- ${collection.id}`);
-          
-          // Get document count
-          const snap = await collection.get();
-          logDebug(`  Documents: ${snap.size}`);
-          
-          if (!snap.empty && snap.size <= 5) {
-            // Show first few documents
-            snap.docs.forEach((doc, index) => {
-              if (index < 3) {
-                logDebug(`  Doc ${index + 1}: ${JSON.stringify(doc.data(), null, 2)}`);
-              }
-            });
-          }
-        }
-        
-        // Also check for specific deposit-related collections
+        // Check for specific deposit-related collections
         const depositCollections = ['deposit_requests', 'depositRequests', 'deposits', 'deposit_request'];
-        logDebug('Checking specific deposit collections:');
+        logDebug('Checking deposit collections:');
         
         for (const collectionName of depositCollections) {
           try {
@@ -1028,6 +1025,25 @@
                 if (index < 2) {
                   logDebug(`  ${collectionName} Doc ${index + 1}: ${JSON.stringify(doc.data(), null, 2)}`);
                 }
+              });
+            }
+          } catch (error) {
+            logDebug(`${collectionName}: Error - ${error.message}`);
+          }
+        }
+        
+        // Check other common collections
+        const otherCollections = ['users', 'orders', 'global_notifications'];
+        logDebug('Checking other collections:');
+        
+        for (const collectionName of otherCollections) {
+          try {
+            const snap = await db.collection(collectionName).get();
+            logDebug(`${collectionName}: ${snap.size} documents`);
+            
+            if (!snap.empty && snap.size <= 3) {
+              snap.docs.forEach((doc, index) => {
+                logDebug(`  ${collectionName} Doc ${index + 1}: ${JSON.stringify(doc.data(), null, 2)}`);
               });
             }
           } catch (error) {
