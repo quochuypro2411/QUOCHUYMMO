@@ -778,6 +778,9 @@ async function loadAccounts() {
       await upsertCloudUser(user);
     }
     
+    // Mark that test users were created to avoid infinite loop
+    localStorage.setItem('mmo_test_users_created', 'true');
+    
     body.innerHTML = '<tr><td colspan="5" class="empty-state">Đã tạo tài khoản test. Đang tải lại...</td></tr>';
     
     // Reload after 1 second
@@ -785,6 +788,9 @@ async function loadAccounts() {
       location.reload();
     }, 1000);
     return;
+  } else {
+    // Clear test users flag if real users exist
+    localStorage.removeItem('mmo_test_users_created');
   }
   body.innerHTML = users.map(user => {
     const role = user.role || (user.isAdmin ? 'admin' : 'user');
