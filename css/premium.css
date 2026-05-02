@@ -112,18 +112,6 @@ body[data-layout="premium"] .search-btn {
   border-radius: 0 4px 4px 0;
 }
 
-/* Xử lý Logo nền trắng bằng CSS trick */
-body[data-layout="premium"] .logo img {
-  /* Đảo ngược trắng thành đen, rồi áp dụng màu vàng sepia */
-  filter: invert(1) sepia(1) saturate(5) hue-rotate(5deg) brightness(1.2) contrast(1.2);
-  /* Chế độ hòa trộn screen sẽ làm màu đen (vốn là nền trắng cũ) trở nên hoàn toàn trong suốt */
-  mix-blend-mode: screen;
-  transition: all 0.3s ease;
-}
-body[data-layout="premium"] .logo img:hover {
-  filter: invert(1) sepia(1) saturate(8) hue-rotate(5deg) brightness(1.5) contrast(1.2) drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
-}
-
 /* Main Nav */
 body[data-layout="premium"] .main-nav {
   background: #050505 !important;
