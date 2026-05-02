@@ -493,3 +493,173 @@ body[data-layout="premium"] .step-number {
   top: -25px;
   border: 4px solid #130d1a;
 }
+
+/* ── 11. SUBPAGES (DEPOSIT, CHECKOUT, HISTORY, ETC) ─────── */
+
+/* Nền và Khung chính */
+body[data-layout="premium"] .deposit-card,
+body[data-layout="premium"] .deposit-history,
+body[data-layout="premium"] .ck-section,
+body[data-layout="premium"] .summary-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  color: var(--text);
+}
+
+body[data-layout="premium"] .page-header h1,
+body[data-layout="premium"] .card-title,
+body[data-layout="premium"] .section-title {
+  color: var(--primary);
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+body[data-layout="premium"] .page-header p {
+  color: var(--text-muted);
+}
+
+/* Số dư (Pill) */
+body[data-layout="premium"] .user-bal-pill {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+}
+
+/* Nút Chọn Phương Thức Thanh Toán */
+body[data-layout="premium"] .pay-methods {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+}
+body[data-layout="premium"] .pay-method {
+  color: var(--text-muted);
+}
+body[data-layout="premium"] .pay-method:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+body[data-layout="premium"] .pay-method.active {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+}
+
+/* Ô nhập liệu (Inputs / Selects) */
+body[data-layout="premium"] .field label {
+  color: var(--text-muted);
+}
+body[data-layout="premium"] .field input,
+body[data-layout="premium"] .field select {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+body[data-layout="premium"] .field input:focus,
+body[data-layout="premium"] .field select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+  background: rgba(10, 10, 20, 0.8);
+}
+body[data-layout="premium"] .field select option {
+  background: #130d1a;
+  color: #fff;
+}
+
+/* Khung quét QR */
+body[data-layout="premium"] .qr-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(245, 158, 11, 0.3);
+}
+body[data-layout="premium"] .qr-box img {
+  border: 2px solid rgba(245, 158, 11, 0.2);
+}
+body[data-layout="premium"] .qr-box div {
+  color: var(--text-muted) !important;
+}
+body[data-layout="premium"] .qr-box div:first-of-type {
+  color: var(--primary) !important;
+}
+
+/* Nút Submit Chung */
+body[data-layout="premium"] .btn-submit,
+body[data-layout="premium"] .checkout-sidebar .buy-btn,
+body[data-layout="premium"] .pay-modal .buy-btn {
+  background: var(--premium-gold-gradient);
+  color: #000;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+body[data-layout="premium"] .btn-submit:hover,
+body[data-layout="premium"] .checkout-sidebar .buy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--primary-glow);
+  filter: brightness(1.1);
+}
+
+/* Bảng Lịch Sử (Tables) */
+body[data-layout="premium"] .deposit-history th,
+body[data-layout="premium"] .deposit-history td,
+body[data-layout="premium"] table td,
+body[data-layout="premium"] table th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+body[data-layout="premium"] .deposit-history th,
+body[data-layout="premium"] table th {
+  color: var(--primary);
+}
+
+/* Checkout Page Specifics */
+body[data-layout="premium"] .cart-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+body[data-layout="premium"] .item-details h4 {
+  color: var(--text);
+}
+body[data-layout="premium"] .item-price {
+  color: var(--primary);
+}
+body[data-layout="premium"] .item-actions div {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text);
+}
+body[data-layout="premium"] .qty-btn {
+  color: var(--primary);
+}
+body[data-layout="premium"] .summary-row {
+  color: var(--text-muted);
+}
+body[data-layout="premium"] .summary-row span:last-child {
+  color: var(--text);
+}
+body[data-layout="premium"] .summary-row.total {
+  border-top: 1px dashed rgba(245, 158, 11, 0.3);
+  color: var(--primary);
+}
+body[data-layout="premium"] .total-price {
+  color: var(--primary);
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+/* Modal Thanh Toán */
+body[data-layout="premium"] .pay-modal {
+  background: #130d1a;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.1);
+}
+body[data-layout="premium"] .pm-header {
+  background: rgba(245, 158, 11, 0.1);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+}
+body[data-layout="premium"] #pm-title {
+  color: var(--primary);
+}
+body[data-layout="premium"] .bank-info {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+body[data-layout="premium"] .bank-name {
+  color: var(--primary);
+}
