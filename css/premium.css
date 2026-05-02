@@ -497,3 +497,37 @@ body[data-layout="premium"] .qr-box {
   background: #111 !important;
   border: 2px dashed var(--border-gold) !important;
 }
+
+/* ── 9. GUIDE & NEWS PAGES ────────────── */
+body[data-layout="premium"] .guide-card,
+body[data-layout="premium"] .news-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.8) !important;
+  color: var(--text-main) !important;
+}
+
+body[data-layout="premium"] .guide-card:hover,
+body[data-layout="premium"] .news-card:hover {
+  border-color: var(--border-gold) !important;
+  box-shadow: 0 0 15px var(--gold-glow) !important;
+  transform: translateY(-4px) !important;
+}
+
+body[data-layout="premium"] .guide-icon,
+body[data-layout="premium"] .news-img {
+  background: #111 !important;
+  border: 1px solid var(--border-gold) !important;
+  color: var(--gold-flat) !important;
+}
+
+body[data-layout="premium"] .guide-info h4,
+body[data-layout="premium"] .news-title {
+  color: var(--gold-flat) !important;
+}
+
+body[data-layout="premium"] .guide-info p,
+body[data-layout="premium"] .news-desc,
+body[data-layout="premium"] .news-meta {
+  color: var(--text-muted) !important;
+}
