@@ -544,10 +544,17 @@
           <input type="number" id="detail-balance" value="${user.balance || 0}" min="0" placeholder="Nhập số dư">
         </div>
         <div class="form-group">
+          <label>Chuyển tiền từ Admin</label>
+          <input type="number" id="transfer-amount" min="0" placeholder="Nhập số tiền muốn chuyển">
+        </div>
+        <div class="form-group">
           <label>Mật khẩu mới</label>
           <input type="password" id="new-password-input" placeholder="Nhập mật khẩu mới">
         </div>
         <div class="form-actions">
+          <button class="success" onclick="transferMoneyFromAdmin('${user.email}')">
+            <i class="fas fa-exchange-alt"></i> Chuyển tiền
+          </button>
           <button class="primary" onclick="saveUserDetails('${user.email}')">
             <i class="fas fa-save"></i> Lưu thay đổi
           </button>
@@ -559,6 +566,84 @@
     
     function closeUserModal() {
       document.getElementById('user-modal').classList.remove('show');
+    }
+    
+    async function transferMoneyFromAdmin(userEmail) {
+      const transferAmount = parseInt(document.getElementById('transfer-amount').value) || 0;
+      
+      if (!transferAmount || transferAmount <= 0) {
+        showToast('Vui lòng nhập số tiền muốn chuyển.', true);
+        return;
+      }
+      
+      if (!confirm(`Xác nhận chuyển ${formatMoney(transferAmount)} cho ${userEmail}?`)) {
+        return;
+      }
+      
+      try {
+        // Get admin account
+        const adminEmail = 'admin@quochuy.mmo';
+        const users = getUsers();
+        const adminIndex = users.findIndex(u => u.email === adminEmail);
+        const userIndex = users.findIndex(u => u.email === userEmail);
+        
+        if (adminIndex === -1) {
+          showToast('Không tìm thấy tài khoản admin.', true);
+          return;
+        }
+        
+        if (userIndex === -1) {
+          showToast('Không tìm thấy tài khoản người nhận.', true);
+          return;
+        }
+        
+        if (users[adminIndex].balance < transferAmount) {
+          showToast('Admin không đủ số dư để chuyển.', true);
+          return;
+        }
+        
+        // Subtract from admin
+        users[adminIndex].balance -= transferAmount;
+        
+        // Add to user
+        users[userIndex].balance = (users[userIndex].balance || 0) + transferAmount;
+        
+        // Save to localStorage and Firebase
+        setUsers(users);
+        await upsertCloudUser(users[adminIndex]);
+        await upsertCloudUser(users[userIndex]);
+        
+        // Create deposit request for this transfer
+        const depositRequest = {
+          id: 'transfer_' + Date.now(),
+          customerEmail: userEmail,
+          customer: users[userIndex].user || userEmail,
+          email: userEmail,
+          amount: transferAmount,
+          status: 'Chờ duyệt',
+          createdAt: new Date().toISOString(),
+          type: 'admin_transfer',
+          method: 'admin_transfer',
+          fromAdmin: adminEmail,
+          description: `Chuyển tiền từ Admin: ${formatMoney(transferAmount)}`
+        };
+        
+        // Save deposit request to Firebase
+        await db.collection('deposit_requests').doc(depositRequest.id).set(depositRequest);
+        
+        showToast(`✅ Đã chuyển ${formatMoney(transferAmount)} cho ${userEmail} và tạo yêu cầu nạp tiền.`);
+        
+        // Clear transfer amount field
+        document.getElementById('transfer-amount').value = '';
+        
+        // Refresh user details and deposit requests
+        closeUserModal();
+        await loadAccounts();
+        await loadDepositRequests();
+      } catch (error) {
+        console.error('Error transferring money:', error);
+        showToast('❌ Lỗi chuyển tiền.', true);
+      }
     }
     
     async function saveUserDetails(email) {
