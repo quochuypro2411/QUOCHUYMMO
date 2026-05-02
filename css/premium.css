@@ -118,16 +118,35 @@ body[data-layout="premium"] .main-nav {
   border-bottom: 1px solid var(--border-light);
 }
 body[data-layout="premium"] .nav-item a {
+  background: transparent !important;
   color: var(--text-muted) !important;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 12px;
   font-weight: 600;
+  box-shadow: none !important;
+  border: 1px solid transparent;
+}
+body[data-layout="premium"] .nav-icon {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-muted) !important;
 }
 body[data-layout="premium"] .nav-item a:hover,
 body[data-layout="premium"] .nav-item.active a {
+  background: #111 !important;
   color: var(--gold-flat) !important;
-  border-bottom-color: var(--gold-flat) !important;
+  border: 1px solid var(--border-gold) !important;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.15) !important;
+}
+body[data-layout="premium"] .nav-item a:hover .nav-icon,
+body[data-layout="premium"] .nav-item.active a .nav-icon {
+  background: var(--gold-metallic) !important;
+  color: #000 !important;
+  box-shadow: 0 0 5px var(--gold-glow);
+}
+body[data-layout="premium"] .nav-item a::after {
+  background: var(--gold-flat) !important;
+  height: 2px;
 }
 
 /* Action Boxes (Cart, Wallet, Auth) */
