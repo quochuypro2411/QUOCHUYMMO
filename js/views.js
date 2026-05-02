@@ -1,3 +1,9 @@
+/**
+ * Views – QuocHuy MMO
+ * UI rendering layer. Logic giá luôn qua PricingService.
+ */
+'use strict';
+
 const Views = {
     Home: () => {
         let homeHtml = `
@@ -266,35 +272,76 @@ const Views = {
             `;
         }
 
-        let cartRows = cart.map(item => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:rgba(0,0,0,0.2); border-radius:8px; margin-bottom:10px;">
+        // Re-verify user để tính giá đúng (không trust frontend)
+        const user     = window.RoleGuard ? RoleGuard.getVerifiedUser() : null;
+        const totals   = window.PricingService ? PricingService.calcCartTotals(user, cart) : null;
+        const isPremium = totals?.is_premium || false;
+
+        let cartRows = cart.map(item => {
+            const basePriceTotal = item.price * (item.qty || 1);
+            const finalPriceTotal = totals
+                ? (totals.items.find(i => i.id === item.id)?.breakdown?.final_price ?? basePriceTotal)
+                : basePriceTotal;
+            const saved = basePriceTotal - finalPriceTotal;
+
+            return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:rgba(0,0,0,0.08); border:1px solid var(--border); border-radius:10px; margin-bottom:10px;">
                 <div style="flex:1">
-                    <h4 style="margin:0 0 5px 0;">${item.title}</h4>
-                    <span style="color:var(--primary); font-weight:bold;">${item.price.toLocaleString()}đ</span>
+                    <h4 style="margin:0 0 5px 0; color:var(--text);">${item.title || item.name}</h4>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="color:var(--primary); font-weight:bold; font-size:15px;">${finalPriceTotal.toLocaleString()}đ</span>
+                        ${isPremium && saved > 0 ? `<span style="font-size:11px; color:#9090c0; text-decoration:line-through;">${basePriceTotal.toLocaleString()}đ</span><span style="font-size:11px; color:#34d399; font-weight:700;">Tiết kiệm ${saved.toLocaleString()}đ</span>` : ''}
+                    </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button onclick="Cart.updateQty('${item.id}', ${item.qty - 1})" style="width:30px; height:30px; border-radius:5px; border:none; background:var(--border); color:#fff; cursor:pointer;">-</button>
-                    <span style="font-weight:bold; width:20px; text-align:center;">${item.qty}</span>
-                    <button onclick="Cart.updateQty('${item.id}', ${item.qty + 1})" style="width:30px; height:30px; border-radius:5px; border:none; background:var(--primary); color:#fff; cursor:pointer;">+</button>
-                    <button onclick="Cart.remove('${item.id}')" style="margin-left:15px; background:none; border:none; color:var(--danger); cursor:pointer; font-size:18px;"><i class="fas fa-trash"></i></button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="Cart.updateQty('${item.id}', ${item.qty - 1})" style="width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text); cursor:pointer; font-weight:bold;">-</button>
+                    <span style="font-weight:bold; width:24px; text-align:center; color:var(--text);">${item.qty}</span>
+                    <button onclick="Cart.updateQty('${item.id}', ${item.qty + 1})" style="width:28px; height:28px; border-radius:6px; border:none; background:var(--primary); color:#fff; cursor:pointer; font-weight:bold;">+</button>
+                    <button onclick="Cart.remove('${item.id}')" style="margin-left:8px; background:none; border:none; color:#ef4444; cursor:pointer; font-size:16px;"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
+
+        // Tính breakdown tổng
+        const originalTotal = totals ? totals.original_total : cart.reduce((a,b) => a + b.price * b.qty, 0);
+        const finalTotal    = totals ? totals.final_total    : originalTotal;
+        const totalSaved    = totals ? totals.total_saved    : 0;
+
+        const breakdownHtml = isPremium ? `
+            <div class="order-breakdown">
+                <div class="breakdown-row">
+                    <span style="color:var(--text-muted); font-size:13px;">Giá gốc:</span>
+                    <span class="breakdown-original">${originalTotal.toLocaleString()}đ</span>
+                </div>
+                <div class="breakdown-row">
+                    <span style="color:var(--text-muted); font-size:13px;">Giảm giá Premium (-25%):</span>
+                    <span class="breakdown-saved">-${totalSaved.toLocaleString()}đ</span>
+                </div>
+                <div class="breakdown-row final">
+                    <span>Tổng thanh toán:</span>
+                    <span style="color:var(--primary);">${finalTotal.toLocaleString()}đ</span>
+                </div>
+            </div>
+        ` : `
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:15px;">
+                <span style="color:var(--text-muted);">Tổng tiền:</span>
+                <span style="color:var(--text); font-weight:bold; font-size:18px;">${finalTotal.toLocaleString()}đ</span>
+            </div>
+        `;
 
         return `
 <main class="main-content" style="min-height:70vh; padding: 40px 0;">
     <div class="container" style="display:grid; grid-template-columns:2fr 1fr; gap:30px;">
         <div class="cart-items-wrap" style="background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:20px;">
-            <h2 style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px;">Giỏ hàng (${cart.reduce((a,b)=>a+b.qty,0)} sản phẩm)</h2>
+            <h2 style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px; color:var(--text);">Giỏ hàng (${cart.reduce((a,b)=>a+b.qty,0)} sản phẩm)</h2>
+            ${isPremium ? `<div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#f59e0b;"><i class="fas fa-star"></i> <strong>Giá Premium đã được áp dụng</strong> – Bạn đang tiết kiệm ${totalSaved.toLocaleString()}đ!</div>` : ''}
             ${cartRows}
         </div>
         <div class="cart-summary-wrap" style="background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:20px; height:max-content;">
-            <h3 style="margin-bottom:20px;">Tóm tắt đơn hàng</h3>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:15px; color:var(--text-muted);">
-                <span>Tổng tiền:</span>
-                <span style="color:var(--text); font-weight:bold; font-size:18px;">${window.Cart.getTotal().toLocaleString()}đ</span>
-            </div>
-            <button onclick="Views.doCheckout()" id="checkout-btn" style="width:100%; padding:15px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; transition:0.3s;">
+            <h3 style="margin-bottom:20px; color:var(--text);">Tóm tắt đơn hàng</h3>
+            ${breakdownHtml}
+            <button onclick="Views.doCheckout()" id="checkout-btn" style="width:100%; padding:15px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; transition:0.3s; margin-top:16px;">
                 THANH TOÁN NGAY
             </button>
             <p style="text-align:center; margin-top:15px; font-size:13px; color:var(--text-muted);"><i class="fas fa-shield-alt"></i> Thanh toán an toàn, tự động 100%</p>
@@ -306,70 +353,124 @@ const Views = {
 
     doCheckout: async () => {
         const btn = document.getElementById('checkout-btn');
+        if (!btn) return;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
         btn.disabled = true;
+
         try {
-            await window.Cart.checkout();
-            window.UI.showToast('Thành công', 'Thanh toán thành công! Chuyển hướng...', 'success');
-            setTimeout(() => window.Router.navigate('/dashboard'), 1500);
+            // Re-verify user (không trust frontend)
+            const user = window.RoleGuard
+                ? RoleGuard.getVerifiedUser()
+                : (window.Auth ? Auth.getCurrentUser() : null);
+
+            if (!user) {
+                throw new Error('Bạn cần đăng nhập để thanh toán');
+            }
+
+            const cart = window.Cart ? Cart.getItems() : [];
+
+            // Dùng OrderService nếu có (tính giá server-side style)
+            if (window.OrderService) {
+                const result = await new Promise((resolve, reject) => {
+                    try {
+                        const r = OrderService.createOrder(user, cart);
+                        resolve(r);
+                    } catch (e) {
+                        reject(e);
+                    }
+                });
+
+                // Update UI balance
+                if (window.Auth) Auth.updateUI();
+
+                const saved = result.totals.total_saved;
+                const msg   = saved > 0
+                    ? `Thanh toán thành công! Tiết kiệm ${saved.toLocaleString()}đ nhờ Premium 🎉`
+                    : 'Thanh toán thành công!';
+
+                if (window.UI?.showToast) window.UI.showToast('Thành công', msg, 'success');
+            } else {
+                // Fallback nếu OrderService chưa load
+                await window.Cart.checkout();
+                if (window.UI?.showToast) window.UI.showToast('Thành công', 'Thanh toán thành công!', 'success');
+            }
+
+            setTimeout(() => {
+                if (window.Router) window.Router.navigate('/dashboard');
+            }, 1500);
+
         } catch (err) {
-            window.UI.showToast('Lỗi', err.message, 'error');
+            console.error('[Views.doCheckout] Error:', err.message);
+            if (window.UI?.showToast) window.UI.showToast('Lỗi', err.message, 'error');
             btn.innerHTML = 'THANH TOÁN NGAY';
             btn.disabled = false;
         }
     },
 
     Dashboard: () => {
-        const user = window.Auth.getCurrentUser();
+        // Re-verify user từ source
+        const user = window.RoleGuard ? RoleGuard.getVerifiedUser() : (window.Auth ? Auth.getCurrentUser() : null);
         if(!user) {
-            setTimeout(() => window.Router.navigate('/auth'), 0);
+            setTimeout(() => window.Router ? window.Router.navigate('/auth') : (window.location.href = 'auth.html'), 0);
             return '';
         }
 
+        // Premium info
+        const isPremium = window.PricingService ? PricingService.isPremiumActive(user) : false;
+        const premiumExpiry = user.premium_expired_at
+            ? new Date(user.premium_expired_at).toLocaleDateString('vi-VN')
+            : 'Vĩnh viễn';
+
         const txns = user.transactions || [];
-        const txnRows = txns.length === 0 ? '<tr><td colspan="4" style="text-align:center; padding:20px;">Chưa có giao dịch nào</td></tr>' :
-            txns.map(t => `
+        const txnRows = txns.length === 0
+            ? '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Chưa có giao dịch nào</td></tr>'
+            : txns.map(t => `
             <tr style="border-bottom:1px solid var(--border);">
-                <td style="padding:15px;">${t.id}</td>
-                <td style="padding:15px;">${new Date(t.date).toLocaleString('vi-VN')}</td>
-                <td style="padding:15px;">
+                <td style="padding:12px 15px; font-family:monospace; font-size:12px; color:var(--text-muted);">${t.id}</td>
+                <td style="padding:12px 15px; font-size:13px;">${new Date(t.date).toLocaleString('vi-VN')}</td>
+                <td style="padding:12px 15px;">
                     ${t.desc}
-                    ${t.status ? `<div style="font-size:12px; color:${t.status === 'Thành công' ? '#10b981' : t.status === 'Thất bại' ? '#ef4444' : '#f59e0b'}; margin-top:6px;">${t.status}</div>` : ''}
+                    ${t.meta?.saved > 0 ? `<div style="font-size:11px; color:#34d399; margin-top:3px;">Tiết kiệm ${t.meta.saved.toLocaleString()}đ (Premium)</div>` : ''}
+                    ${t.status ? `<div style="font-size:11px; color:${t.status === 'Thành công' ? '#10b981' : t.status === 'Thất bại' ? '#ef4444' : '#f59e0b'}; margin-top:3px;">${t.status}</div>` : ''}
                 </td>
-                <td style="padding:15px; font-weight:bold; color:${t.amount > 0 ? '#10b981' : '#ef4444'}">${t.amount > 0 ? '+' : ''}${t.amount.toLocaleString()}đ</td>
+                <td style="padding:12px 15px; font-weight:bold; color:${t.amount > 0 ? '#10b981' : '#ef4444'}">${t.amount > 0 ? '+' : ''}${t.amount.toLocaleString()}đ</td>
             </tr>
             `).join('');
 
         return `
 <main class="main-content" style="min-height:70vh; padding: 40px 0;">
     <div class="container">
-        <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:30px; margin-bottom:30px; display:flex; justify-content:space-between; align-items:center;">
+        <!-- User Info Card -->
+        <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:30px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
             <div>
-                <h2 style="margin-bottom:10px;">Xin chào, ${user.username}!</h2>
-                <p style="color:var(--text-muted);">Email: ${user.email} | Ngày tham gia: ${new Date(user.createdAt).toLocaleDateString('vi-VN')}</p>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <h2 style="margin:0;">Xin chào, ${user.username}!</h2>
+                    ${isPremium ? `<span style="background:linear-gradient(135deg,#78350f,#f59e0b); color:#fff; font-size:11px; font-weight:800; padding:3px 10px; border-radius:12px; letter-spacing:0.5px;">⭐ PREMIUM</span>` : ''}
+                </div>
+                <p style="color:var(--text-muted); margin:0; font-size:14px;">Email: ${user.email} · Tham gia: ${new Date(user.createdAt).toLocaleDateString('vi-VN')}</p>
+                ${isPremium ? `<p style="color:#f59e0b; margin:6px 0 0; font-size:13px;"><i class="fas fa-star"></i> Premium đến: <strong>${premiumExpiry}</strong> · Giảm giá 25% tất cả sản phẩm</p>` : `<p style="color:var(--text-muted); margin:6px 0 0; font-size:13px;">Nâng cấp Premium để giảm 25% tất cả sản phẩm</p>`}
             </div>
             <div style="text-align:right;">
-                <div style="font-size:14px; color:var(--text-muted); margin-bottom:5px;">Số dư hiện tại</div>
-                <div style="font-size:32px; font-weight:bold; color:#10b981; margin-bottom:10px;">${user.balance.toLocaleString()} đ</div>
-                <a href="/deposit" data-link style="display:inline-block; padding:10px 20px; background:#10b981; color:#fff; border-radius:6px; font-weight:bold;"><i class="fas fa-plus-circle"></i> Nạp thêm</a>
+                <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Số dư hiện tại</div>
+                <div style="font-size:30px; font-weight:800; color:#10b981; margin-bottom:12px;">${(user.balance || 0).toLocaleString()} đ</div>
+                <a href="/deposit" data-link style="display:inline-block; padding:9px 18px; background:#10b981; color:#fff; border-radius:8px; font-weight:bold; font-size:14px;"><i class="fas fa-plus-circle"></i> Nạp thêm</a>
             </div>
         </div>
 
+        <!-- Transaction History -->
         <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:30px;">
-            <h3 style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px;">Lịch sử giao dịch</h3>
+            <h3 style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px; color:var(--text);">Lịch sử giao dịch</h3>
             <div style="overflow-x:auto;">
                 <table style="width:100%; border-collapse:collapse; text-align:left;">
                     <thead>
-                        <tr style="background:rgba(0,0,0,0.3);">
-                            <th style="padding:15px; border-radius:8px 0 0 8px;">Mã GD</th>
-                            <th style="padding:15px;">Thời gian</th>
-                            <th style="padding:15px;">Nội dung</th>
-                            <th style="padding:15px; border-radius:0 8px 8px 0;">Số tiền</th>
+                        <tr style="background:rgba(0,0,0,0.15);">
+                            <th style="padding:12px 15px; font-size:12px; letter-spacing:0.5px; color:var(--text-muted);">MÃ GD</th>
+                            <th style="padding:12px 15px; font-size:12px; letter-spacing:0.5px; color:var(--text-muted);">THỜI GIAN</th>
+                            <th style="padding:12px 15px; font-size:12px; letter-spacing:0.5px; color:var(--text-muted);">NỘI DUNG</th>
+                            <th style="padding:12px 15px; font-size:12px; letter-spacing:0.5px; color:var(--text-muted);">SỐ TIỀN</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        ${txnRows}
-                    </tbody>
+                    <tbody>${txnRows}</tbody>
                 </table>
             </div>
         </div>

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css?v=2.5">
-  <link rel="stylesheet" href="css/premium.css" id="premium-css" disabled>
+  <link rel="stylesheet" href="css/premium.css?v=1.0">
   <style>
     /* DEBUG STYLE - FORCE VISIBILITY */
     .main-content { position: relative; z-index: 10; background: var(--bg-body); }
@@ -2500,12 +2500,39 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js?v=2.5" defer></script>
   <script src="js/common.js?v=2.5" defer></script>
-  <script src="js/auth.js" defer></script>
-  <script src="js/role-middleware.js" defer></script>
-  <script src="js/premium-pricing.js" defer></script>
-  <script src="js/ui-switcher.js" defer></script>
+  <!-- ═══ PREMIUM SYSTEM – Load theo thứ tự phụ thuộc ═══ -->
+  <!-- Layer 1: Middlewares (không phụ thuộc gì) -->
+  <script src="js/middlewares/rate.limiter.js?v=1.0" defer></script>
+  <!-- Layer 2: Services -->
+  <script src="js/services/pricing.service.js?v=1.0" defer></script>
+  <script src="js/services/auth.service.js?v=1.0" defer></script>
+  <script src="js/services/order.service.js?v=1.0" defer></script>
+  <script src="js/services/admin.service.js?v=1.0" defer></script>
+  <!-- Layer 3: Role Guard (depends on AuthService) -->
+  <script src="js/middlewares/role.guard.js?v=1.1" defer></script>
+  <!-- Layer 4: Layouts -->
+  <script src="js/layouts/default.layout.js?v=1.0" defer></script>
+  <script src="js/layouts/premium.layout.js?v=1.0" defer></script>
+  <script src="js/layout.manager.js?v=1.0" defer></script>
+  <!-- Layer 5: Core Auth UI (depends on AuthService + LayoutManager) -->
+  <script src="js/auth.js?v=3.1" defer></script>
+  <!-- Layer 6: Sync + Main script -->
   <script src="js/sync.js?v=2.5" defer></script>
   <script src="js/script.js?v=2.5" defer></script>
+  <!-- Init LayoutManager sau khi DOM ready -->
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Delay nhỏ để đảm bảo tất cả scripts đã load
+      setTimeout(() => {
+        if (window.LayoutManager) {
+          LayoutManager.apply();
+        }
+        if (window.Auth) {
+          Auth.init();
+        }
+      }, 100);
+    });
+  </script>
 </body>
 
 </html>
