@@ -225,11 +225,14 @@
     </div>
 
     <div class="admin-table-wrap">
-      <div class="order-filter-bar">
-        <button class="button-small details active" data-filter="all" onclick="setOrderFilter('all')">Tất cả</button>
-        <button class="button-small" data-filter="pending" onclick="setOrderFilter('pending')">Chờ duyệt</button>
-        <button class="button-small" data-filter="approved" onclick="setOrderFilter('approved')">Đã duyệt</button>
-        <button class="button-small" data-filter="rejected" onclick="setOrderFilter('rejected')">Bị từ chối</button>
+      <div class="order-filter-bar" style="justify-content: space-between; align-items: center; width: 100%;">
+        <div style="display: flex; gap: 10px;">
+          <button class="button-small details active" data-filter="all" onclick="setOrderFilter('all')">Tất cả</button>
+          <button class="button-small" data-filter="pending" onclick="setOrderFilter('pending')">Chờ duyệt</button>
+          <button class="button-small" data-filter="approved" onclick="setOrderFilter('approved')">Đã duyệt</button>
+          <button class="button-small" data-filter="rejected" onclick="setOrderFilter('rejected')">Bị từ chối</button>
+        </div>
+        <button class="button-small reject" onclick="clearHandledOrders()" style="margin-left: auto;"><i class="fas fa-broom"></i> Xóa đã xử lý</button>
       </div>
       <table class="orders-table">
         <thead>
@@ -252,7 +255,10 @@
 </div>
 
 <div class="deposit-section">
-  <div class="section-title">Yêu cầu nạp tiền</div>
+  <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+    <span>Yêu cầu nạp tiền</span>
+    <button class="button-small reject" onclick="clearHandledDeposits()"><i class="fas fa-broom"></i> Xóa đã xử lý</button>
+  </div>
   <div class="account-card">
     <div class="users-table-wrap">
       <table class="users-table">
@@ -882,6 +888,32 @@ function updateDepositRequestStatus(requestId, status) {
   if (selectedEmail && selectedEmail === updatedUserEmail) {
     selectAccount(selectedEmail);
   }
+}
+
+function clearHandledOrders() {
+  if (!confirm('Bạn có chắc muốn xóa tất cả đơn hàng ĐÃ XỬ LÝ (Thành công/Thất bại)?')) return;
+  const users = getUsers();
+  users.forEach(user => {
+    if (user.orders) {
+      user.orders = user.orders.filter(o => o.status === 'Đang xử lý');
+    }
+  });
+  setUsers(users);
+  showToast('Đã dọn dẹp các đơn hàng đã xử lý.');
+  loadOrders();
+}
+
+function clearHandledDeposits() {
+  if (!confirm('Bạn có chắc muốn xóa tất cả yêu cầu nạp tiền ĐÃ XỬ LÝ (Thành công/Thất bại)?')) return;
+  const users = getUsers();
+  users.forEach(user => {
+    if (user.transactions) {
+      user.transactions = user.transactions.filter(t => t.type !== 'deposit-request' || t.status === 'Đang xử lý');
+    }
+  });
+  setUsers(users);
+  showToast('Đã dọn dẹp các yêu cầu nạp tiền đã xử lý.');
+  loadDepositRequests();
 }
 function selectAccount(email) {
   const users = getUsers();
