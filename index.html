@@ -2513,25 +2513,28 @@
   <!-- Layer 4: Layouts -->
   <script src="js/layouts/default.layout.js?v=1.0" defer></script>
   <script src="js/layouts/premium.layout.js?v=1.0" defer></script>
-  <script src="js/layout.manager.js?v=1.1" defer></script>
+  <script src="js/layout.manager.js?v=1.2" defer></script>
   <!-- Layer 5: Core Auth UI (depends on AuthService + LayoutManager) -->
   <script src="js/auth.js?v=3.1" defer></script>
   <!-- Layer 6: Sync + Main script -->
   <script src="js/sync.js?v=2.5" defer></script>
   <script src="js/script.js?v=2.5" defer></script>
-  <!-- Init: Auth trước → LayoutManager sau -->
+  <!-- Init: Auth trước → LayoutManager sau → Watcher bật -->
   <script defer>
     document.addEventListener('DOMContentLoaded', () => {
       // Step 1: Auth init renders header với đúng user info
       if (window.Auth) Auth.init();
 
-      // Step 2: Sau khi Auth render xong, apply layout theo role
+      // Step 2: Apply layout theo verified role
       setTimeout(() => {
-        if (window.LayoutManager) LayoutManager.apply();
+        if (window.LayoutManager) {
+          LayoutManager.apply();
+          // Step 3: Bật watcher — detect admin thay đổi role real-time
+          LayoutManager.startWatching();
+        }
       }, 50);
 
-      // Step 3: Safety re-apply sau khi tất cả scripts khác đã init xong
-      // Đảm bảo không bị override bởi script.js hay sync.js
+      // Step 4: Safety re-apply
       setTimeout(() => {
         if (window.LayoutManager) LayoutManager.apply();
       }, 500);

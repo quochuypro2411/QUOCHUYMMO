@@ -213,12 +213,114 @@ const LayoutManager = (() => {
     }
   }
 
+  // ─── Force apply (bỏ qua early return) ──────────────────
+  /**
+   * Gọi khi admin thay đổi role từ tab khác.
+   * Clear cache để LayoutManager re-apply layout từ đầu.
+   */
+  function forceApply() {
+    document.body.removeAttribute('data-role-layout');
+    _currentLayout = null;
+    apply();
+
+    // Cập nhật Auth UI (header dropdown, badge, balance)
+    if (window.Auth) Auth.updateUI();
+  }
+
+  // ─── Real-time watcher ──────────────────────────────────
+  /**
+   * Lắng nghe thay đổi mmo_users từ tab khác (admin panel).
+   * Dùng 2 cơ chế:
+   *   1. `storage` event – fires khi tab KHÁC thay đổi localStorage
+   *   2. Polling mỗi 3s – backup cho same-tab hoặc iframe
+   */
+  let _watchInterval = null;
+  let _lastRoleSnapshot = null;
+
+  function _getCurrentRoleSnapshot() {
+    try {
+      const cur = JSON.parse(localStorage.getItem('mmo_currentUser'));
+      if (!cur) return null;
+
+      const users = JSON.parse(localStorage.getItem('mmo_users') || '[]');
+      const id = cur.username || cur.user || cur.email;
+      const fresh = users.find(u =>
+        (u.username || u.user || u.email) === id ||
+        (u.email && u.email === cur.email)
+      );
+
+      return fresh ? (fresh.role + '|' + (fresh.premium_expired_at || '')) : null;
+    } catch { return null; }
+  }
+
+  function _onRoleChanged() {
+    const cur = JSON.parse(localStorage.getItem('mmo_currentUser') || 'null');
+    if (!cur) return;
+
+    // Re-fetch user mới nhất từ mmo_users
+    const users = JSON.parse(localStorage.getItem('mmo_users') || '[]');
+    const id = cur.username || cur.user || cur.email;
+    const fresh = users.find(u =>
+      (u.username || u.user || u.email) === id ||
+      (u.email && u.email === cur.email)
+    );
+
+    if (fresh && fresh.role !== cur.role) {
+      // Sync mmo_currentUser với role mới
+      const updated = { ...cur, role: fresh.role, premium_expired_at: fresh.premium_expired_at || null };
+      localStorage.setItem('mmo_currentUser', JSON.stringify(updated));
+      console.log('[LayoutManager] Role changed:', cur.role, '→', fresh.role);
+    }
+
+    // Force re-apply layout
+    forceApply();
+  }
+
+  function startWatching() {
+    // Snapshot ban đầu
+    _lastRoleSnapshot = _getCurrentRoleSnapshot();
+
+    // Cơ chế 1: storage event (cross-tab)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'mmo_users') {
+        console.log('[LayoutManager] Detected mmo_users change from another tab');
+        const newSnapshot = _getCurrentRoleSnapshot();
+        if (newSnapshot !== _lastRoleSnapshot) {
+          _lastRoleSnapshot = newSnapshot;
+          _onRoleChanged();
+        }
+      }
+    });
+
+    // Cơ chế 2: Polling mỗi 3 giây (same-tab fallback)
+    _watchInterval = setInterval(() => {
+      const newSnapshot = _getCurrentRoleSnapshot();
+      if (newSnapshot !== _lastRoleSnapshot) {
+        _lastRoleSnapshot = newSnapshot;
+        console.log('[LayoutManager] Polling detected role change');
+        _onRoleChanged();
+      }
+    }, 3000);
+
+    console.log('[LayoutManager] Watcher started (storage event + 3s polling)');
+  }
+
+  function stopWatching() {
+    if (_watchInterval) {
+      clearInterval(_watchInterval);
+      _watchInterval = null;
+    }
+  }
+
   // ─── Public API ───────────────────────────────────────────
   return {
     get,
     apply,
+    forceApply,
     initFlashSale,
     stopCountdown,
+    startWatching,
+    stopWatching,
   };
 })();
 
