@@ -1,70 +1,59 @@
 /**
  * Premium CSS – QuocHuy MMO
  * ============================================================
- * CSS cho Premium Layout: Dark Luxury, Glassmorphism, Neon Accents.
- * Import AFTER style.css để có thể override.
+ * True Luxury Aesthetic: High Contrast Black & Metallic Gold.
+ * No muddy glassmorphism. Crisp text, clean edges, premium feel.
  * ============================================================
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
-/* ── 1. LAYOUT VARIABLES ────────────────────────────────── */
-
+/* ── 1. CORE VARIABLES (TRUE LUXURY) ────────────────────── */
 body[data-layout="premium"] {
-  --bg-color-1: #07070a;
-  --bg-color-2: #130d1a;
-  --bg-body: radial-gradient(circle at 50% 0%, var(--bg-color-2) 0%, var(--bg-color-1) 100%);
-  --bg-section: transparent;
+  --bg-body: #050505; /* True Black for highest contrast */
+  --bg-card: #111111; /* Deep charcoal for cards */
+  --bg-hover: #1a1a1a;
   
-  /* Glassmorphism settings */
-  --glass-bg: rgba(20, 20, 35, 0.4);
-  --glass-border: rgba(245, 158, 11, 0.15);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-gold: rgba(212, 175, 55, 0.3);
   
-  --border: rgba(255, 255, 255, 0.05);
-  --text: #f0f0f5;
-  --text-muted: #a0a0c0;
+  --text-main: #ffffff; /* Pure white for high readability */
+  --text-muted: #a1a1aa; /* Light silver for secondary text */
   
-  --primary: #f59e0b;
-  --primary-dark: #b45309;
-  --primary-glow: rgba(245, 158, 11, 0.4);
+  --gold-metallic: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+  --gold-flat: #D4AF37;
+  --gold-glow: rgba(212, 175, 55, 0.4);
   
-  --premium-gold-gradient: linear-gradient(135deg, #fde68a 0%, #f59e0b 50%, #d97706 100%);
-  
-  background: var(--bg-body);
-  background-attachment: fixed;
-  color: var(--text);
-  font-family: 'Outfit', sans-serif; /* Modern, clean font for premium feel */
+  background: var(--bg-body) !important;
+  color: var(--text-main) !important;
 }
 
-/* ── 2. GENERAL OVERRIDES ────────────────────────────────── */
+/* ── 2. GLOBAL OVERRIDES ─────────────────────────────────── */
+body[data-layout="premium"] a { color: var(--gold-flat); transition: all 0.3s ease; }
+body[data-layout="premium"] a:hover { color: #FCF6BA; }
 
-body[data-layout="premium"] a {
-  color: var(--primary);
-  transition: all 0.3s ease;
-}
-
-body[data-layout="premium"] a:hover {
-  color: #fde68a;
-  text-shadow: 0 0 8px var(--primary-glow);
+body[data-layout="premium"] h1, 
+body[data-layout="premium"] h2, 
+body[data-layout="premium"] h3, 
+body[data-layout="premium"] h4, 
+body[data-layout="premium"] h5, 
+body[data-layout="premium"] h6 {
+  color: var(--text-main);
+  font-weight: 700;
 }
 
 body[data-layout="premium"] .section-title {
-  background: var(--premium-gold-gradient);
+  background: var(--gold-metallic);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
   letter-spacing: 0.5px;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
 }
 
 body[data-layout="premium"] .section-desc,
-body[data-layout="premium"] .section-subtitle {
-  color: var(--text-muted);
-  font-weight: 300;
+body[data-layout="premium"] .section-subtitle,
+body[data-layout="premium"] p {
+  color: var(--text-muted) !important;
 }
 
-/* Background overrides */
 body[data-layout="premium"] .section-products,
 body[data-layout="premium"] .section-news,
 body[data-layout="premium"] .section-about,
@@ -72,594 +61,329 @@ body[data-layout="premium"] .home-categories,
 body[data-layout="premium"] .home-steps,
 body[data-layout="premium"] .product-section,
 body[data-layout="premium"] .footer {
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  border-top: 1px solid var(--border-light);
 }
 
-/* Custom Scrollbar for Premium */
-body[data-layout="premium"]::-webkit-scrollbar {
-  width: 8px;
-}
-body[data-layout="premium"]::-webkit-scrollbar-track {
-  background: #05050a; 
-}
-body[data-layout="premium"]::-webkit-scrollbar-thumb {
-  background: #2a2a40; 
-  border-radius: 4px;
-}
-body[data-layout="premium"]::-webkit-scrollbar-thumb:hover {
-  background: var(--primary); 
-}
-
-/* ── 3. HEADER & NAV (GLASSMORPHISM) ─────────────────────── */
-
+/* ── 3. HEADER & NAV ─────────────────────────────────────── */
 body[data-layout="premium"] .top-bar {
-  background: rgba(0, 0, 0, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: #000 !important;
+  border-bottom: 1px solid var(--border-light);
   color: var(--text-muted);
-  font-size: 12px;
 }
 
 body[data-layout="premium"] .header {
-  background: rgba(10, 10, 15, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-  position: sticky;
-  top: 0;
-  z-index: 999;
+  background: #0a0a0a !important;
+  border-bottom: 1px solid var(--border-gold);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
 }
 
+/* Fix Logo: Make it look intentional on dark bg */
 body[data-layout="premium"] .logo {
-  background: transparent;
-  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.2));
+  background: #ffffff !important; /* Solid white to hold the logo */
+  border-radius: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--gold-flat);
+  box-shadow: 0 0 15px var(--gold-glow);
 }
 
+/* Search Bar */
 body[data-layout="premium"] .search-bar {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
+  background: #111;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
 }
-
 body[data-layout="premium"] .search-bar:focus-within {
-  border-color: rgba(245, 158, 11, 0.5);
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.15), inset 0 2px 5px rgba(0,0,0,0.2);
+  border-color: var(--gold-flat);
+  box-shadow: 0 0 10px var(--gold-glow);
 }
-
+body[data-layout="premium"] .search-cat { border-right: 1px solid var(--border-light); background: transparent; }
 body[data-layout="premium"] .search-cat select,
 body[data-layout="premium"] .search-input {
-  background: transparent;
-  color: var(--text);
-  border: none;
+  background: transparent !important;
+  color: var(--text-main) !important;
 }
-
-body[data-layout="premium"] .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-
+body[data-layout="premium"] .search-cat select option { background: #111; color: #fff; }
+body[data-layout="premium"] .search-input::placeholder { color: #555; }
 body[data-layout="premium"] .search-btn {
-  background: var(--premium-gold-gradient);
-  color: #000;
-  font-weight: 700;
-  border: none;
-  padding: 0 24px;
+  background: var(--gold-metallic) !important;
+  color: #000 !important;
+  font-weight: 800;
+  border-radius: 0 4px 4px 0;
 }
 
+/* Main Nav */
 body[data-layout="premium"] .main-nav {
-  background: rgba(5, 5, 8, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: #050505 !important;
+  border-bottom: 1px solid var(--border-light);
 }
-
 body[data-layout="premium"] .nav-item a {
-  color: var(--text-muted);
-  font-weight: 500;
+  color: var(--text-muted) !important;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 13px;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 600;
 }
-
 body[data-layout="premium"] .nav-item a:hover,
 body[data-layout="premium"] .nav-item.active a {
-  color: #fff;
-  border-bottom-color: var(--primary);
-  text-shadow: 0 0 10px var(--primary-glow);
+  color: var(--gold-flat) !important;
+  border-bottom-color: var(--gold-flat) !important;
 }
 
-/* Action Boxes (Cart, Auth, Wallet) */
+/* Action Boxes (Cart, Wallet, Auth) */
 body[data-layout="premium"] .action-box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
+  background: #111 !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 8px;
 }
-
 body[data-layout="premium"] .action-box:hover {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(245, 158, 11, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  border-color: var(--gold-flat) !important;
+  background: #1a1a1a !important;
 }
-
 body[data-layout="premium"] .action-icon {
-  background: linear-gradient(135deg, #2a2a35, #151520) !important;
-  color: var(--primary) !important;
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
-  border: 1px solid rgba(0,0,0,0.5);
+  background: #000 !important;
+  color: var(--gold-flat) !important;
+  border: 1px solid var(--border-gold);
 }
-
 body[data-layout="premium"] .cart-badge {
-  background: var(--primary);
-  color: #000;
-  box-shadow: 0 0 10px var(--primary-glow);
+  background: var(--gold-metallic) !important;
+  color: #000 !important;
 }
+body[data-layout="premium"] .action-label { color: var(--text-muted) !important; }
+body[data-layout="premium"] .action-value { color: var(--text-main) !important; }
+body[data-layout="premium"] .auth-texts a { color: var(--text-main) !important; }
+body[data-layout="premium"] .auth-texts a:last-child { color: var(--gold-flat) !important; }
 
-body[data-layout="premium"] .auth-texts a {
-  color: var(--text);
-  font-weight: 500;
+/* Contact CTA (Zalo) */
+body[data-layout="premium"] .contact-cta {
+  background: #111 !important;
+  border: 1px solid var(--border-light) !important;
 }
-body[data-layout="premium"] .auth-texts a:last-child {
-  color: var(--primary);
+body[data-layout="premium"] .contact-cta .ring {
+  background: var(--gold-metallic) !important;
+  color: #000 !important;
+  box-shadow: 0 0 10px var(--gold-glow);
 }
+body[data-layout="premium"] .contact-cta .cta-label { color: var(--text-muted) !important; }
+body[data-layout="premium"] .contact-cta .cta-phone { color: var(--gold-flat) !important; }
 
-/* ── 4. PREMIUM HERO/ANNOUNCEMENT ────────────────────────── */
-
-.premium-announcement-bar {
-  background: linear-gradient(90deg, #150a00, #3d1a00, #b45309, #3d1a00, #150a00);
-  background-size: 200% auto;
-  animation: shine 3s linear infinite;
-  color: #fff;
-  text-align: center;
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 2px 15px rgba(245, 158, 11, 0.2);
-}
-
-@keyframes shine {
-  to { background-position: 200% center; }
-}
-
-/* ── 5. CARDS (PRODUCTS, CATEGORIES, STEPS) ──────────────── */
-
-/* Glass Card Base */
+/* ── 4. CARDS (PRODUCTS, CATEGORIES, STEPS) ──────────────── */
 body[data-layout="premium"] .feature-card,
 body[data-layout="premium"] .step-card,
 body[data-layout="premium"] .product-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  box-shadow: var(--glass-shadow);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
 }
 
-/* Hover Effects */
 body[data-layout="premium"] .feature-card:hover,
 body[data-layout="premium"] .step-card:hover,
 body[data-layout="premium"] .product-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  border-color: var(--glass-border);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(245, 158, 11, 0.15);
-  background: rgba(30, 30, 45, 0.6);
+  border-color: var(--gold-flat) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.8), 0 0 15px var(--border-gold) !important;
+  background: var(--bg-hover) !important;
 }
 
-/* Feature & Step specifics */
 body[data-layout="premium"] .feature-card h3,
-body[data-layout="premium"] .step-card h3 {
-  color: #fff;
-  font-weight: 600;
+body[data-layout="premium"] .step-card h3,
+body[data-layout="premium"] .card-name {
+  color: var(--text-main) !important;
 }
 
 body[data-layout="premium"] .feature-thumb {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(0,0,0,0));
-  color: var(--primary);
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.1);
+  background: #000 !important;
+  color: var(--gold-flat) !important;
+  border: 1px solid var(--border-gold) !important;
 }
 
+body[data-layout="premium"] .step-card { text-align: center; padding-top: 40px; }
 body[data-layout="premium"] .step-number {
-  background: var(--premium-gold-gradient);
-  color: #000;
-  border: none;
-  box-shadow: 0 0 15px var(--primary-glow);
-  font-weight: 800;
+  background: var(--gold-metallic) !important;
+  color: #000 !important;
+  border: 4px solid #000 !important;
+  width: 50px; height: 50px; font-size: 24px; top: -25px;
+  box-shadow: 0 0 15px var(--gold-glow);
 }
 
-/* Product Card Specifics */
+/* Product Card Details */
 body[data-layout="premium"] .card-img {
-  background: transparent;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
-}
-
-body[data-layout="premium"] .card-img::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
-  pointer-events: none;
+  background: #050505 !important; /* Pure black image area */
+  border-bottom: 1px solid var(--border-light) !important;
 }
 
 body[data-layout="premium"] .card-icon {
-  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-}
-
-body[data-layout="premium"] .card-name {
-  color: #fff;
-  font-weight: 600;
-  font-size: 15px;
+  background: #111 !important;
+  color: var(--gold-flat) !important;
+  border: 1px solid var(--border-gold) !important;
 }
 
 body[data-layout="premium"] .card-meta {
-  border-color: rgba(255,255,255,0.05);
-  background: rgba(0,0,0,0.2);
-  border-radius: 8px;
-  padding: 8px;
+  background: #000 !important;
+  border: 1px solid var(--border-light) !important;
 }
-
-body[data-layout="premium"] .meta-item {
-  color: #b0b0c0;
-}
+body[data-layout="premium"] .meta-item { color: var(--text-muted) !important; }
 
 body[data-layout="premium"] .buy-btn {
-  background: var(--premium-gold-gradient);
-  color: #000;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  background: var(--gold-metallic) !important;
+  color: #000 !important;
+  border: none !important;
+  font-weight: 800 !important;
+  border-radius: 4px !important;
 }
-
 body[data-layout="premium"] .buy-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--primary-glow);
-  filter: brightness(1.1);
+  filter: brightness(1.2);
+  box-shadow: 0 0 15px var(--gold-glow);
 }
 
 .premium-price {
-  background: var(--premium-gold-gradient);
+  background: var(--gold-metallic);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-weight: 800;
+  font-weight: 900;
   font-size: 18px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
-/* ── 6. FLASH SALE (REDESIGNED) ──────────────────────────── */
-
-.premium-flash-sale {
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.03"><rect width="100" height="100" fill="none"/><path d="M0,50 L100,50 M50,0 L50,100" stroke="%23f59e0b" stroke-width="1"/></svg>'), linear-gradient(180deg, #07070a 0%, #150a00 50%, #07070a 100%);
-  border-top: 1px solid rgba(245, 158, 11, 0.2);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
-  padding: 60px 0;
-  position: relative;
-}
-
-.premium-flash-sale::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-.flash-sale-header {
-  margin-bottom: 40px;
-}
-
-.flash-title {
-  font-size: 28px;
-  text-transform: uppercase;
-}
-
-.c-unit {
-  background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  color: #fff;
-  box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2);
-  border-radius: 8px;
-}
-
-.flash-card {
-  background: rgba(10, 10, 15, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.flash-card:hover {
-  border-color: var(--primary);
-  box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
-}
-
-/* ── 7. FOOTER ──────────────────────────────────────────── */
-body[data-layout="premium"] .footer {
-  background: #050508;
-  border-top: 1px solid rgba(255,255,255,0.05);
-}
-
-/* ── 8. TRUST BAR ───────────────────────────────────────── */
-body[data-layout="premium"] .trust-bar {
-  background: rgba(10, 10, 15, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-/* ── 9. ADMIN/CHECKOUT OVERRIDES ────────────────────────── */
-.role-badge.role-premium { 
-  background: var(--premium-gold-gradient);  
-  color: #000; 
-  box-shadow: 0 2px 10px rgba(245,158,11,0.3);
-}
-
-.breakdown-row.final {
-  color: #fff;
-  border-top: 1px dashed rgba(255,255,255,0.2);
-}
-
-/* ── 10. DETAILED OVERRIDES (ICONS, BADGES, CTA) ────────── */
-/* Nút liên hệ (Zalo) */
-body[data-layout="premium"] .contact-cta {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-body[data-layout="premium"] .contact-cta .ring {
-  background: var(--premium-gold-gradient) !important;
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4) !important;
-  color: #000;
-}
-body[data-layout="premium"] .contact-cta .cta-label {
-  color: var(--text-muted);
-}
-body[data-layout="premium"] .contact-cta .cta-phone {
-  color: var(--primary);
-  text-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
-}
-
-/* Biến Icon sản phẩm thành tông Vàng Kim */
-body[data-layout="premium"] .card-icon {
-  background: rgba(20, 20, 30, 0.8) !important;
-  border: 1px solid rgba(245, 158, 11, 0.3) !important;
-  color: var(--primary) !important;
-  box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.1), 0 5px 15px rgba(0,0,0,0.5) !important;
-}
-
-/* Badges (Hot, New, Sale) và Tags */
+/* Badges & Tags */
 body[data-layout="premium"] .card-badge,
 body[data-layout="premium"] .ctag {
-  background: rgba(10, 10, 15, 0.85) !important;
-  border: 1px solid rgba(245, 158, 11, 0.4) !important;
-  color: var(--primary) !important;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  font-weight: 600;
+  background: #000 !important;
+  border: 1px solid var(--gold-flat) !important;
+  color: var(--gold-flat) !important;
+  font-weight: 700 !important;
+  border-radius: 4px !important;
 }
-
 body[data-layout="premium"] .card-badge.badge-prem {
-  background: var(--premium-gold-gradient) !important;
+  background: var(--gold-metallic) !important;
   color: #000 !important;
   border: none !important;
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
 }
 
-/* Thanh Tìm Kiếm - Dropdown options */
-body[data-layout="premium"] .search-cat {
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  background: transparent;
+/* ── 5. FLASH SALE (DARK LUXURY) ─────────────────────────── */
+/* Override default slider/flash sale backgrounds */
+body[data-layout="premium"] .slide-bg { background: #0a0a0a !important; }
+body[data-layout="premium"] .premium-flash-sale {
+  background: #0a0a0a !important;
+  border-top: 1px solid var(--border-gold) !important;
+  border-bottom: 1px solid var(--border-gold) !important;
 }
-body[data-layout="premium"] .search-cat select {
-  background: transparent;
-}
-body[data-layout="premium"] .search-cat select option {
-  background: #130d1a;
-  color: #fff;
-}
+.flash-title { color: var(--gold-flat) !important; }
+.c-unit { background: #000 !important; color: var(--gold-flat) !important; border: 1px solid var(--border-gold) !important; }
+.flash-card { background: #111 !important; border: 1px solid var(--border-light) !important; }
+.flash-card:hover { border-color: var(--gold-flat) !important; }
+.flash-price-new { color: var(--gold-flat) !important; }
+.flash-buy-btn { background: var(--gold-metallic) !important; color: #000 !important; }
 
-/* Logo - Làm nền trắng mờ để tách biệt logo xanh */
-body[data-layout="premium"] .logo {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  padding: 4px 10px;
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
-  transition: all 0.3s ease;
-}
-body[data-layout="premium"] .logo:hover {
-  background: #fff;
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
-}
-
-/* Căn chỉnh lại 3 bước hướng dẫn để sang hơn */
-body[data-layout="premium"] .step-card {
-  text-align: center;
-  padding-top: 40px;
-}
-body[data-layout="premium"] .step-number {
-  width: 50px;
-  height: 50px;
-  font-size: 24px;
-  top: -25px;
-  border: 4px solid #130d1a;
-}
-
-/* ── 11. SUBPAGES (DEPOSIT, CHECKOUT, HISTORY, ETC) ─────── */
-
-/* Nền và Khung chính */
+/* ── 6. SUBPAGES (DEPOSIT, CHECKOUT, HISTORY) ────────────── */
 body[data-layout="premium"] .deposit-card,
 body[data-layout="premium"] .deposit-history,
 body[data-layout="premium"] .ck-section,
 body[data-layout="premium"] .summary-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  color: var(--text);
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8) !important;
+  color: var(--text-main) !important;
+  border-radius: 8px !important;
 }
 
 body[data-layout="premium"] .page-header h1,
 body[data-layout="premium"] .card-title,
 body[data-layout="premium"] .section-title {
-  color: var(--primary);
-  text-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+  background: var(--gold-metallic);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+body[data-layout="premium"] .page-header p { color: var(--text-muted) !important; }
 
-body[data-layout="premium"] .page-header p {
-  color: var(--text-muted);
-}
-
-/* Số dư (Pill) */
+/* Pills & Methods */
 body[data-layout="premium"] .user-bal-pill {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--primary);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+  background: #000 !important;
+  color: var(--gold-flat) !important;
+  border: 1px solid var(--border-gold) !important;
 }
-
-/* Nút Chọn Phương Thức Thanh Toán */
-body[data-layout="premium"] .pay-methods {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--border);
-}
-body[data-layout="premium"] .pay-method {
-  color: var(--text-muted);
-}
-body[data-layout="premium"] .pay-method:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
+body[data-layout="premium"] .pay-methods { background: #000 !important; border: 1px solid var(--border-light) !important; }
+body[data-layout="premium"] .pay-method { color: var(--text-muted) !important; }
 body[data-layout="premium"] .pay-method.active {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--primary);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+  background: #111 !important;
+  color: var(--gold-flat) !important;
+  border: 1px solid var(--border-gold) !important;
 }
 
-/* Ô nhập liệu (Inputs / Selects) */
-body[data-layout="premium"] .field label {
-  color: var(--text-muted);
-}
+/* Inputs & Forms */
+body[data-layout="premium"] .field label { color: var(--text-muted) !important; }
 body[data-layout="premium"] .field input,
 body[data-layout="premium"] .field select {
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border);
-  color: var(--text);
+  background: #000 !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-main) !important;
 }
 body[data-layout="premium"] .field input:focus,
 body[data-layout="premium"] .field select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
-  background: rgba(10, 10, 20, 0.8);
+  border-color: var(--gold-flat) !important;
+  box-shadow: 0 0 5px var(--gold-glow) !important;
 }
-body[data-layout="premium"] .field select option {
-  background: #130d1a;
-  color: #fff;
-}
+body[data-layout="premium"] .field select option { background: #111; color: #fff; }
 
-/* Khung quét QR */
 body[data-layout="premium"] .qr-box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 2px dashed rgba(245, 158, 11, 0.3);
+  background: #000 !important;
+  border: 1px dashed var(--gold-flat) !important;
 }
-body[data-layout="premium"] .qr-box img {
-  border: 2px solid rgba(245, 158, 11, 0.2);
-}
-body[data-layout="premium"] .qr-box div {
-  color: var(--text-muted) !important;
-}
-body[data-layout="premium"] .qr-box div:first-of-type {
-  color: var(--primary) !important;
-}
+body[data-layout="premium"] .qr-box img { border: 2px solid var(--gold-flat) !important; }
+body[data-layout="premium"] .qr-box div { color: var(--text-muted) !important; }
+body[data-layout="premium"] .qr-box div:first-of-type { color: var(--gold-flat) !important; }
 
-/* Nút Submit Chung */
 body[data-layout="premium"] .btn-submit,
 body[data-layout="premium"] .checkout-sidebar .buy-btn,
 body[data-layout="premium"] .pay-modal .buy-btn {
-  background: var(--premium-gold-gradient);
-  color: #000;
-  font-weight: 800;
-  border: none;
-  box-shadow: 0 4px 15px var(--primary-glow);
-}
-body[data-layout="premium"] .btn-submit:hover,
-body[data-layout="premium"] .checkout-sidebar .buy-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--primary-glow);
-  filter: brightness(1.1);
+  background: var(--gold-metallic) !important;
+  color: #000 !important;
+  font-weight: 800 !important;
+  border: none !important;
 }
 
-/* Bảng Lịch Sử (Tables) */
+/* Tables & Checkout */
 body[data-layout="premium"] .deposit-history th,
 body[data-layout="premium"] .deposit-history td,
 body[data-layout="premium"] table td,
 body[data-layout="premium"] table th {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-light) !important;
 }
 body[data-layout="premium"] .deposit-history th,
-body[data-layout="premium"] table th {
-  color: var(--primary);
-}
+body[data-layout="premium"] table th { color: var(--gold-flat) !important; }
 
-/* Checkout Page Specifics */
-body[data-layout="premium"] .cart-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-body[data-layout="premium"] .item-details h4 {
-  color: var(--text);
-}
-body[data-layout="premium"] .item-price {
-  color: var(--primary);
-}
-body[data-layout="premium"] .item-actions div {
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: var(--text);
-}
-body[data-layout="premium"] .qty-btn {
-  color: var(--primary);
-}
-body[data-layout="premium"] .summary-row {
-  color: var(--text-muted);
-}
-body[data-layout="premium"] .summary-row span:last-child {
-  color: var(--text);
-}
-body[data-layout="premium"] .summary-row.total {
-  border-top: 1px dashed rgba(245, 158, 11, 0.3);
-  color: var(--primary);
-}
-body[data-layout="premium"] .total-price {
-  color: var(--primary);
-  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
-}
+body[data-layout="premium"] .cart-item { border-bottom: 1px solid var(--border-light) !important; }
+body[data-layout="premium"] .item-details h4 { color: var(--text-main) !important; }
+body[data-layout="premium"] .item-price { color: var(--gold-flat) !important; }
+body[data-layout="premium"] .item-actions div { background: #000 !important; border: 1px solid var(--border-light) !important; color: var(--text-main) !important; }
+body[data-layout="premium"] .qty-btn { color: var(--gold-flat) !important; }
+body[data-layout="premium"] .remove-btn { color: #ef4444 !important; }
+body[data-layout="premium"] .summary-row { color: var(--text-muted) !important; }
+body[data-layout="premium"] .summary-row span:last-child { color: var(--text-main) !important; }
+body[data-layout="premium"] .summary-row.total { border-top: 1px solid var(--border-gold) !important; color: var(--gold-flat) !important; }
+body[data-layout="premium"] .total-price { color: var(--gold-flat) !important; }
 
-/* Modal Thanh Toán */
-body[data-layout="premium"] .pay-modal {
-  background: #130d1a;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.1);
+/* Modals */
+body[data-layout="premium"] .pay-modal,
+body[data-layout="premium"] .modal-content {
+  background: #111 !important;
+  border: 1px solid var(--border-gold) !important;
+  color: var(--text-main) !important;
 }
-body[data-layout="premium"] .pm-header {
-  background: rgba(245, 158, 11, 0.1);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+body[data-layout="premium"] .pm-header,
+body[data-layout="premium"] .modal-header {
+  background: #000 !important;
+  border-bottom: 1px solid var(--border-light) !important;
 }
-body[data-layout="premium"] #pm-title {
-  color: var(--primary);
-}
-body[data-layout="premium"] .bank-info {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: var(--text);
-}
-body[data-layout="premium"] .bank-name {
-  color: var(--primary);
-}
+body[data-layout="premium"] #pm-title,
+body[data-layout="premium"] .modal-title { color: var(--gold-flat) !important; }
+body[data-layout="premium"] .bank-info { background: #000 !important; border: 1px solid var(--border-light) !important; color: var(--text-main) !important; }
+body[data-layout="premium"] .bank-name { color: var(--gold-flat) !important; }
+
+/* Trust Bar & Footer */
+body[data-layout="premium"] .trust-bar { background: #0a0a0a !important; border-bottom: 1px solid var(--border-light) !important; }
+body[data-layout="premium"] .trust-item { color: var(--text-main) !important; }
+body[data-layout="premium"] .trust-ico { background: #111 !important; color: var(--gold-flat) !important; border: 1px solid var(--border-gold) !important; }
+body[data-layout="premium"] .footer { background: #050505 !important; }
+body[data-layout="premium"] .footer h3 { color: var(--gold-flat) !important; }
+body[data-layout="premium"] .footer-bottom { background: #000 !important; border-top: 1px solid var(--border-light) !important; }

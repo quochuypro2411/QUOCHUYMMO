@@ -69,15 +69,23 @@ console.log("✅ QuocHuy MMO Common Utilities Loaded");
 })();
 
 // Auto-inject Premium Layout for all pages
-document.addEventListener('DOMContentLoaded', () => {
-  const user = window.MMO.getUser();
-  if (user && (user.role === 'premium' || user.role === 'admin' || user.isAdmin)) {
-    document.body.setAttribute('data-layout', 'premium');
-    if (!document.querySelector('link[href*="premium.css"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'css/premium.css?v=' + Date.now(); // Cache busting
-      document.head.appendChild(link);
+(function() {
+  function applyPremium() {
+    const user = window.MMO.getUser();
+    if (user && (user.role === 'premium' || user.role === 'admin' || user.isAdmin)) {
+      document.body.setAttribute('data-layout', 'premium');
+      if (!document.querySelector('link[href*="premium.css"]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'css/premium.css?v=' + Date.now(); // Cache busting
+        document.head.appendChild(link);
+      }
     }
   }
-});
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyPremium);
+  } else {
+    applyPremium();
+  }
+})();
