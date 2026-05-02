@@ -454,19 +454,23 @@ let usersCache = [];
 function normalizeUser(user) {
   const email = (user && user.email) ? String(user.email).toLowerCase().trim() : '';
   return {
-    uid: user.uid || null,
-    name: user.name || '',
-    user: user.user || '',
-    email: email,
-    pass: user.pass || '',
-    role: user.role || (user.isAdmin ? 'admin' : 'user'),
-    isAdmin: Boolean(user.isAdmin || user.role === 'admin'),
-    permissions: user.permissions || getDefaultPermissions(user.role === 'admin' || user.isAdmin),
-    orders: Array.isArray(user.orders) ? user.orders : [],
-    transactions: Array.isArray(user.transactions) ? user.transactions : [],
+    uid:                user.uid || null,
+    name:               user.name || '',
+    user:               user.user || '',
+    username:           user.username || user.user || '',
+    email:              email,
+    pass:               user.pass || '',
+    role:               user.role || (user.isAdmin ? 'admin' : 'user'),
+    isAdmin:            Boolean(user.isAdmin || user.role === 'admin'),
+    // ─── Premium fields – KHÔNG được strip ───────────────
+    premium_expired_at: user.premium_expired_at || null,
+    balance:            Number(user.balance || 0),
+    // ──────────────────────────────────────────────────────
+    permissions:   user.permissions || getDefaultPermissions(user.role === 'admin' || user.isAdmin),
+    orders:        Array.isArray(user.orders)        ? user.orders        : [],
+    transactions:  Array.isArray(user.transactions)  ? user.transactions  : [],
     notifications: Array.isArray(user.notifications) ? user.notifications : [],
-    createdAt: user.createdAt || null,
-    balance: Number(user.balance || 0)
+    createdAt:     user.createdAt || null,
   };
 }
 
@@ -482,19 +486,41 @@ async function fetchCloudUsers() {
 }
 
 async function upsertCloudUser(user) {
-  if (!db || !user?.email) {
-    console.warn("⚠️ Không thể đồng bộ: Thiếu email hoặc DB chưa sẵn sàng", user);
+  if (!db || !user) {
+    console.warn('⚠️ Không thể đồng bộ: Thiếu DB hoặc user');
     return;
   }
   try {
-    const normalized = normalizeUser(user);
-    const docId = normalized.uid || userDocId(normalized.email);
-    await db.collection('users').doc(docId).set(normalized, { merge: true });
-    console.log("✅ Đã đồng bộ lên Cloud cho:", normalized.email);
+    // Dùng spread để đảm bảo premium_expired_at không bị strip bởi normalizeUser
+    const data = {
+      uid:                user.uid   || null,
+      name:               user.name  || '',
+      user:               user.user  || '',
+      username:           user.username || user.user || '',
+      email:              (user.email || '').toLowerCase(),
+      role:               user.role  || 'user',
+      isAdmin:            Boolean(user.isAdmin || user.role === 'admin'),
+      premium_expired_at: user.premium_expired_at || null,
+      balance:            Number(user.balance || 0),
+      permissions:        user.permissions || getDefaultPermissions(user.role === 'admin' || user.isAdmin),
+      orders:             Array.isArray(user.orders)        ? user.orders        : [],
+      transactions:       Array.isArray(user.transactions)  ? user.transactions  : [],
+      notifications:      Array.isArray(user.notifications) ? user.notifications : [],
+      createdAt:          user.createdAt || null,
+      updatedAt:          new Date().toISOString(),
+    };
+    const docId = data.uid || userDocId(data.email);
+    if (!docId || docId === 'unknown_user_') {
+      console.warn('⚠️ Không sync được: thiếu uid/email', user);
+      return;
+    }
+    await db.collection('users').doc(docId).set(data, { merge: true });
+    console.log('✅ Synced to Firestore:', data.email, '| role:', data.role);
   } catch (err) {
-    console.error("❌ Lỗi đồng bộ Cloud:", err);
+    console.error('❌ Lỗi đồng bộ Cloud:', err);
   }
 }
+
 
 async function deleteCloudUser(user) {
   if (!db || !user) return;
@@ -519,7 +545,6 @@ async function initializeUsers() {
   try {
     const cloudUsers = await fetchCloudUsers();
     const byEmail = new Map();
-    // Merge local and cloud users, keeping cloud users as priority but merging arrays
     const mergeArrays = (arr1, arr2) => {
       const map = new Map();
       [...(arr1 || []), ...(arr2 || [])].forEach(item => {
@@ -528,26 +553,43 @@ async function initializeUsers() {
       return Array.from(map.values());
     };
 
-    [...localUsers, ...cloudUsers].forEach((u) => {
-      const emailKey = u.email ? userDocId(u.email) : null;
-      const userKey = u.user ? u.user.toLowerCase() : null;
-      const key = emailKey || userKey;
-      
-      if (key) {
-        if (byEmail.has(key)) {
-          const existing = byEmail.get(key);
-          u.transactions = mergeArrays(existing.transactions, u.transactions);
-          u.orders = mergeArrays(existing.orders, u.orders);
-          u.notifications = mergeArrays(existing.notifications, u.notifications);
+    // Pass 1: local users vào trước (local là nguồn truth cho role/premium)
+    localUsers.forEach((u) => {
+      const key = u.email ? userDocId(u.email) : (u.user ? u.user.toLowerCase() : null);
+      if (key) byEmail.set(key, normalizeUser(u));
+    });
+
+    // Pass 2: cloud users merge, KHÔNG ghi đè role/premium nếu local đã có
+    cloudUsers.forEach((u) => {
+      const key = u.email ? userDocId(u.email) : (u.user ? u.user.toLowerCase() : null);
+      if (!key) return;
+
+      if (byEmail.has(key)) {
+        const existing = byEmail.get(key);
+        const merged = {
+          ...u,
+          transactions:  mergeArrays(existing.transactions, u.transactions),
+          orders:        mergeArrays(existing.orders, u.orders),
+          notifications: mergeArrays(existing.notifications, u.notifications),
+        };
+        // ─── Local role/premium_expired_at ưu tiên hơn cloud ──
+        if (existing.role === 'premium' || existing.role === 'admin') {
+          merged.role = existing.role;
+          merged.premium_expired_at = existing.premium_expired_at;
         }
+        if (existing.balance > 0) {
+          merged.balance = existing.balance;
+        }
+        byEmail.set(key, normalizeUser(merged));
+      } else {
         byEmail.set(key, normalizeUser(u));
       }
     });
+
     usersCache = Array.from(byEmail.values());
     localStorage.setItem('mmo_users', JSON.stringify(usersCache));
   } catch (e) {
-    console.error("Lỗi khi tải dữ liệu từ Cloud:", e);
-    // Keep local fallback when cloud is unreachable.
+    console.error('Lỗi khi tải dữ liệu từ Cloud:', e);
   }
 }
 function getCurrentUser() {
@@ -1417,6 +1459,9 @@ function doUpgradePremium(input, days) {
   localStorage.setItem('mmo_users', JSON.stringify(users));
   usersCache = users;
 
+  // ─── Sync lên Firestore ngay ────────────────────────
+  upsertCloudUser(target).catch(e => console.warn('Firestore sync:', e));
+
   const durationLabel = days === 0 ? 'Vĩnh viễn' : days + ' ngày';
   showToast('✅ Đã cấp Premium cho "' + uname + '" (' + durationLabel + ')');
   loadPremiumManagement();
@@ -1474,6 +1519,9 @@ function doAdminDowngrade(input) {
   users[idx] = target;
   localStorage.setItem('mmo_users', JSON.stringify(users));
   usersCache = users;
+
+  // ─── Sync lên Firestore ngay ────────────────────────
+  upsertCloudUser(target).catch(e => console.warn('Firestore sync:', e));
 
   showToast('✅ Đã thu hồi Premium của "' + uname + '"');
   loadPremiumManagement();
