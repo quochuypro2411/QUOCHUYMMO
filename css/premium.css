@@ -439,3 +439,61 @@ body[data-layout="premium"] .hero-badge {
 body[data-layout="premium"] .hero-badge i {
   color: var(--gold-flat) !important;
 }
+
+/* ── 8. SUBPAGES (HISTORY, DEPOSIT, CHECKOUT, AUTH) ────────────── */
+body[data-layout="premium"] .topbar {
+  background: #050505 !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+body[data-layout="premium"] .table-card,
+body[data-layout="premium"] .ck-section,
+body[data-layout="premium"] .deposit-card,
+body[data-layout="premium"] .deposit-history,
+body[data-layout="premium"] .summary-card,
+body[data-layout="premium"] .auth-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8) !important;
+}
+
+body[data-layout="premium"] th {
+  background: #111 !important;
+  color: var(--gold-flat) !important;
+  border-bottom: 1px solid var(--border-gold) !important;
+}
+
+body[data-layout="premium"] td {
+  border-bottom: 1px solid var(--border-light) !important;
+  color: var(--text-muted) !important;
+}
+
+body[data-layout="premium"] .section-title,
+body[data-layout="premium"] .card-title,
+body[data-layout="premium"] .page-title {
+  color: var(--gold-flat) !important;
+}
+
+body[data-layout="premium"] .back-home {
+  color: var(--gold-flat) !important;
+}
+
+body[data-layout="premium"] .auth-wrapper {
+  background: #000 !important;
+}
+body[data-layout="premium"] .pay-methods {
+  background: transparent !important;
+}
+body[data-layout="premium"] .pay-method {
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border-light) !important;
+}
+body[data-layout="premium"] .pay-method.active {
+  background: #111 !important;
+  color: var(--gold-flat) !important;
+  border: 1px solid var(--border-gold) !important;
+}
+body[data-layout="premium"] .qr-box {
+  background: #111 !important;
+  border: 2px dashed var(--border-gold) !important;
+}
