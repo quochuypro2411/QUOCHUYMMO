@@ -40,7 +40,8 @@ body[data-layout="premium"] .section-title {
   text-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
 }
 
-body[data-layout="premium"] .section-desc {
+body[data-layout="premium"] .section-desc,
+body[data-layout="premium"] .section-subtitle {
   color: var(--text-muted);
 }
 
@@ -48,6 +49,9 @@ body[data-layout="premium"] .section-desc {
 body[data-layout="premium"] .section-products,
 body[data-layout="premium"] .section-news,
 body[data-layout="premium"] .section-about,
+body[data-layout="premium"] .home-categories,
+body[data-layout="premium"] .home-steps,
+body[data-layout="premium"] .product-section,
 body[data-layout="premium"] .footer {
   background-color: var(--bg-body);
   border-top: 1px solid var(--border);
@@ -66,17 +70,23 @@ body[data-layout="premium"] .header {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
+body[data-layout="premium"] .logo {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 4px;
+}
+
 body[data-layout="premium"] .logo-text {
   color: var(--premium-gold);
   text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
 }
 
-body[data-layout="premium"] .search-bar {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-}
-
+body[data-layout="premium"] .search-bar,
+body[data-layout="premium"] .search-cat select,
+body[data-layout="premium"] .search-input,
 body[data-layout="premium"] .search-bar input {
+  background: var(--bg-card);
+  border-color: var(--border);
   color: var(--text);
 }
 
@@ -87,6 +97,7 @@ body[data-layout="premium"] .search-bar input::placeholder {
 body[data-layout="premium"] .search-btn {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: #fff;
+  border: none;
 }
 
 body[data-layout="premium"] .main-nav {
@@ -104,23 +115,103 @@ body[data-layout="premium"] .nav-item.active a {
   border-bottom-color: var(--premium-gold);
 }
 
-/* Cart & Wallet Buttons */
+/* Cart & Wallet Buttons & Auth Texts */
+body[data-layout="premium"] .action-box,
 body[data-layout="premium"] .cart-btn,
 body[data-layout="premium"] .wallet-btn {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  color: var(--premium-gold);
+  color: var(--text);
 }
 
+body[data-layout="premium"] .action-box:hover,
 body[data-layout="premium"] .cart-btn:hover,
 body[data-layout="premium"] .wallet-btn:hover {
   background: rgba(245, 158, 11, 0.1);
   border-color: var(--premium-gold);
 }
 
+body[data-layout="premium"] .action-label {
+  color: var(--text-muted);
+}
+
+body[data-layout="premium"] .action-value {
+  color: var(--text);
+}
+
+body[data-layout="premium"] .action-icon {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: var(--premium-gold) !important;
+}
+
 body[data-layout="premium"] .cart-badge {
   background: linear-gradient(135deg, #f59e0b, #d97706);
 }
+
+body[data-layout="premium"] .auth-texts a {
+  color: var(--premium-gold);
+}
+
+/* Trust Bar */
+body[data-layout="premium"] .trust-bar {
+  background-color: #080816;
+  border-bottom: 1px solid var(--border);
+}
+
+body[data-layout="premium"] .trust-item {
+  color: var(--text);
+}
+
+body[data-layout="premium"] .trust-ico {
+  color: var(--premium-gold);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+body[data-layout="premium"] .trust-copy span {
+  color: var(--text-muted);
+}
+
+/* ── 3.5. CATEGORIES & STEPS ─────────────────────────────── */
+body[data-layout="premium"] .feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body[data-layout="premium"] .feature-card h3 {
+  color: var(--premium-gold);
+}
+
+body[data-layout="premium"] .feature-card p {
+  color: var(--text-muted);
+}
+
+body[data-layout="premium"] .feature-card:hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 10px rgba(245, 158, 11, 0.15);
+  transform: translateY(-5px);
+}
+
+body[data-layout="premium"] .step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body[data-layout="premium"] .step-number {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border-color: #fff;
+}
+
+body[data-layout="premium"] .step-card h3 {
+  color: var(--premium-gold);
+}
+
+body[data-layout="premium"] .step-card p {
+  color: var(--text-muted);
+}
+
 
 /* ── 4. PREMIUM ANNOUNCEMENT BAR ────────────────────────── */
 .premium-announcement-bar {
@@ -217,12 +308,22 @@ body[data-layout="premium"] .product-card:hover {
   transform: translateY(-4px);
 }
 
+body[data-layout="premium"] .card-img {
+  background: #080816; /* Dark background instead of light grey */
+  border-bottom: 1px solid var(--border);
+}
+
 body[data-layout="premium"] .card-name {
   color: var(--text);
 }
 
+body[data-layout="premium"] .card-desc {
+  color: var(--text-muted);
+}
+
 body[data-layout="premium"] .card-meta {
   color: var(--text-muted);
+  border-color: var(--border);
 }
 
 body[data-layout="premium"] .buy-btn {
