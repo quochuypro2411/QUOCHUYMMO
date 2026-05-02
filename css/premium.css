@@ -112,18 +112,6 @@ body[data-layout="premium"] .search-btn {
   border-radius: 0 4px 4px 0;
 }
 
-/* Xóa nền trắng cho Logo trong bản Premium */
-body[data-layout="premium"] .logo img {
-  /* Ép độ tương phản cao để màu đen (sau khi đảo ngược) thật sự đen tuyệt đối */
-  filter: invert(1) contrast(200%) brightness(1.2);
-  /* Chế độ screen sẽ lọc bỏ hoàn toàn màu đen tuyệt đối */
-  mix-blend-mode: screen;
-  transition: all 0.3s ease;
-}
-body[data-layout="premium"] .logo img:hover {
-  filter: invert(1) contrast(200%) brightness(1.5) drop-shadow(0 0 8px var(--gold-glow));
-}
-
 /* Main Nav */
 body[data-layout="premium"] .main-nav {
   background: #050505 !important;
