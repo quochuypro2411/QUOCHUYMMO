@@ -406,3 +406,36 @@ body[data-layout="premium"] .trust-ico { background: #111 !important; color: var
 body[data-layout="premium"] .footer { background: #050505 !important; }
 body[data-layout="premium"] .footer h3 { color: var(--gold-flat) !important; }
 body[data-layout="premium"] .footer-bottom { background: #000 !important; border-top: 1px solid var(--border-light) !important; }
+
+/* ── 7. SERVICE PAGES (FACEBOOK, GMAIL, TOOL...) ─────────── */
+body[data-layout="premium"] .service-hero {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8) !important;
+}
+
+body[data-layout="premium"] .service-hero-card {
+  background: #000 !important;
+  border: 1px solid var(--border-gold) !important;
+  box-shadow: 0 0 15px var(--gold-glow) !important;
+}
+
+body[data-layout="premium"] .hero-callout-title {
+  color: var(--gold-flat) !important;
+}
+
+body[data-layout="premium"] .hero-list li {
+  color: var(--text-muted) !important;
+}
+body[data-layout="premium"] .hero-list li i {
+  color: var(--gold-flat) !important;
+}
+
+body[data-layout="premium"] .hero-badge {
+  background: #000 !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-light) !important;
+}
+body[data-layout="premium"] .hero-badge i {
+  color: var(--gold-flat) !important;
+}
