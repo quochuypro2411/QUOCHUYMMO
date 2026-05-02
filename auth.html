@@ -563,21 +563,41 @@ async function getUsersMerged() {
       return Array.from(map.values());
     };
 
-    [...localUsers, ...cloudUsers].forEach((u) => {
-      const emailKey = u.email ? userDocId(u.email) : null;
-      const userKey = u.user ? u.user.toLowerCase() : null;
-      const key = emailKey || userKey;
-      
-      if (key) {
-        if (byEmail.has(key)) {
-          const existing = byEmail.get(key);
-          u.transactions = mergeArrays(existing.transactions, u.transactions);
-          u.orders = mergeArrays(existing.orders, u.orders);
-          u.notifications = mergeArrays(existing.notifications, u.notifications);
+    // Pass 1: Thêm local users trước
+    localUsers.forEach((u) => {
+      const key = u.email ? userDocId(u.email) : (u.user ? u.user.toLowerCase() : null);
+      if (key) byEmail.set(key, normalizeUser(u));
+    });
+
+    // Pass 2: Merge cloud users, nhưng KHÔNG ghi đè role/premium nếu local đã có
+    cloudUsers.forEach((u) => {
+      const key = u.email ? userDocId(u.email) : (u.user ? u.user.toLowerCase() : null);
+      if (!key) return;
+
+      if (byEmail.has(key)) {
+        const existing = byEmail.get(key);
+        // Merge arrays
+        const merged = {
+          ...u,
+          transactions:  mergeArrays(existing.transactions, u.transactions),
+          orders:        mergeArrays(existing.orders, u.orders),
+          notifications: mergeArrays(existing.notifications, u.notifications),
+        };
+        // ─── Ưu tiên local role/premium nếu admin đã cấp ────
+        if (existing.role === 'premium' || existing.role === 'admin') {
+          merged.role = existing.role;
+          merged.premium_expired_at = existing.premium_expired_at;
         }
+        // Giữ balance local (admin quản lý qua localStorage)
+        if (existing.balance > 0) {
+          merged.balance = existing.balance;
+        }
+        byEmail.set(key, normalizeUser(merged));
+      } else {
         byEmail.set(key, normalizeUser(u));
       }
     });
+
     const merged = Array.from(byEmail.values());
     saveLocalUsers(merged);
     return merged;
@@ -710,11 +730,42 @@ async function handleLogin(e) {
           snapshot = await db.collection('users').doc(authUser.uid).get();
         }
 
+        // Lấy local profile (có thể đã được admin cấp premium)
+        const localProfile = await findUserByLoginInput(u);
+
         if (snapshot && snapshot.exists) {
-          profile = normalizeUser(snapshot.data());
+          const cloudData = snapshot.data();
+          // ─── MERGE: local role/premium ưu tiên hơn cloud ────
+          // Admin cấp premium qua localStorage, cloud có thể chưa sync
+          const mergedData = {
+            ...cloudData,
+            uid: authUser.uid,
+            email: authUser.email || loginEmail,
+          };
+
+          // Nếu local có role premium/admin mà cloud không có → giữ local
+          if (localProfile && localProfile.role === 'premium' && cloudData.role !== 'premium') {
+            mergedData.role = localProfile.role;
+            mergedData.premium_expired_at = localProfile.premium_expired_at;
+          }
+          // Giữ balance từ local (admin có thể đã chỉnh)
+          if (localProfile && localProfile.balance > 0) {
+            mergedData.balance = localProfile.balance;
+          }
+
+          profile = normalizeUser(mergedData);
+
+          // Sync role mới lên Firestore
+          if (db && mergedData.role !== cloudData.role) {
+            db.collection('users').doc(authUser.uid).set({
+              role: mergedData.role,
+              premium_expired_at: mergedData.premium_expired_at || null,
+              balance: mergedData.balance || 0,
+            }, { merge: true }).catch(e => console.warn('Firestore sync error:', e));
+          }
         } else {
           profile = normalizeUser({
-            ...(profile || {}),
+            ...(localProfile || profile || {}),
             uid: authUser.uid,
             email: authUser.email || loginEmail
           });
