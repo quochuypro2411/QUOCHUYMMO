@@ -112,6 +112,16 @@ body[data-layout="premium"] .search-btn {
   border-radius: 0 4px 4px 0;
 }
 
+/* Xử lý Logo nền trắng cho giao diện Premium */
+body[data-layout="premium"] .logo img {
+  /* Bước 1: Đảo ngược trắng thành đen */
+  /* Bước 2: Dùng sepia và saturate để tạo màu vàng kim */
+  filter: invert(1) sepia(1) saturate(10) hue-rotate(5deg) brightness(1.1);
+  /* Bước 3: Chế độ screen làm màu đen (nền đã đảo ngược) biến mất trên nền tối */
+  mix-blend-mode: screen;
+  transition: all 0.3s ease;
+}
+
 /* Main Nav */
 body[data-layout="premium"] .main-nav {
   background: #050505 !important;
