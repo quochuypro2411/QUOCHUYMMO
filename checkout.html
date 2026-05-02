@@ -139,6 +139,66 @@
   </script>
 
 <script>
+  // ─── Mail Generator ───────────────────────────────────────────
+  const _MAIL_DOMAINS = ['@gmail.com','@yahoo.com','@hotmail.com','@outlook.com','@mail.com'];
+  const _CHARS        = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const _PASS_CHARS   = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
+  const _r = (s) => s[Math.floor(Math.random() * s.length)];
+
+  function _randUser() {
+    let u = _r('abcdefghijklmnopqrstuvwxyz');
+    const len = 5 + Math.floor(Math.random() * 8);
+    for (let i = 1; i < len; i++) {
+      if (Math.random() < 0.12 && i > 2 && u[u.length-1] !== '.') u += '.';
+      else u += _r(_CHARS);
+    }
+    return u.endsWith('.') ? u + _r('abcdefghijklmnopqrstuvwxyz') : u;
+  }
+
+  function _randPass() {
+    let p = '';
+    for (let i = 0; i < 12; i++) p += _r(_PASS_CHARS);
+    return p;
+  }
+
+  /**
+   * Generate n dòng mail|pass
+   * @param {number} n
+   * @returns {string}
+   */
+  function generateMailContent(n) {
+    const lines = [];
+    for (let i = 0; i < n; i++) {
+      lines.push(_randUser() + _r(_MAIL_DOMAINS) + '|' + _randPass());
+    }
+    return lines.join('\n');
+  }
+
+  /**
+   * Tính tổng số lượng mail từ giỏ hàng (chỉ tính loại account)
+   */
+  function getTotalMailQty(cart) {
+    return cart.filter(i => i.type === 'account').reduce((sum, item) => sum + (item.qty || 1), 0);
+  }
+
+  /**
+   * Sinh nội dung trả về cho đơn hàng
+   * @param {Array} cart
+   * @returns {string}
+   */
+  function generateOrderResults(cart) {
+    let results = [];
+    cart.forEach(item => {
+      if (item.type === 'account') {
+        results.push(generateMailContent(item.qty));
+      } else {
+        results.push(`[Dịch vụ: ${item.name}]\nĐang xử lý dịch vụ... Quý khách vui lòng đợi admin hoàn tất.`);
+      }
+    });
+    return results.join('\n\n');
+  }
+  // ──────────────────────────────────────────────────────────────
+
   // Core Data
   const getCart = () => JSON.parse(localStorage.getItem('mmo_cart') || '[]');
   const saveCart = (c) => localStorage.setItem('mmo_cart', JSON.stringify(c));
@@ -254,13 +314,20 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
 
+      const isBalance = (payMethod === 'balance');
+      const mailQty = getTotalMailQty(cart);
+      const mailContent = isBalance ? generateOrderResults(cart) : null;
+
       const order = {
         id: window.currentOrderId,
         date: new Date().toISOString(),
+        ts: new Date().toISOString(),
         items: cart,
         total: total,
-        method: payMethod === 'balance' ? 'Số dư' : 'Chuyển khoản',
-        status: payMethod === 'balance' ? 'Thành công' : 'Đang xử lý'
+        method: isBalance ? 'Số dư' : 'Chuyển khoản',
+        status: isBalance ? 'Thành công' : 'Đang xử lý',
+        mailQty: mailQty,
+        mailContent: mailContent  // null nếu chờ duyệt, string nếu đã thành công
       };
 
       user.orders = user.orders || [];

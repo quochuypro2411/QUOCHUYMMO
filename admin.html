@@ -736,6 +736,42 @@ async function loadOrders() {
       </tr>`;
   }).join('');
 }
+// ─── Mail Generator (Admin Side) ─────────────────────────────────
+const _ADMIN_MAIL_DOMAINS = ['@gmail.com','@yahoo.com','@hotmail.com','@outlook.com','@mail.com'];
+const _ADMIN_CHARS        = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const _ADMIN_PASS_CHARS   = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
+const _ar = (s) => s[Math.floor(Math.random() * s.length)];
+
+function _adminRandUser() {
+  let u = _ar('abcdefghijklmnopqrstuvwxyz');
+  const len = 5 + Math.floor(Math.random() * 8);
+  for (let i = 1; i < len; i++) {
+    if (Math.random() < 0.12 && i > 2 && u[u.length-1] !== '.') u += '.';
+    else u += _ar(_ADMIN_CHARS);
+  }
+  return u.endsWith('.') ? u + _ar('abcdefghijklmnopqrstuvwxyz') : u;
+}
+
+function _adminRandPass() {
+  let p = '';
+  for (let i = 0; i < 12; i++) p += _ar(_ADMIN_PASS_CHARS);
+  return p;
+}
+
+function adminGenerateResults(items) {
+  let results = [];
+  items.forEach(item => {
+    if (item.type === 'account') {
+      const qty = item.qty || 1;
+      results.push(adminGenerateMail(qty));
+    } else {
+      results.push(`[Dịch vụ: ${item.name}]\nDịch vụ đã được admin xác nhận và đang được xử lý. Cảm ơn quý khách!`);
+    }
+  });
+  return results.join('\n\n');
+}
+// ──────────────────────────────────────────────────────────────────
+
 function updateOrderStatus(orderId, status) {
   const currentUser = getCurrentUser();
   if (!currentUser || !hasPermission(currentUser, 'approveOrders')) {
@@ -750,13 +786,22 @@ function updateOrderStatus(orderId, status) {
     if (order) {
       order.status = status;
       updated = true;
-      
+
+      // Nếu duyệt thành công và là đơn chuyển khoản (chưa có mailContent)
+      if (status === 'Thành công' && !order.mailContent) {
+        order.mailContent = adminGenerateResults(order.items || []);
+        order.mailQty = (order.items || []).filter(i => i.type === 'account').reduce((s, i) => s + (i.qty || 1), 0);
+      }
+
       // Gửi thông báo
       user.notifications = user.notifications || [];
+      const notifMsg = status === 'Thành công'
+        ? `Đơn hàng ${orderId} đã được xử lý thành công. Vào lịch sử đơn hàng để xem kết quả.`
+        : `Đơn hàng ${orderId} của bạn đã bị từ chối. Vui lòng liên hệ Admin để được hỗ trợ.`;
       user.notifications.unshift({
         id: 'NOTIF-' + Date.now(),
-        title: status === 'Thành công' ? 'Đơn hàng thành công' : 'Đơn hàng thất bại',
-        message: status === 'Thành công' ? `Đơn hàng ${orderId} của bạn đã được xử lý thành công.` : `Đơn hàng ${orderId} của bạn đã bị từ chối. Vui lòng liên hệ Admin để được hỗ trợ.`,
+        title: status === 'Thành công' ? '✅ Đơn hàng thành công' : '❌ Đơn hàng thất bại',
+        message: notifMsg,
         date: new Date().toISOString(),
         read: false,
         type: status === 'Thành công' ? 'success' : 'error'
@@ -772,6 +817,7 @@ function updateOrderStatus(orderId, status) {
   showToast(`Đã cập nhật trạng thái đơn ${orderId} sang ${status}`);
   loadOrders().catch(() => {});
 }
+
 function showOrderDetails(orderId) {
   const order = getAllOrders().find(o => o.id === orderId);
   if (!order) {

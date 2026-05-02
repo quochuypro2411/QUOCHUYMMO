@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            width: 520px;
+            max-width: 95vw;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #e2e8f0, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { border-color: #6366f1; }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:active { transform: scale(0.97); }
+
+        .btn-gen {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        .btn-gen:hover { box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4); }
+
+        .btn-copy {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .btn-copy:hover { background: rgba(16, 185, 129, 0.25); }
+
+        textarea {
+            width: 100%;
+            height: 320px;
+            padding: 14px;
+            background: rgba(2, 6, 23, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 10px;
+            color: #a5f3fc;
+            font-family: 'Consolas', monospace;
+            font-size: 0.82rem;
+            line-height: 1.8;
+            resize: vertical;
+            outline: none;
+        }
+
+        textarea:focus { border-color: rgba(99, 102, 241, 0.4); }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            padding: 10px 20px;
+            background: #10b981;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📧 Mail Generator</h1>
+        <div class="row">
+            <input type="number" id="qty" value="10" min="1" max="10000" placeholder="Số lượng">
+            <button class="btn-gen" onclick="generate()">Tạo Mail</button>
+            <button class="btn-copy" onclick="copyAll()">Copy</button>
+        </div>
+        <textarea id="out" readonly placeholder="Kết quả mail|pass sẽ hiển thị ở đây..."></textarea>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const domains = ['@gmail.com','@yahoo.com','@hotmail.com','@outlook.com','@mail.com'];
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        const passChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
+
+        const r = (s) => s[Math.floor(Math.random() * s.length)];
+
+        function randUser() {
+            let u = r('abcdefghijklmnopqrstuvwxyz');
+            const len = 5 + Math.floor(Math.random() * 8);
+            for (let i = 1; i < len; i++) {
+                if (Math.random() < 0.12 && i > 2 && u[u.length-1] !== '.') u += '.';
+                else u += r(chars);
+            }
+            return u.endsWith('.') ? u + r('abcdefghijklmnopqrstuvwxyz') : u;
+        }
+
+        function randPass() {
+            let p = '';
+            for (let i = 0; i < 12; i++) p += r(passChars);
+            return p;
+        }
+
+        function generate() {
+            const n = Math.min(Math.max(parseInt(document.getElementById('qty').value) || 1, 1), 10000);
+            const lines = [];
+            for (let i = 0; i < n; i++) {
+                lines.push(randUser() + r(domains) + '|' + randPass());
+            }
+            document.getElementById('out').value = lines.join('\n');
+            toast('✅ Đã tạo ' + n + ' mail!');
+        }
+
+        function copyAll() {
+            const text = document.getElementById('out').value;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => toast('📋 Đã copy!')).catch(() => {
+                document.getElementById('out').select();
+                document.execCommand('copy');
+                toast('📋 Đã copy!');
+            });
+        }
+
+        let t;
+        function toast(msg) {
+            clearTimeout(t);
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            t = setTimeout(() => el.classList.remove('show'), 2000);
+        }
+
+        document.getElementById('qty').addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+    </script>
+</body>
+</html>

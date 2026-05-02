@@ -109,12 +109,18 @@ document.addEventListener('click', function(e) {
     const priceText = card.querySelector('.price-new')?.textContent || '0';
     const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
     const id = card.id;
+    
+    // Determine type: fb, gm, clone, tiktok, proxy -> account, others -> service
+    let type = 'service';
+    if (id.startsWith('pcard-fb') || id.startsWith('pcard-gm') || id.startsWith('pcard-clone') || id.startsWith('pcard-tiktok') || id.startsWith('pcard-proxy')) {
+      type = 'account';
+    }
 
     let cart = JSON.parse(localStorage.getItem('mmo_cart') || '[]');
     const existing = cart.find(i => i.id === id);
     if (existing) { existing.qty++; } else {
       cart.push({ 
-        id, name, price, qty: 1, 
+        id, name, price, qty: 1, type,
         icon: card.querySelector('.card-icon i')?.className || 'fas fa-box',
         color: 'var(--primary), var(--primary-dark)'
       });

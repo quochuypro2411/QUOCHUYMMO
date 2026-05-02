@@ -44,9 +44,36 @@
     .status-pending { background: #fef3c7; color: #92400e; }
     .status-failed { background: #fee2e2; color: #dc2626; }
     
-    .view-btn { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: #fff; cursor: pointer; transition: all 0.2s; color: var(--text-secondary); font-size: 13px; }
+    .view-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border); background: #fff; cursor: pointer; transition: all 0.2s; color: var(--text-secondary); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
     .view-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-    
+    .view-btn.pending-btn { background: #fffbeb; color: #92400e; border-color: #fde68a; cursor: default; }
+    .view-btn.pending-btn:hover { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+
+    /* Mail Modal */
+    .mail-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:999; align-items:center; justify-content:center; }
+    .mail-overlay.active { display:flex; }
+    .mail-modal { background:#fff; border-radius:20px; width:min(560px,96vw); max-height:88vh; display:flex; flex-direction:column; box-shadow:0 32px 80px rgba(0,0,0,0.25); overflow:hidden; }
+    .mail-modal-header { background:linear-gradient(135deg,#1877F2,#0c5dc7); padding:22px 26px; display:flex; align-items:center; justify-content:space-between; }
+    .mail-modal-header h3 { color:#fff; font-size:16px; font-weight:800; display:flex; align-items:center; gap:10px; margin:0; }
+    .mail-modal-close { background:rgba(255,255,255,0.15); border:none; color:#fff; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:background .2s; }
+    .mail-modal-close:hover { background:rgba(255,255,255,0.3); }
+    .mail-modal-body { padding:22px 26px; flex:1; overflow-y:auto; }
+    .mail-meta { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .mail-meta-item { display:flex; align-items:center; gap:6px; background:#f0f2f5; padding:8px 14px; border-radius:999px; font-size:12px; font-weight:700; color:#374151; }
+    .mail-meta-item i { color:var(--primary); }
+    .mail-textarea { width:100%; height:220px; padding:14px; background:#0f172a; border:2px solid #e2e8f0; border-radius:12px; color:#a5f3fc; font-family:'Consolas',monospace; font-size:13px; line-height:1.9; resize:vertical; outline:none; transition:border-color .2s; }
+    .mail-textarea:focus { border-color:var(--primary); }
+    .mail-actions { display:flex; gap:10px; margin-top:16px; }
+    .mail-btn { flex:1; padding:12px; border-radius:10px; border:none; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .mail-btn.copy { background:linear-gradient(135deg,#1877F2,#0c5dc7); color:#fff; box-shadow:0 4px 15px rgba(24,119,242,0.3); }
+    .mail-btn.copy:hover { box-shadow:0 6px 25px rgba(24,119,242,0.4); transform:translateY(-1px); }
+    .mail-btn.dl { background:#f1f5f9; color:#374151; border:1px solid #e2e8f0; }
+    .mail-btn.dl:hover { background:#e2e8f0; }
+    .mail-pending-notice { text-align:center; padding:32px 20px; }
+    .mail-pending-notice .pi { font-size:56px; margin-bottom:16px; }
+    .mail-pending-notice h4 { font-size:18px; font-weight:800; color:#92400e; margin-bottom:8px; }
+    .mail-pending-notice p { font-size:14px; color:#64748b; line-height:1.7; }
+
     @media (max-width: 768px) { .history-container { margin: 20px auto; } }
   </style>
 </head>
@@ -79,6 +106,17 @@
           <!-- Rendered by JS -->
         </tbody>
       </table>
+  </div>
+</div>
+
+<!-- Mail Viewer Modal -->
+<div class="mail-overlay" id="mail-overlay">
+  <div class="mail-modal">
+    <div class="mail-modal-header">
+      <h3><i class="fas fa-envelope"></i> <span id="mail-modal-title">Danh sách Mail</span></h3>
+      <button class="mail-modal-close" onclick="closeMailModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mail-modal-body" id="mail-modal-body">
     </div>
   </div>
 </div>
@@ -129,6 +167,21 @@
       const firstItem = order.items[0] || { name: 'Sản phẩm' };
       const statusCls = order.status === 'Thành công' ? 'status-success' : (order.status === 'Thất bại' ? 'status-failed' : 'status-pending');
       const statusIcon = order.status === 'Thành công' ? 'fa-check-circle' : (order.status === 'Thất bại' ? 'fa-times-circle' : 'fa-clock');
+
+      // Nút xem kết quả theo trạng thái và loại sản phẩm
+      const hasAccount = (order.items || []).some(i => i.type === 'account');
+      const btnText = hasAccount ? 'Xem mail' : 'Xem kết quả';
+      
+      let viewBtn;
+      if (order.status === 'Thành công' && order.mailContent) {
+        viewBtn = `<button class="view-btn" onclick="openMailModal('${order.id}')"><i class="fas fa-eye"></i> ${btnText}</button>`;
+      } else if (order.status === 'Đang xử lý') {
+        viewBtn = `<button class="view-btn pending-btn" onclick="openMailModal('${order.id}')"><i class="fas fa-hourglass-half"></i> Chờ duyệt</button>`;
+      } else if (order.status === 'Thất bại') {
+        viewBtn = `<button class="view-btn" style="color:#dc2626;border-color:#fca5a5;cursor:default;" disabled><i class="fas fa-times-circle"></i> Từ chối</button>`;
+      } else {
+        viewBtn = `<button class="view-btn" onclick="openMailModal('${order.id}')"><i class="fas fa-eye"></i> Chi tiết</button>`;
+      }
       
       return `
         <tr>
@@ -149,16 +202,107 @@
               <i class="fas ${statusIcon}"></i> ${order.status}
             </span>
           </td>
-          <td>
-            <button class="view-btn"><i class="fas fa-eye"></i> Chi tiết</button>
-          </td>
+          <td>${viewBtn}</td>
         </tr>
       `;
     }).join('');
   }
 
+  // ─── Mail Modal ───────────────────────────────────────────────
+  function openMailModal(orderId) {
+    const user = window.MMO.getUser();
+    if (!user || !user.orders) return;
+    const order = user.orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const bodyEl   = document.getElementById('mail-modal-body');
+    const titleEl  = document.getElementById('mail-modal-title');
+    const mailQty  = order.mailQty || 0;
+    const hasAccount = (order.items || []).some(i => i.type === 'account');
+
+    if (order.status === 'Thành công' && order.mailContent) {
+      titleEl.textContent = hasAccount ? `Kết quả đơn ${order.id}` : `Thông tin dịch vụ ${order.id}`;
+      bodyEl.innerHTML = `
+        <div class="mail-meta">
+          ${mailQty > 0 ? `<div class="mail-meta-item"><i class="fas fa-list-ol"></i> ${mailQty} tài khoản</div>` : ''}
+          <div class="mail-meta-item"><i class="fas fa-coins"></i> ${window.MMO.fmt(order.total)}</div>
+          <div class="mail-meta-item"><i class="fas fa-check-circle" style="color:#16a34a"></i> Đã hoàn tất</div>
+        </div>
+        <textarea class="mail-textarea" id="mail-content-area" readonly>${order.mailContent}</textarea>
+        <div class="mail-actions">
+          <button class="mail-btn copy" onclick="copyMailContent()"><i class="fas fa-copy"></i> Copy nội dung</button>
+          <button class="mail-btn dl" onclick="downloadMailContent('${order.id}')"><i class="fas fa-download"></i> Tải file .txt</button>
+        </div>
+      `;
+    } else if (order.status === 'Đang xử lý') {
+      titleEl.textContent = `Đơn ${order.id} – Chờ duyệt`;
+      bodyEl.innerHTML = `
+        <div class="mail-pending-notice">
+          <div class="pi">⏳</div>
+          <h4>Đơn hàng đang chờ xử lý</h4>
+          <p>Hệ thống hoặc Admin đang xử lý yêu cầu của bạn.<br>
+          ${hasAccount ? `Sau khi được duyệt, tài khoản sẽ xuất hiện tại đây.` : `Kết quả dịch vụ sẽ được thông báo sớm nhất.`}<br>
+          Thời gian xử lý: 30 giây – 15 phút.</p>
+        </div>
+      `;
+    } else {
+      titleEl.textContent = `Chi tiết đơn ${order.id}`;
+      const items = (order.items || []).map(i => `• ${i.name || 'Sản phẩm'} x${i.qty || 1}`).join('<br>');
+      bodyEl.innerHTML = `<div style="padding:20px; line-height:2;">${items || 'Không có sản phẩm'}</div>`;
+    }
+
+    document.getElementById('mail-overlay').classList.add('active');
+  }
+
+  function closeMailModal() {
+    document.getElementById('mail-overlay').classList.remove('active');
+  }
+
+  function copyMailContent() {
+    const area = document.getElementById('mail-content-area');
+    if (!area) return;
+    navigator.clipboard.writeText(area.value).then(() => {
+      showHistoryToast('📋 Đã copy toàn bộ mail!');
+    }).catch(() => {
+      area.select();
+      document.execCommand('copy');
+      showHistoryToast('📋 Đã copy!');
+    });
+  }
+
+  function downloadMailContent(orderId) {
+    const area = document.getElementById('mail-content-area');
+    if (!area || !area.value) return;
+    const blob = new Blob([area.value], { type: 'text/plain;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `mail_${orderId}.txt`; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Đóng modal khi click nền
+  document.getElementById('mail-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeMailModal();
+  });
+
+  // Toast nhỏ
+  let _htt;
+  function showHistoryToast(msg) {
+    let el = document.getElementById('h-toast');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'h-toast';
+      el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#10b981;color:#fff;padding:10px 22px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;transition:all .3s ease;z-index:10000;pointer-events:none;';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.style.opacity = '1'; el.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(_htt);
+    _htt = setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(80px)'; }, 2200);
+  }
+
   window.addEventListener('DOMContentLoaded', renderHistory);
 </script>
+
 
 </body>
 </html>
