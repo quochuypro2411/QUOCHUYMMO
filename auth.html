@@ -486,10 +486,15 @@ function normalizeUser(user) {
     uid: user.uid || null,
     name: user.name || '',
     user: user.user || '',
+    username: user.username || user.user || '',
     email: (user.email || '').toLowerCase(),
     pass: user.pass || '',
     role: user.role || (user.isAdmin ? 'admin' : 'user'),
     isAdmin: Boolean(user.isAdmin || user.role === 'admin'),
+    // ─── Premium fields – KHÔNG strip ──────────────────────
+    premium_expired_at: user.premium_expired_at || null,
+    balance: Number(user.balance || 0),
+    // ────────────────────────────────────────────────────────
     permissions: user.permissions || {
       approveOrders: Boolean(user.isAdmin || user.role === 'admin'),
       manageUsers: Boolean(user.isAdmin || user.role === 'admin'),

@@ -34,17 +34,19 @@ const LayoutManager = (() => {
    * RoleGuard.getVerifiedUser() tự handle expiry.
    */
   function apply() {
-    const user   = RoleGuard.getVerifiedUser();
-    const layout = user ? get(user.role) : DefaultLayout;
+    const user    = RoleGuard.getVerifiedUser();
+    const role    = user?.role || 'guest';
+    const layout  = user ? get(role) : DefaultLayout;
 
-    // Không apply lại nếu đã đúng layout
-    if (_currentLayout === layout && user?.role === document.body.getAttribute('data-layout')) {
-      return;
-    }
+    // Không apply lại nếu đã apply đúng layout này rồi
+    const currentDataLayout = document.body.getAttribute('data-role-layout');
+    if (currentDataLayout === role) return;
 
+    // Đánh dấu layout đã apply
+    document.body.setAttribute('data-role-layout', role);
     _currentLayout = layout;
 
-    // Apply layout (DefaultLayout.apply() hoặc PremiumLayout.apply(user))
+    // Apply layout
     if (layout === PremiumLayout) {
       PremiumLayout.apply(user);
       initFlashSale(user);
@@ -57,7 +59,7 @@ const LayoutManager = (() => {
     // Update product cards với đúng giá
     _updateProductPrices(user);
 
-    console.log(`[LayoutManager] Applied layout: ${layout.id} for role: ${user?.role || 'guest'}`);
+    console.log(`[LayoutManager] Applied layout: ${layout.id} for role: ${role}`);
   }
 
   // ─── Update giá sản phẩm theo role ───────────────────────
