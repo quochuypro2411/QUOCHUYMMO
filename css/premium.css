@@ -409,3 +409,87 @@ body[data-layout="premium"] .trust-bar {
   color: #fff;
   border-top: 1px dashed rgba(255,255,255,0.2);
 }
+
+/* ── 10. DETAILED OVERRIDES (ICONS, BADGES, CTA) ────────── */
+/* Nút liên hệ (Zalo) */
+body[data-layout="premium"] .contact-cta {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+body[data-layout="premium"] .contact-cta .ring {
+  background: var(--premium-gold-gradient) !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4) !important;
+  color: #000;
+}
+body[data-layout="premium"] .contact-cta .cta-label {
+  color: var(--text-muted);
+}
+body[data-layout="premium"] .contact-cta .cta-phone {
+  color: var(--primary);
+  text-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
+}
+
+/* Biến Icon sản phẩm thành tông Vàng Kim */
+body[data-layout="premium"] .card-icon {
+  background: rgba(20, 20, 30, 0.8) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  color: var(--primary) !important;
+  box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.1), 0 5px 15px rgba(0,0,0,0.5) !important;
+}
+
+/* Badges (Hot, New, Sale) và Tags */
+body[data-layout="premium"] .card-badge,
+body[data-layout="premium"] .ctag {
+  background: rgba(10, 10, 15, 0.85) !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  font-weight: 600;
+}
+
+body[data-layout="premium"] .card-badge.badge-prem {
+  background: var(--premium-gold-gradient) !important;
+  color: #000 !important;
+  border: none !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+/* Thanh Tìm Kiếm - Dropdown options */
+body[data-layout="premium"] .search-cat {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+}
+body[data-layout="premium"] .search-cat select {
+  background: transparent;
+}
+body[data-layout="premium"] .search-cat select option {
+  background: #130d1a;
+  color: #fff;
+}
+
+/* Logo - Làm nền trắng mờ để tách biệt logo xanh */
+body[data-layout="premium"] .logo {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 4px 10px;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+  transition: all 0.3s ease;
+}
+body[data-layout="premium"] .logo:hover {
+  background: #fff;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+}
+
+/* Căn chỉnh lại 3 bước hướng dẫn để sang hơn */
+body[data-layout="premium"] .step-card {
+  text-align: center;
+  padding-top: 40px;
+}
+body[data-layout="premium"] .step-number {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  top: -25px;
+  border: 4px solid #130d1a;
+}
